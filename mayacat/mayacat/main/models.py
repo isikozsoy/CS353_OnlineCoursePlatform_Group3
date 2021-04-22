@@ -265,7 +265,6 @@ class Assignment(models.Model):
 
 class LectureMaterial(models.Model):
     materialno = models.UUIDField(primary_key=True, max_length=32, editable=False)
-
     lecture_no = models.ForeignKey(Lecture, on_delete=models.CASCADE)
 
     material = models.FileField(upload_to='lecture/material/')
