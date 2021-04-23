@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ object.cname }}</title>
+</head>
+<body>
+    <h1>Course Details</h1>
+    <h2>{{ object.cname }}</h2>
+    <h3>{{ object.description }}</h3>
+    <ol>
+      {% for lecture in object.lecture_set.all %}
+      <li><a href="{{ lecture.get_url }}">{{ lecture.lecture_name }}</a></li>
+      {% endfor %}
+    </ol>
+</body>
+</html>
