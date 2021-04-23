@@ -46,7 +46,7 @@ class Advertiser(models.Model):
 
 
 class Course(models.Model):
-    cno = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    cno = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, max_length=32)
     owner = models.ForeignKey(Instructor, on_delete=models.CASCADE)
     cname = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=6, decimal_places=2)  # up to 9999 with 2 decimal places
@@ -80,7 +80,8 @@ class Course(models.Model):
     # so that we can call it as course.lecture_list() directly
     @property
     def lecture_list(self):
-        return self.lecture_set.all().order_by('position')
+        print(self.lecture_set)
+        return self.lecture_set.all().order_by('lecture_name')
 
 class Gift(models.Model):
     # added a gift-id because Django does not support composite primary keys with 2+ columns
@@ -102,10 +103,10 @@ class Complaint(models.Model):
 
 
 class Lecture(models.Model):
-    lecture_no = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    lecture_no = models.UUIDField(primary_key=True, max_length=32, default=uuid.uuid4, editable=False)
 
     lecture_name = models.CharField(max_length=200)
-    position = models.IntegerField()
+    # position = models.IntegerField()
 
     lecture_slug = models.SlugField()
     ### video_file = models.FileField() veya
@@ -113,6 +114,15 @@ class Lecture(models.Model):
 
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
 
+    def get_url(self):
+        return reverse('main:lecture-detail',
+                       kwargs={
+                           'course_slug': self.cno.slug,
+                           'lecture_slug': self.lecture_slug
+                       })
+
+    def __str__(self):
+        return self.lecture_name
 
 class Takes_note(models.Model):
     # new primary key because Django does not support composite primary keys

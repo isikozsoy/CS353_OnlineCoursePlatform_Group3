@@ -26,7 +26,7 @@ class LectureView(View):
             'object': lecture
         }
 
-        return render(request, 'main/lecture_desc.html', context)
+        return render(request, 'main/lecture_detail.html', context)
 
 # Create your views here.
 def index(request):
