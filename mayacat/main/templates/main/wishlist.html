@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MayaCat E-Learning Platform</title>
+</head>
+<body>
+    <h1>Wishlist</h1>
+    {% for object in object_list %}
+        <a href="{{ object.get_url }}">{{ object }}</a>
+    {% endfor %}
+</body>
+</html>
