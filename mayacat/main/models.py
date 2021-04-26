@@ -1,12 +1,11 @@
 from django.db import models
-# from django.contrib.auth.models import User
 from django.conf import settings
 from django.urls import reverse
 import uuid
-
+from django.contrib.auth.models import User
 
 # Create your models here
-
+"""
 class User(models.Model):
     username = models.CharField(
         max_length=50,
@@ -19,12 +18,15 @@ class User(models.Model):
     def __str__(self):
         return self.username
 
+"""
 
 class Student(User):
+    phone = models.CharField(max_length=50, blank=True)
     description = models.TextField()
 
 
 class Instructor(User):
+    phone = models.CharField(max_length=50, blank=True)
     description = models.TextField()
 
     def __str__(self):

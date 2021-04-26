@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login to MayaCat</title>
+</head>
+<body>
+    <form action="login" method="post">
+        {% csrf_token %}
+        {{ form.as_table }}
+        <br>
+        <button type="submit"
+                class="btn btn-primary"
+                role="button">Login!</button>
+    </form>
+</body>
+</html>

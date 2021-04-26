@@ -4,6 +4,12 @@ from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, View
 from .models import Course, Lecture
 
+class MainView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return render(request, 'main/course_list.html')
+        return render(request, 'main/main.html')
+
 class CourseListView(ListView):
     model = Course
 

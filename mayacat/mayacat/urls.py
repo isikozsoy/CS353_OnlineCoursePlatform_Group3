@@ -25,6 +25,7 @@ admin.site.index_title = "MayaCat"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('accounts.urls', namespace='accounts')),
     path('', include('main.urls', namespace='main')),
 ]
 
