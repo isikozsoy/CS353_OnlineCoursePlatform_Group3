@@ -2,88 +2,9 @@ from django.db import models
 from django.conf import settings
 from django.urls import reverse
 import uuid
-from django.contrib.auth.models import User
+from courses.models import *
+from accounts.models import *
 
-# Create your models here
-"""
-class User(models.Model):
-    username = models.CharField(
-        max_length=50,
-        primary_key=True)
-    name = models.CharField(max_length=50)
-    password = models.CharField(max_length=50)
-    email = models.CharField(max_length=50)
-    phone = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.username
-
-"""
-
-class Student(User):
-    phone = models.CharField(max_length=50, blank=True)
-    description = models.TextField()
-
-
-class Instructor(User):
-    phone = models.CharField(max_length=50, blank=True)
-    description = models.TextField()
-
-    def __str__(self):
-        return "".format("Instructor: ", self.username)
-
-
-class SiteAdmin(User):
-    ssn = models.CharField(max_length=20)
-    address = models.CharField(max_length=100)
-
-
-class Advertiser(models.Model):
-    ad_username = models.CharField(max_length=50, primary_key=True)
-    name = models.CharField(max_length=50)
-    password = models.CharField(max_length=50)
-    company_name = models.CharField(max_length=100)
-    email = models.CharField(max_length=50)
-    phone = models.CharField(max_length=50)
-
-
-class Course(models.Model):
-    cno = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, max_length=32)
-    owner = models.ForeignKey(Instructor, on_delete=models.CASCADE)
-    cname = models.CharField(max_length=50)
-    price = models.DecimalField(max_digits=6, decimal_places=2)  # up to 9999 with 2 decimal places
-
-    slug = models.SlugField()
-
-    ######### WE CAN CHANGE THE BELOW ENUMERATION AS SMALLINTEGERFIELD
-    class Situation(models.TextChoices):
-        Pnd = 'Pending'
-        Dcl = 'Declined'
-        Appr = 'Approved'
-
-    situation = models.CharField(
-        max_length=8,
-        choices=Situation.choices,
-        default=Situation.Pnd,
-    )
-
-    is_private = models.BooleanField(default=False)
-
-    course_img = models.ImageField(upload_to='thumbnails/')  ## varchar 512
-
-    description = models.TextField()
-
-    def __str__(self):
-        return self.cname
-
-    def get_url(self):
-        return reverse('main:desc', kwargs={'slug':self.slug})
-
-    # so that we can call it as course.lecture_list() directly
-    @property
-    def lecture_list(self):
-        print(self.lecture_set)
-        return self.lecture_set.all().order_by('lecture_name')
 
 class Gift(models.Model):
     # added a gift-id because Django does not support composite primary keys with 2+ columns
@@ -103,28 +24,6 @@ class Complaint(models.Model):
 
     description = models.TextField()
 
-
-class Lecture(models.Model):
-    lecture_no = models.UUIDField(primary_key=True, max_length=32, default=uuid.uuid4, editable=False)
-
-    lecture_name = models.CharField(max_length=200)
-    # position = models.IntegerField()
-
-    lecture_slug = models.SlugField()
-    ### video_file = models.FileField() veya
-    video_url = models.CharField(max_length=200)
-
-    cno = models.ForeignKey(Course, on_delete=models.CASCADE)
-
-    def get_url(self):
-        return reverse('main:lecture-detail',
-                       kwargs={
-                           'course_slug': self.cno.slug,
-                           'lecture_slug': self.lecture_slug
-                       })
-
-    def __str__(self):
-        return self.lecture_name
 
 class Takes_note(models.Model):
     # new primary key because Django does not support composite primary keys
@@ -252,7 +151,8 @@ class Post(models.Model):
 
 
 class Quest_answ(models.Model):
-    answer_no = models.ForeignKey(Post, primary_key=True, related_name='answer', default=uuid.uuid4, on_delete=models.CASCADE)
+    answer_no = models.ForeignKey(Post, primary_key=True, related_name='answer', default=uuid.uuid4,
+                                  on_delete=models.CASCADE)
     question_no = models.ForeignKey(Post, related_name='question', on_delete=models.CASCADE)
 
 
@@ -292,13 +192,6 @@ class Assignment(models.Model):
 
     lecture_no = models.ForeignKey(Lecture, on_delete=models.CASCADE)
     assignment = models.FileField(upload_to='lecture/assignments/')
-
-
-class LectureMaterial(models.Model):
-    materialno = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
-    lecture_no = models.ForeignKey(Lecture, on_delete=models.CASCADE)
-
-    material = models.FileField(upload_to='lecture/material/')
 
 
 class Inside_Cart(models.Model):
