@@ -126,7 +126,7 @@ class Lecture(models.Model):
 
 class Takes_note(models.Model):
     # new primary key because Django does not support composite primary keys
-    note_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    note_id = models.UUIDField(primary_key=True, max_length=32,default=uuid.uuid4, editable=False)
 
     s_username = models.ForeignKey(Student, on_delete=models.CASCADE)
     lecture_no = models.ForeignKey(Lecture, on_delete=models.CASCADE)
@@ -171,7 +171,7 @@ class Enroll(models.Model):
 
 class Announcement(models.Model):
     # new primary key because Django does not support composite primary keys
-    ann_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    ann_id = models.UUIDField(primary_key=True, max_length=32,default=uuid.uuid4, editable=False)
 
     i_user = models.ForeignKey(Instructor, on_delete=models.CASCADE)
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -238,7 +238,7 @@ class Discount(models.Model):
 
 
 class Post(models.Model):
-    postno = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    postno = models.UUIDField(primary_key=True, max_length=32,default=uuid.uuid4, editable=False)
 
     lecture_no = models.ForeignKey(Lecture, on_delete=models.CASCADE)
     username = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -247,7 +247,7 @@ class Post(models.Model):
 
 
 class Quest_answ(models.Model):
-    answer_no = models.ForeignKey(Post, primary_key=True, related_name='answer', on_delete=models.CASCADE)
+    answer_no = models.ForeignKey(Post, primary_key=True, related_name='answer', default=uuid.uuid4, on_delete=models.CASCADE)
     question_no = models.ForeignKey(Post, related_name='question', on_delete=models.CASCADE)
 
 
