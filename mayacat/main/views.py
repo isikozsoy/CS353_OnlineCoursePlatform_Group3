@@ -3,7 +3,46 @@ from django.http import HttpResponse, HttpResponseRedirect
 import uuid
 
 from django.views.generic import ListView, DetailView, View
-from .models import Course, Lecture, Wishes, Student
+from .models import Course, Lecture, Wishes, Student, Enroll
+
+
+class MyCoursesView(ListView):
+    def get(self, request):
+        # WILL BE CHANGED TO CURRENT USER
+        s = Student.objects.filter(username="user2").first()
+        my_courses_q = Enroll.objects.filter(user=s)
+        context = {
+            'my_courses_q': my_courses_q
+        }
+        return render(request, 'main/my_courses.html', context)
+
+
+def add_to_my_courses(request, course_slug):
+    course_queue = Course.objects.filter(slug=course_slug)
+    if course_queue.exists():
+        course = course_queue.first()
+    else:
+        return
+
+    # WILL BE CHANGED TO CURRENT USER
+    s = Student.objects.filter(username="user2").first()
+
+    if not Enroll.objects.filter(user=s, cno=course):
+        Enroll.objects.create(enroll_id=uuid.uuid1(), cno=course, user=s)
+    else:
+        Enroll.objects.filter(cno=course, user=s).delete()
+    return redirect("courses:my_courses")
+
+
+class WishlistView(ListView):
+    def get(self, request):
+        # WILL BE CHANGED TO CURRENT USER
+        s = Student.objects.filter(username="user2").first()
+        wishlist_q = Wishes.objects.filter(user=s)
+        context = {
+            'wishlist_q': wishlist_q
+        }
+        return render(request, 'main/wishlist.html', context)
 
 
 def add_to_wishlist(request, course_slug):
@@ -21,24 +60,15 @@ def add_to_wishlist(request, course_slug):
     else:
         Wishes.objects.filter(cno=course, user=s).delete()
     return redirect("courses:wishlist_items")
-    #return render(request, 'main/wishlist.html')
-
-class WishlistView(ListView):
-    def get(self, request):
-        # WILL BE CHANGED TO CURRENT USER
-        s = Student.objects.filter(username="user2").first()
-        wishlist_q = Wishes.objects.filter(user=s)
-        context = {
-            'wishlist_q': wishlist_q
-        }
-        return render(request, 'main/wishlist.html', context)
 
 
 class CourseListView(ListView):
     model = Course
 
+
 class CourseDetailView(DetailView):
     model = Course
+
 
 class LectureView(View):
     # model = Lecture
@@ -57,6 +87,7 @@ class LectureView(View):
         }
 
         return render(request, 'main/lecture_detail.html', context)
+
 
 # Create your views here.
 def index(request):
