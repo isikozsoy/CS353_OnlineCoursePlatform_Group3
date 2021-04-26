@@ -5,9 +5,10 @@
     <title>MayaCat E-Learning Platform</title>
 </head>
 <body>
-    <h1>Wishlist</h1>
-    {% for object in object_list %}
-        <a href="{{ object.get_url }}">{{ object }}</a>
+    <h1>Welcome Your Wishlist</h1>
+    <h2>Items Added To Wishlist</h2>
+    {% for wish in wishlist_q %}
+        <p>{{ wish.cno }}</p>
     {% endfor %}
 </body>
 </html>

@@ -8,6 +8,7 @@
     <h1>Course Details</h1>
     <h2>{{ object.cname }}</h2>
     <h3>{{ object.description }}</h3>
+     <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
     <ol>
       {% for lecture in object.lecture_set.all %}
       <li><a href="{{ lecture.get_url }}">{{ lecture.lecture_name }}</a></li>
