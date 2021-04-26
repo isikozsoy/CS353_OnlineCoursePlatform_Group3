@@ -5,10 +5,10 @@
     <title>Login to MayaCat</title>
 </head>
 <body>
+    <h1>Login!</h1>
     <form action="login" method="post">
         {% csrf_token %}
         {{ form.as_table }}
-        <br>
         <button type="submit"
                 class="btn btn-primary"
                 role="button">Login!</button>
