@@ -85,7 +85,7 @@ class Course(models.Model):
 
 class Gift(models.Model):
     # added a gift-id because Django does not support composite primary keys with 2+ columns
-    gift_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    gift_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
     receiver = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='receiver')
@@ -93,7 +93,7 @@ class Gift(models.Model):
 
 
 class Complaint(models.Model):
-    comp_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    comp_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
     s_user = models.ForeignKey(Student, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
@@ -126,7 +126,7 @@ class Lecture(models.Model):
 
 class Takes_note(models.Model):
     # new primary key because Django does not support composite primary keys
-    note_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    note_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     s_username = models.ForeignKey(Student, on_delete=models.CASCADE)
     lecture_no = models.ForeignKey(Lecture, on_delete=models.CASCADE)
@@ -135,7 +135,7 @@ class Takes_note(models.Model):
 
 class Wishes(models.Model):
     # new primary key because Django does not support composite primary keys
-    wishes_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    wishes_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     user = models.ForeignKey(Student, on_delete=models.CASCADE)
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -143,7 +143,7 @@ class Wishes(models.Model):
 
 class Finishes(models.Model):
     # new primary key because Django does not support composite primary keys
-    finishes_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    finishes_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     user = models.ForeignKey(Student, on_delete=models.CASCADE)
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -153,7 +153,7 @@ class Finishes(models.Model):
 
 class Rate(models.Model):
     # new primary key because Django does not support composite primary keys
-    finishes_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    finishes_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     user = models.ForeignKey(Student, on_delete=models.CASCADE)
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -163,7 +163,7 @@ class Rate(models.Model):
 
 class Enroll(models.Model):
     # new primary key because Django does not support composite primary keys
-    enroll_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    enroll_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     user = models.ForeignKey(Student, on_delete=models.CASCADE)
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -171,7 +171,7 @@ class Enroll(models.Model):
 
 class Announcement(models.Model):
     # new primary key because Django does not support composite primary keys
-    ann_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    ann_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     i_user = models.ForeignKey(Instructor, on_delete=models.CASCADE)
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -182,7 +182,7 @@ class Announcement(models.Model):
 
 class Contributor(models.Model):
     # new primary key because Django does not support composite primary keys
-    cont_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    cont_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     user = models.ForeignKey(Instructor, on_delete=models.CASCADE)
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -190,7 +190,7 @@ class Contributor(models.Model):
 
 class Progress(models.Model):
     # new primary key because Django does not support composite primary keys
-    prog_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    prog_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     s_username = models.ForeignKey(Student, on_delete=models.CASCADE)
     lecture_no = models.ForeignKey(Lecture, on_delete=models.CASCADE)
@@ -198,7 +198,7 @@ class Progress(models.Model):
 
 class Teaches(models.Model):
     # new primary key because Django does not support composite primary keys
-    teach_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    teach_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     user = models.ForeignKey(Instructor, on_delete=models.CASCADE)
     lecture_no = models.ForeignKey(Lecture, on_delete=models.CASCADE)
@@ -210,7 +210,7 @@ class Topic(models.Model):
 
 class Course_Topic(models.Model):
     # new primary key because Django does not support composite primary keys
-    course_topic_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    course_topic_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
     topicname = models.ForeignKey(Topic, on_delete=models.CASCADE)
@@ -218,14 +218,14 @@ class Course_Topic(models.Model):
 
 class Interested_in(models.Model):
     # new primary key because Django does not support composite primary keys
-    interested_in_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    interested_in_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
     s_username = models.ForeignKey(Student, on_delete=models.CASCADE)
 
 
 class Discount(models.Model):
-    discountno = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    discountno = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
     admin_username = models.ForeignKey(SiteAdmin, on_delete=models.CASCADE)
@@ -238,7 +238,7 @@ class Discount(models.Model):
 
 
 class Post(models.Model):
-    postno = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    postno = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     lecture_no = models.ForeignKey(Lecture, on_delete=models.CASCADE)
     username = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -252,7 +252,7 @@ class Quest_answ(models.Model):
 
 
 class Advertisement(models.Model):
-    advertisementno = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    advertisementno = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     ad_username = models.ForeignKey(Advertiser, on_delete=models.CASCADE)
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -265,7 +265,7 @@ class Advertisement(models.Model):
 
 
 class RefundRequest(models.Model):
-    refund_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    refund_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     s_username = models.ForeignKey(Student, on_delete=models.CASCADE)
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -276,21 +276,21 @@ class RefundRequest(models.Model):
 
 
 class Evaluates(models.Model):
-    refund_id = models.ForeignKey(RefundRequest, primary_key=True, on_delete=models.CASCADE)
+    refund_id = models.ForeignKey(RefundRequest, primary_key=True, on_delete=models.CASCADE, default=uuid.uuid4)
     admin_username = models.ForeignKey(SiteAdmin, on_delete=models.CASCADE)
 
     reply_date = models.DateField()
 
 
 class Assignment(models.Model):
-    assignmentno = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    assignmentno = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     lecture_no = models.ForeignKey(Lecture, on_delete=models.CASCADE)
     assignment = models.FileField(upload_to='lecture/assignments/')
 
 
 class LectureMaterial(models.Model):
-    materialno = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    materialno = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
     lecture_no = models.ForeignKey(Lecture, on_delete=models.CASCADE)
 
     material = models.FileField(upload_to='lecture/material/')
@@ -298,7 +298,7 @@ class LectureMaterial(models.Model):
 
 class Inside_Cart(models.Model):
     # new primary key because Django does not support composite primary keys
-    inside_cart_id = models.UUIDField(primary_key=True, max_length=32, editable=False)
+    inside_cart_id = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
 
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
     username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='buyer')
