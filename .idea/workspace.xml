@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/mayacat/courses/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/templates/main/course_list.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/templates/main/main.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/templates/main/main.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/mayacat/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/mayacat/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/mayacat/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/mayacat/urls.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="defne" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="ProjectId" id="1rhnB0k4FGBu22VYjyTvqchkY2l" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/mayacat/accounts/templates" />
+    <property name="settings.editor.selected.configurable" value="database.data.csv.formats" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\defne\PycharmProjects\CS353_OnlineCoursePlatform_Group3\mayacat\accounts\templates" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="" />
+      <created>1619437052187</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1619437052187</updated>
+      <workItem from="1619437056053" duration="9870000" />
+      <workItem from="1619460313766" duration="7141000" />
+    </task>
+    <task id="LOCAL-00001" summary="Added default values to UUIDs &amp; deleted 2 unnecessary html template files">
+      <created>1619438627395</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1619438627395</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Student and Instructor accounts can be added and they show up on the database as well. User table is deprecated and not used anymore. Register and login pages are done and can redirect to appropriate pages.">
+      <created>1619446680721</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1619446680721</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Passwords are not visible now.">
+      <created>1619447536050</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1619447536050</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Merged eveything.">
+      <created>1619470838238</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1619470838238</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Added default values to UUIDs &amp; deleted 2 unnecessary html template files" />
+    <MESSAGE value="Student and Instructor accounts can be added and they show up on the database as well. User table is deprecated and not used anymore. Register and login pages are done and can redirect to appropriate pages." />
+    <MESSAGE value="Passwords are not visible now." />
+    <MESSAGE value="Merged eveything." />
+    <option name="LAST_COMMIT_MESSAGE" value="Merged eveything." />
+  </component>
+</project>
