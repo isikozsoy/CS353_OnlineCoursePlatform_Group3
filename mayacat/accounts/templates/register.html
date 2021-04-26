@@ -8,8 +8,18 @@
   <h1>Register to MayaCat</h1>
   <form action="register" method="POST">
     {% csrf_token %}
-    {{ form.as_table }}
-    <br>
+      Username: {{ form.username }}<br>
+      E-mail: {{ form.email }}<br>
+      Phone: {{ form.phone }}<br>
+
+      {% if "instructor" in path|lower %}
+        Your instructor description: {{ form.description }}<br>
+      {% elif "advertiser" in path|lower %}
+        Name & Surname: {{ form.name }}<br>
+        Company Name: {{ form.company_name }}<br>
+      {% endif %}
+
+      Password: {{ form.password }}<br>
     <button type="submit" class="btn btn-primary">Create an account!</button>
   </form>
 </body>

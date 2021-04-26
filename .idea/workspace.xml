@@ -4,16 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/mayacat/courses/urls.py" afterDir="false" />
+    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="Regis">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/templates/register.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/templates/register_instructor.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/templates/main/course_list.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/courses/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/migrations/0001_initial.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/main/templates/main/main.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/templates/main/main.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/mayacat/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/mayacat/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/mayacat/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/mayacat/urls.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,7 +75,8 @@
       <option name="presentableId" value="Default" />
       <updated>1619437052187</updated>
       <workItem from="1619437056053" duration="9870000" />
-      <workItem from="1619460313766" duration="7141000" />
+      <workItem from="1619460313766" duration="7417000" />
+      <workItem from="1619475880810" duration="4819000" />
     </task>
     <task id="LOCAL-00001" summary="Added default values to UUIDs &amp; deleted 2 unnecessary html template files">
       <created>1619438627395</created>
@@ -102,7 +106,21 @@
       <option name="project" value="LOCAL" />
       <updated>1619470838238</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Combined everything in a neater way with an additional &quot;courses&quot; app. Added a log out button.">
+      <created>1619475618248</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1619475618248</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Solved a simple error that was caused by forgetting to import a class.">
+      <created>1619475809878</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1619475809878</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -125,6 +143,8 @@
     <MESSAGE value="Student and Instructor accounts can be added and they show up on the database as well. User table is deprecated and not used anymore. Register and login pages are done and can redirect to appropriate pages." />
     <MESSAGE value="Passwords are not visible now." />
     <MESSAGE value="Merged eveything." />
-    <option name="LAST_COMMIT_MESSAGE" value="Merged eveything." />
+    <MESSAGE value="Combined everything in a neater way with an additional &quot;courses&quot; app. Added a log out button." />
+    <MESSAGE value="Solved a simple error that was caused by forgetting to import a class." />
+    <option name="LAST_COMMIT_MESSAGE" value="Solved a simple error that was caused by forgetting to import a class." />
   </component>
 </project>
