@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 import uuid
 
 from django.views.generic import ListView, DetailView, View
-from .models import Course, Lecture, Wishes, Student, Enroll
+from .models import *
 
 
 class MyCoursesView(ListView):
