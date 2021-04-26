@@ -48,7 +48,7 @@ class Advertiser(models.Model):
 
 
 class Course(models.Model):
-    cno = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, max_length=32)
+    cno = models.UUIDField(primary_key=True)
     owner = models.ForeignKey(Instructor, on_delete=models.CASCADE)
     cname = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=6, decimal_places=2)  # up to 9999 with 2 decimal places
@@ -77,7 +77,7 @@ class Course(models.Model):
         return self.cname
 
     def get_url(self):
-        return reverse('main:desc', kwargs={'slug':self.slug})
+        return reverse('main:desc', kwargs={'slug': self.slug})
 
     # so that we can call it as course.lecture_list() directly
     @property
@@ -141,6 +141,9 @@ class Wishes(models.Model):
 
     user = models.ForeignKey(Student, on_delete=models.CASCADE)
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def get_url(self):
+        return reverse('main:wishlist_items')
 
 
 class Finishes(models.Model):

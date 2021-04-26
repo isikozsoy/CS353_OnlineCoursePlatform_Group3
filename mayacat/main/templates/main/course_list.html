@@ -5,6 +5,9 @@
     <title>MayaCat E-Learning Platform</title>
 </head>
 <body>
+    <a href="/wishlist">Wishlist</a>
+    <a href="/my_courses">My Courses</a>
+
     <h1>Courses List</h1>
     {% for object in object_list %}
         <a href="{{ object.get_url }}">{{ object }}</a>
