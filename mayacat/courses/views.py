@@ -49,9 +49,14 @@ class LectureView(View):
 
         announcements = Announcement.objects.raw('SELECT * FROM main_announcement WHERE cno_id = %s', [cno])
 
-        notes = Takes_note.objects.raw('SELECT * FROM main_takes_note WHERE cno_id = %s', [cno])
+        notes = Takes_note.objects.raw('SELECT * FROM main_takes_note WHERE lecture_no_id = %s', [lecture_no])
 
-        lecturecnt = lectures.count()
+        # lecturecnt = len(list(lectures))
+        cursor = connection.cursor()
+        row = cursor.execute('SELECT COUNT(lecture_no) FROM courses_lecture WHERE cno_id = %s', [cno])
+        row = cursor.fetchone()
+        lecturecnt = row[0]
+        print("lecturecnt: ", lecturecnt, ", len: ", len(list(lectures))) # both of them gives 0 for aaa but should give 2
 
         # questions = Post.objects.raw('''SELECT postno
         #                                 FROM Post
