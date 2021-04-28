@@ -4,19 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="Regis">
+    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/accounts/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/accounts/migrations/0001_initial.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/templates/instructor.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/templates/login.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/accounts/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/templates/register.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/accounts/templates/register_instructor.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/courses/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/templates/main/main.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/templates/main/main.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/courses/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,13 +55,38 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/mayacat/accounts/templates" />
-    <property name="settings.editor.selected.configurable" value="database.data.csv.formats" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/mayacat" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.django.DjangoModulesConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\defne\PycharmProjects\CS353_OnlineCoursePlatform_Group3\mayacat\accounts\templates" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="defne dijkstra" type="Python.DjangoServer" factoryName="Django server">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\defne\anaconda3\envs\CS353_OnlineCoursePlatform_Group3\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/mayacat" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <option name="port" value="3306" />
+      <option name="host" value="dijkstra.ug.bcc.bilkent.edu.tr" />
+      <option name="additionalOptions" value="" />
+      <option name="browserUrl" value="" />
+      <option name="runTestServer" value="false" />
+      <option name="runNoReload" value="false" />
+      <option name="useCustomRunCommand" value="true" />
+      <option name="customRunCommand" value="python manage.py runserver" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -76,7 +98,7 @@
       <updated>1619437052187</updated>
       <workItem from="1619437056053" duration="9870000" />
       <workItem from="1619460313766" duration="7417000" />
-      <workItem from="1619475880810" duration="4819000" />
+      <workItem from="1619475880810" duration="21322000" />
     </task>
     <task id="LOCAL-00001" summary="Added default values to UUIDs &amp; deleted 2 unnecessary html template files">
       <created>1619438627395</created>
@@ -120,7 +142,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619475809878</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Register page fully done - Advertisers added.&#10;TODO: Admin login and special Admin page.">
+      <created>1619481404094</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1619481404094</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -145,6 +174,7 @@
     <MESSAGE value="Merged eveything." />
     <MESSAGE value="Combined everything in a neater way with an additional &quot;courses&quot; app. Added a log out button." />
     <MESSAGE value="Solved a simple error that was caused by forgetting to import a class." />
-    <option name="LAST_COMMIT_MESSAGE" value="Solved a simple error that was caused by forgetting to import a class." />
+    <MESSAGE value="Register page fully done - Advertisers added.&#10;TODO: Admin login and special Admin page." />
+    <option name="LAST_COMMIT_MESSAGE" value="Register page fully done - Advertisers added.&#10;TODO: Admin login and special Admin page." />
   </component>
 </project>

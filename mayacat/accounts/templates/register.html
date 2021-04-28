@@ -6,7 +6,7 @@
 </head>
 <body>
   <h1>Register to MayaCat</h1>
-  <form action="register" method="POST">
+  <form action="/register" method="POST">
     {% csrf_token %}
       Username: {{ form.username }}<br>
       E-mail: {{ form.email }}<br>
@@ -20,7 +20,10 @@
       {% endif %}
 
       Password: {{ form.password }}<br>
-    <button type="submit" class="btn btn-primary">Create an account!</button>
+    <button type="submit" class="btn btn-primary">Create an account!</button><br>
+    Create an <a href="/register/instructor">instructor account</a> or
+    become an <a href="/register/advertiser">advertiser</a> now!
+    <br>
   </form>
 </body>
 </html>

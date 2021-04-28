@@ -10,11 +10,13 @@ import uuid
     - type: 0 for (only) Student, 1 for Instructor, 2 for Advertiser, 3 for SiteAdmin
 """
 
+class DefaultUser(User):
+    password_orig = models.CharField(max_length=50)
+    type = models.IntegerField()
 
-class Student(User):
+class Student(DefaultUser):
     phone = models.CharField(max_length=50, blank=True)
     description = models.TextField()
-    type = models.IntegerField()
 
 
 class Instructor(Student):
@@ -22,14 +24,11 @@ class Instructor(Student):
         return self.username
 
 
-class Advertiser(User):
+class Advertiser(DefaultUser):
     name = models.CharField(max_length=50)
     company_name = models.CharField(max_length=100)
     phone = models.CharField(max_length=50)
-    type = models.IntegerField()
 
-
-class SiteAdmin(User):
+class SiteAdmin(DefaultUser):
     ssn = models.CharField(max_length=20)
     address = models.CharField(max_length=100)
-    type = models.IntegerField()

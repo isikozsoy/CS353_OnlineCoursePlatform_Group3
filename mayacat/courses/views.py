@@ -41,7 +41,7 @@ class LectureView(View):
 
         announcements = Announcement.objects.filter(cno_id=course.cno)
 
-        notes = Takes_note.objects.filter(lecture_no_id=lecture.lecture_no)  # student will be added
+        notes = Takes_note.objects.filter(lecture_no_id=lecture.lecture_no, s_username_id=request.user.username)
 
         lecturecnt = lectures.count()
 
