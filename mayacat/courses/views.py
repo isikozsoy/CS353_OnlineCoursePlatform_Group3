@@ -84,7 +84,7 @@ def add_to_my_courses(request, course_slug):
     user_id = request.user.id
     cursor = connection.cursor()
     my_courses = Enroll.objects.raw('SELECT * FROM main_enroll WHERE user_id = %s',
-                                        [user_id])
+                                    [user_id])
 
     if len(list(my_courses)) == 0:
         cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',

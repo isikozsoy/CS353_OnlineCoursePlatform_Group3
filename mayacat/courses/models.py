@@ -55,7 +55,7 @@ class Lecture(models.Model):
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def get_url(self):
-        return reverse('main:lecture-detail',
+        return reverse('courses:lecture-detail',
                        kwargs={
                            'course_slug': self.cno.slug,
                            'lecture_slug': self.lecture_slug
