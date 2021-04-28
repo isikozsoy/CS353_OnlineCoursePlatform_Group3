@@ -1,3 +1,4 @@
+from django.db import connections
 from django.shortcuts import render, redirect
 from django.views.generic.base import View, HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
@@ -5,6 +6,8 @@ from django.contrib.auth import login, logout
 
 from .forms import *
 from .models import DefaultUser, Student, Instructor, SiteAdmin, Advertiser
+
+cursor = connections['default'].cursor()
 
 
 class LogoutView(View):
@@ -81,46 +84,45 @@ class RegisterView(View):
                 return HttpResponseRedirect('/register')
 
             # we first create a new User object inside the auth.models.User model
-            #new_user = User(username=username, email=email)
-            #new_user.set_password(password)
-            #new_user.save()
+            new_user = User(username=username, email=email, password=password)
+            new_user.save()
 
-            # then we go on to add this model to the corresponding submodels, i.e. DefaultUser where password_orig
+            # Then we go on to add this model to the corresponding submodels, i.e. DefaultUser where password_orig
             #  will be saved, Student, Instructor, Advertiser, etc. For this, we need the id of the user that we added
             #  previously.
-            #user = User.objects.raw('select id from auth_user where username = "' + username + '";')[0]
-            #user_id = user.id
 
             # The registration type is determined from the path the user takes for the account
             if "advertiser" in request.path:
-                name = form.cleaned_data['name']; company_name = form.cleaned_data['company_name']
-                new_user = Advertiser(username=username, email=email, password_orig=password, type=2, name=name,
-                                      company_name=company_name, password=password)
-                #DefaultUser.objects.raw('insert into accounts_defaultuser (user_ptr_id, password_orig, type) '
-                 #                       'values ("' + user_id + '", "' + password + '", 2);')
-                #Advertiser.objects.raw('insert into accounts_advertiser (defaultuser_ptr_id, name, company_name) '
-                 #                      'values ("' + user_id + '", "' + name + '", "' + company_name + '");')
+                name = form.cleaned_data['name']
+                company_name = form.cleaned_data['company_name']
 
+                cursor.execute(
+                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( '%s', '%s', %s)",
+                    [new_user.id, password, 2])
+                cursor.execute(
+                    "insert into accounts_advertiser(defaultuser_ptr_id, name, company_name) values ( '%s', '%s', %s)",
+                    [new_user.id, name, company_name])
             elif "instructor" in request.path:
                 description = form.cleaned_data['description']
-                new_user = Instructor(username=username, email=email, phone=phone, password_orig=password, type=1,
-                                      description=description, password=password)
-                #DefaultUser.objects.raw('insert into accounts_defaultuser (user_ptr_id, password_orig, type) '
-                 #                       'values ("' + user_id + '", "' + password + '", 1);')
-                #Instructor.objects.raw('insert into accounts_student (defaultuser_ptr_id, description) ' \
-                 #                      'values ("' + user_id + '", "' + description + '");')
+
+                cursor.execute(
+                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
+                    [new_user.id, password, 1])
+                cursor.execute(
+                    "insert into accounts_student(defaultuser_ptr_id, phone, description) values ( %s, %s, %s)",
+                    [new_user.id, phone, description])
+                cursor.execute(
+                    "insert into accounts_instructor(student_ptr_id) values ( %s)",
+                    new_user.id)
             else:
-                new_user = Student(username=username, email=email, phone=phone, password_orig=password, type=0,
-                                   password=password)
-                #DefaultUser.objects.raw('insert into accounts_defaultuser (user_ptr_id, password_orig, type) '
-                                        #'values (' + str(user_id) + ', "' + password + '", 0);')[0].save()
-                #new_user = Student.objects.raw('insert into accounts_student (username, email, phone, password_orig, type) ' \
-                 #                   'values ("' + username + '", "' + email + '", "' + phone + '", "' + password + '", 0);')[0]
+                cursor.execute(
+                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( '%s', '%s', %s)",
+                    [new_user.id, password, 0])
+                cursor.execute(
+                    "insert into accounts_student(defaultuser_ptr_id, phone, description) values ( '%s', '%s', '%s')",
+                    [new_user.id, phone, ""])
 
             new_user.save()
-            #            new_user.username = username; new_user.email = email
-            #            new_user.phone = phone; new_user.password_orig = password
-
             return HttpResponseRedirect('/login')  # /login
         else:
             print("Wrong form values")
