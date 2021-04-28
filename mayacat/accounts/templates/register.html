@@ -6,7 +6,7 @@
 </head>
 <body>
   <h1>Register to MayaCat</h1>
-  <form action="/register" method="POST">
+  <form action={{ path|lower }} method="POST">
     {% csrf_token %}
       Username: {{ form.username }}<br>
       E-mail: {{ form.email }}<br>

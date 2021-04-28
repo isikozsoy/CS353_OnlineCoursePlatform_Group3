@@ -1,10 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic.base import View, HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout
 
 from .forms import *
-from main.models import DefaultUser, Student, Instructor, SiteAdmin
+from .models import DefaultUser, Student, Instructor, SiteAdmin, Advertiser
 
 
 class LogoutView(View):
@@ -95,7 +95,7 @@ class RegisterView(View):
             if "advertiser" in request.path:
                 name = form.cleaned_data['name']; company_name = form.cleaned_data['company_name']
                 new_user = Advertiser(username=username, email=email, password_orig=password, type=2, name=name,
-                                      company_name=company_name)
+                                      company_name=company_name, password=password)
                 #DefaultUser.objects.raw('insert into accounts_defaultuser (user_ptr_id, password_orig, type) '
                  #                       'values ("' + user_id + '", "' + password + '", 2);')
                 #Advertiser.objects.raw('insert into accounts_advertiser (defaultuser_ptr_id, name, company_name) '
@@ -104,19 +104,19 @@ class RegisterView(View):
             elif "instructor" in request.path:
                 description = form.cleaned_data['description']
                 new_user = Instructor(username=username, email=email, phone=phone, password_orig=password, type=1,
-                                      description=description)
+                                      description=description, password=password)
                 #DefaultUser.objects.raw('insert into accounts_defaultuser (user_ptr_id, password_orig, type) '
                  #                       'values ("' + user_id + '", "' + password + '", 1);')
                 #Instructor.objects.raw('insert into accounts_student (defaultuser_ptr_id, description) ' \
                  #                      'values ("' + user_id + '", "' + description + '");')
             else:
-                new_user = Student(username=username, email=email, phone=phone, password_orig=password, type=0)
+                new_user = Student(username=username, email=email, phone=phone, password_orig=password, type=0,
+                                   password=password)
                 #DefaultUser.objects.raw('insert into accounts_defaultuser (user_ptr_id, password_orig, type) '
                                         #'values (' + str(user_id) + ', "' + password + '", 0);')[0].save()
                 #new_user = Student.objects.raw('insert into accounts_student (username, email, phone, password_orig, type) ' \
                  #                   'values ("' + username + '", "' + email + '", "' + phone + '", "' + password + '", 0);')[0]
 
-            new_user.set_password(password)
             new_user.save()
             #            new_user.username = username; new_user.email = email
             #            new_user.phone = phone; new_user.password_orig = password
