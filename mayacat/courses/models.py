@@ -34,7 +34,7 @@ class Course(models.Model):
         return self.cname
 
     def get_url(self):
-        return reverse('main:desc', kwargs={'slug': self.slug})
+        return reverse('courses:desc', kwargs={'slug': self.slug})
 
     # so that we can call it as course.lecture_list() directly
     @property

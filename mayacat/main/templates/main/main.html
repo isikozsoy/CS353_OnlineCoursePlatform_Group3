@@ -16,8 +16,8 @@
     <a href="/my_courses">My Courses</a>
 {% endif %}
     <h1>Courses List</h1>
-    {% for object in object_list %}
-        <a href="{{ object.get_url }}">{{ object }}</a>
+    {% for course in course_list %}
+        <a href="{{ course.get_url }}">{{ course }}</a>
     {% endfor %}
 </body>
 </html>
