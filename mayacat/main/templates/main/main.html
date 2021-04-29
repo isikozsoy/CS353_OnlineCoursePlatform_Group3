@@ -16,6 +16,9 @@
     <a href="/my_courses">My Courses</a>
 {% endif %}
     <h1>Courses List</h1>
+    <form action="search" method="get">
+        <input name="q" type="text" placeholder="Search for a course...">
+    </form>
     {% for course in course_list %}
         <a href="{{ course.get_url }}">{{ course }}</a>
     {% endfor %}
