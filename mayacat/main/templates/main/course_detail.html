@@ -41,9 +41,11 @@
         {% endif %}
 
         {% if comments is not None %}
-            {% for comment in comments.all() %}
-                <li>{{ comment }}</li>
-            {% endfor %}
+            <ol>
+                {% for comment in comments.all() %}
+                    <li>{{ comment }}</li>
+                {% endfor %}
+            </ol>
         {% endif %}
 
     {% endif %}

@@ -61,6 +61,16 @@ class Cart_View(ListView):
         # WILL BE CHANGED TO CURRENT USER ?
         user = request.user
 
-        items = Inside_Cart.objects.raw('SELECT * FROM X WHERE username = %s', [user.name])
+        items_on_cart = Inside_Cart.objects.raw('SELECT * FROM X WHERE username = %s', [user.name]).all()
 
-        return render(request, 'main/shopping_cart.html', {'items': items})
+        items = Course.objects.raw('SELECT * FROM X WHERE cno = %s', [items_on_cart.cno])
+
+        count = Inside_Cart.objects.filter(username = user.name).count()
+
+        total_price = Course.objects.raw('SELECT SUM(price) FROM items')
+
+        return render(request, 'main/shopping_cart.html', {'items': items, 'items_on_cart': items_on_cart,
+                                                           'count': count, 'total_price': total_price})
+
+    def checkout(self):
+        return render(request, 'main/checkout.html', {})
