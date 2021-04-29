@@ -6,9 +6,11 @@
 </head>
 <body>
     <h1>Search Results</h1>
+    {% if object_list[0] %}
     {% for object in object_list %}
-        <a href="{{ object.get_url }}">{{ object }}</a>
+        <a href="{{ object.get_url }}">{{ object.cname }}</a>
     {% endfor %}
+    {% endif %}
 
 </body>
 </html>
