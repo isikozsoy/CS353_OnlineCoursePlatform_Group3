@@ -5,7 +5,7 @@ from accounts.models import Instructor
 
 # Create your models here.
 class Course(models.Model):
-    cno = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, max_length=32)
+    cno = models.AutoField(primary_key=True)
     owner = models.ForeignKey(Instructor, on_delete=models.CASCADE)
     cname = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=6, decimal_places=2)  # up to 9999 with 2 decimal places
@@ -43,7 +43,7 @@ class Course(models.Model):
         return self.lecture_set.all().order_by('lecture_name')
 
 class Lecture(models.Model):
-    lecture_no = models.UUIDField(primary_key=True, max_length=32, default=uuid.uuid4, editable=False)
+    lecture_no = models.AutoField(primary_key=True)
 
     lecture_name = models.CharField(max_length=200)
     # position = models.IntegerField()
@@ -65,7 +65,7 @@ class Lecture(models.Model):
         return self.lecture_name
 
 class LectureMaterial(models.Model):
-    materialno = models.UUIDField(primary_key=True, max_length=32, editable=False, default=uuid.uuid4)
+    materialno = models.AutoField(primary_key=True)
     lecture_no = models.ForeignKey(Lecture, on_delete=models.CASCADE)
 
     material = models.FileField(upload_to='lecture/material/')
