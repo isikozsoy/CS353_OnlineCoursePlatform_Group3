@@ -32,45 +32,41 @@ class LectureView(View):
 def index(request):
     return HttpResponse("MAYACAT")
 
-class Course_View(ListView):
 
-    def course_detail(request, course_id):
 
-        course = Course.objects.raw('SELECT * FROM courses_course WHERE course_id = %s', [course_id])
+def course_detail(request, course_id):
+    course = Course.objects.raw('SELECT * FROM courses_course WHERE course_id = %s', [course_id])
+    # WILL BE CHANGED TO CURRENT USER ?
+    user_id = request.user.id
+    registered = Enroll.objects.raw('SELECT enroll_id FROM X WHERE user = %s AND cno = %s', [user_id], [course_id])
 
-        # WILL BE CHANGED TO CURRENT USER ?
-        user_id = request.user.id
-        registered = Enroll.objects.raw('SELECT enroll_id FROM X WHERE user = %s AND cno = %s', [user_id], [course_id])
+    lecture_count = Lecture.objects.filter(cno_id=course.cno).count()
 
-        lecture_count = Lecture.objects.filter(cno_id=course.cno).count()
+    rating = Rate.objects.raw('SELECT AVG(score) FROM X WHERE cno = %s', [course_id])
+    advertisement = Advertisement.objects.raw('SELECT advertisement FROM X WHERE cno = %s', [course_id])
 
-        rating = Rate.objects.raw('SELECT AVG(score) FROM X WHERE cno = %s', [course_id])
+    comments = Finishes.objects.raw('SELECT comment FROM X WHERE cno = %s', [course_id])
 
-        advertisement = Advertisement.objects.raw('SELECT advertisement FROM X WHERE cno = %s', [course_id])
-
-        comments = Finishes.objects.raw('SELECT comment FROM X WHERE cno = %s', [course_id])
-
-        return render(request, 'main/course_detail.html', {'course': course, 'registered': registered,
+    return render(request, 'main/course_detail.html', {'course': course, 'registered': registered,
                                                            'lecture_count': lecture_count, 'rating': rating,
                                                            'advertisement': advertisement, 'comments': comments})
 
 
-class Cart_View(ListView):
-    def shopping_cart(request):
+def shopping_cart(request):
 
-        # WILL BE CHANGED TO CURRENT USER ?
-        user = request.user
+    # WILL BE CHANGED TO CURRENT USER ?
+    user = request.user
 
-        items_on_cart = Inside_Cart.objects.raw('SELECT * FROM X WHERE username = %s', [user.name]).all()
+    items_on_cart = Inside_Cart.objects.raw('SELECT * FROM X WHERE username = %s', [user.name]).all()
 
-        items = Course.objects.raw('SELECT * FROM X WHERE cno = %s', [items_on_cart.cno])
+    items = Course.objects.raw('SELECT * FROM X WHERE cno = %s', [items_on_cart.cno])
 
-        count = Inside_Cart.objects.filter(username = user.name).count()
+    count = Inside_Cart.objects.filter(username = user.name).count()
 
-        total_price = Course.objects.raw('SELECT SUM(price) FROM items')
+    total_price = Course.objects.raw('SELECT SUM(price) FROM items')
 
-        return render(request, 'main/shopping_cart.html', {'items': items, 'items_on_cart': items_on_cart,
+    return render(request, 'main/shopping_cart.html', {'items': items, 'items_on_cart': items_on_cart,
                                                            'count': count, 'total_price': total_price})
 
-    def checkout(self):
-        return render(request, 'main/checkout.html', {})
+def checkout(self):
+    return render(request, 'main/checkout.html', {})
