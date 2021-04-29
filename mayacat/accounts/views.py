@@ -169,6 +169,7 @@ class AccountView(View):
         if form.is_valid():
             email = form.cleaned_data['email']
             phone = form.cleaned_data['phone']
+
             description = form.cleaned_data['description']
 
             # update the existing fields accordingly
