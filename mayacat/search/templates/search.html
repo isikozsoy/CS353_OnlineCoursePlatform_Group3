@@ -6,11 +6,11 @@
 </head>
 <body>
     <h1>Search Results</h1>
-    {% if object_list[0] %}
+    <form action="search" method="get">
+        <input name="q" type="text" placeholder="Search for a course...">
+    </form>
     {% for object in object_list %}
-        <a href="{{ object.get_url }}">{{ object.cname }}</a>
+        <li><a href="{{ object.get_url }}">{{ object.cname }}</a></li>
     {% endfor %}
-    {% endif %}
-
 </body>
 </html>

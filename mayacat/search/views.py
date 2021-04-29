@@ -39,15 +39,12 @@ class SearchView(View):
 
     def get(self, request):
         q = self.request.GET.get('q')
+        q = '%' + q + '%'
 
         object_list = Course.objects.raw(
-            "select * "
-            "from courses_course "
-            "where cname like '%" + q + "%';"
+            "select * " +
+            "from courses_course " +
+            "where cname like %s;", [q]
         )
-
-        if object_list[0]:
-            for o in object_list:
-                print(type(o))
 
         return render(request=request, template_name=self.template_name, context={'object_list': object_list})

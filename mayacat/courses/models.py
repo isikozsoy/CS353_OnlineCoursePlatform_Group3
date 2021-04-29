@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from main.models import *
 from accounts.models import Instructor
 
@@ -34,7 +35,7 @@ class Course(models.Model):
         return self.cname
 
     def get_url(self):
-        return reverse('main:desc', kwargs={'slug': self.slug})
+        return reverse('courses:desc', kwargs={'slug': self.slug})
 
     # so that we can call it as course.lecture_list() directly
     @property
@@ -55,7 +56,7 @@ class Lecture(models.Model):
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def get_url(self):
-        return reverse('main:lecture-detail',
+        return reverse('courses:lecture-detail',
                        kwargs={
                            'course_slug': self.cno.slug,
                            'lecture_slug': self.lecture_slug
