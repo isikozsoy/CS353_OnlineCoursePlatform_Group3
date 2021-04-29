@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 import uuid
 
@@ -10,8 +11,10 @@ from accounts.models import *
 class WishlistView(ListView):
     def get(self, request):
         # WILL BE CHANGED TO CURRENT USER
-        s = request.user
-        wishlist_q = Wishes.objects.filter(user=s)
+        user_id = request.user.id
+        wishlist_q = Wishes.objects.raw('''SELECT *
+                                            FROM main_wishes
+                                            WHERE user_id = %s''', [user_id])
         context = {
             'wishlist_q': wishlist_q
         }
@@ -19,19 +22,27 @@ class WishlistView(ListView):
 
 
 def add_to_wishlist(request, course_slug):
-    course_queue = Course.objects.filter(slug=course_slug)
-    if course_queue.exists():
-        course = course_queue.first()
+    course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
+    if len(list(course_queue)) != 0:
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1', [course_slug])[0]
+        cno = course.cno
     else:
         return
 
     # WILL BE CHANGED TO CURRENT USER
-    s = request.user
+    user_id = request.user.id
+    cursor = connection.cursor()
 
-    if not Wishes.objects.filter(user=s, cno=course):
-        Wishes.objects.create(wishes_id=uuid.uuid1(), cno=course, user=s)
+    current_wishes = Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s',
+                                        [cno, user_id])
+
+    if len(list(current_wishes)) == 0:
+        wishes_id = "wishes5"
+        cursor.execute('INSERT INTO main_wishes (cno_id, user_id) VALUES (%s, %s);',
+                       [cno, user_id])
     else:
-        Wishes.objects.filter(cno=course, user=s).delete()
+        cursor.execute('DELETE FROM main_wishes WHERE cno_id = %s AND user_id = %s', [cno, user_id])
+
     return redirect("courses:wishlist_items")
 
 

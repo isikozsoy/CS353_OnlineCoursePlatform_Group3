@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="">
+    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="Lecture's get_url function was modified w.r.t new file system.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/courses/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,8 +16,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -48,6 +49,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/mayacat" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
@@ -62,6 +64,31 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\defne\PycharmProjects\CS353_OnlineCoursePlatform_Group3\mayacat\accounts\templates" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="defne dijkstra" type="Python.DjangoServer" factoryName="Django server">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\defne\anaconda3\envs\CS353_OnlineCoursePlatform_Group3\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/mayacat" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <option name="port" value="3306" />
+      <option name="host" value="dijkstra.ug.bcc.bilkent.edu.tr" />
+      <option name="additionalOptions" value="" />
+      <option name="browserUrl" value="" />
+      <option name="runTestServer" value="false" />
+      <option name="runNoReload" value="false" />
+      <option name="useCustomRunCommand" value="true" />
+      <option name="customRunCommand" value="python manage.py runserver" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -125,7 +152,21 @@
       <option name="project" value="LOCAL" />
       <updated>1619481404094</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Django functions were converted into sql queries.&#10;TO DO: some default values in db are not specified (enroll, wishes)">
+      <created>1619647388151</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1619647388151</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Lecture's get_url function was modified w.r.t new file system.">
+      <created>1619648181627</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1619648181627</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -151,6 +192,8 @@
     <MESSAGE value="Combined everything in a neater way with an additional &quot;courses&quot; app. Added a log out button." />
     <MESSAGE value="Solved a simple error that was caused by forgetting to import a class." />
     <MESSAGE value="Register page fully done - Advertisers added.&#10;TODO: Admin login and special Admin page." />
-    <option name="LAST_COMMIT_MESSAGE" value="Register page fully done - Advertisers added.&#10;TODO: Admin login and special Admin page." />
+    <MESSAGE value="Django functions were converted into sql queries.&#10;TO DO: some default values in db are not specified (enroll, wishes)" />
+    <MESSAGE value="Lecture's get_url function was modified w.r.t new file system." />
+    <option name="LAST_COMMIT_MESSAGE" value="Lecture's get_url function was modified w.r.t new file system." />
   </component>
 </project>

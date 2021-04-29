@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, View
+from django.db import connection
 from main.models import *
 from .models import *
 
@@ -8,8 +9,10 @@ from .models import *
 class MyCoursesView(ListView):
     def get(self, request):
         # WILL BE CHANGED TO CURRENT USER
-        s = request.user
-        my_courses_q = Enroll.objects.filter(user=s)
+        user_id = request.user.id
+        my_courses_q = Enroll.objects.raw('''SELECT *
+                                            FROM main_enroll
+                                            WHERE user_id = %s''', [user_id])
         context = {
             'my_courses_q': my_courses_q
         }
@@ -28,22 +31,32 @@ class LectureView(View):
     # model = Lecture
 
     def get(self, request, course_slug, lecture_slug, *args, **kwargs):
-        course_queue = Course.objects.filter(slug=course_slug)
-        if course_queue.exists():
-            course = course_queue.first()
-            print(course)
+        course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
+        if len(list(course_queue)) != 0:
+            course = course_queue[0]
+            cno = course.cno
+        else:
+            return
 
-        lecture_q = Lecture.objects.filter(lecture_slug=lecture_slug)
-        if lecture_q.exists():
-            lecture = lecture_q.first()
+        lecture_queue = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE lecture_slug = %s', [lecture_slug])
+        if len(list(lecture_queue)) != 0:
+            lecture = lecture_queue[0]
+            lecture_no = lecture.lecture_no
+        else:
+            return
 
-        lectures = Lecture.objects.filter(cno_id=course.cno)
+        lectures = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s', [cno])
 
-        announcements = Announcement.objects.filter(cno_id=course.cno)
+        announcements = Announcement.objects.raw('SELECT * FROM main_announcement WHERE cno_id = %s', [cno])
 
-        notes = Takes_note.objects.filter(lecture_no_id=lecture.lecture_no, s_username_id=request.user.username)
+        notes = Takes_note.objects.raw('SELECT * FROM main_takes_note WHERE lecture_no_id = %s', [lecture_no])
 
-        lecturecnt = lectures.count()
+        # lecturecnt = len(list(lectures))
+        cursor = connection.cursor()
+        row = cursor.execute('SELECT COUNT(lecture_no) FROM courses_lecture WHERE cno_id = %s', [cno])
+        row = cursor.fetchone()
+        lecturecnt = row[0]
+        print("lecturecnt: ", lecturecnt, ", len: ", len(list(lectures))) # both of them gives 0 for aaa but should give 2
 
         # questions = Post.objects.raw('''SELECT postno
         #                                 FROM Post
@@ -65,17 +78,41 @@ class LectureView(View):
 
 
 def add_to_my_courses(request, course_slug):
-    course_queue = Course.objects.filter(slug=course_slug)
-    if course_queue.exists():
-        course = course_queue.first()
+    course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
+    if len(list(course_queue)) != 0:
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1', [course_slug])[0]
+        cno = course.cno
     else:
         return
 
     # WILL BE CHANGED TO CURRENT USER
-    s = request.user  # DO NOT KNOW IF THIS WORKS YET
+    user_id = request.user.id
+    cursor = connection.cursor()
+    my_courses = Enroll.objects.raw('SELECT * FROM main_enroll WHERE user_id = %s',
+                                    [user_id])
 
-    if not Enroll.objects.filter(user=s, cno=course):
-        Enroll.objects.create(enroll_id=uuid.uuid1(), cno=course, user=s)
+    if len(list(my_courses)) == 0:
+        cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
+                       [cno, user_id])
     else:
-        Enroll.objects.filter(cno=course, user=s).delete()
+        cursor.execute('DELETE FROM main_enroll WHERE cno_id = %s AND user_id = %s', [cno, user_id])
+    return redirect("courses:my_courses")
+
+
+def send_course_as_gift(request, course_slug, receiver):
+    course_queue = Course.objects.raw('SELECT * FROM courses_course as C WHERE C.slug = %s', [course_slug])
+    if len(list(course_queue)) != 0:
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE C.slug = %s LIMIT 1', [course_slug])[0]
+        cno = course.cno
+    else:
+        return
+
+        # WILL BE CHANGED TO CURRENT USER
+        s = request.user
+
+        if not Enroll.objects.raw('SELECT * FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %', [cno]):
+            Gift.objects.create(wishes_id=uuid.uuid1(), cno=course, user=s)
+        else:
+            Wishes.objects.filter(cno=course, user=s).delete()
+
     return redirect("courses:my_courses")
