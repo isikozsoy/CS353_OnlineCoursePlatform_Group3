@@ -154,8 +154,6 @@ class AccountView(View):
 
             return render(request, self.template_name, {'user': user,
                                                         'type': def_user.type,
-                                                        'phone': self.std.phone,
-                                                        'description': self.std.description,
                                                         'form': form})
         else:
             HttpResponseRedirect('/')  # redirects to main page
@@ -163,17 +161,25 @@ class AccountView(View):
     def post(self, request):
         form = EditForm(request.POST, instance=self.std)
 
+        self.std = Student.objects.raw("select * "
+                                       "from accounts_student "
+                                       "where defaultuser_ptr_id = %s;", [request.user.id])[0]
+        self.type = self.std.type
+
         if form.is_valid():
+            email = form.cleaned_data['email']
             phone = form.cleaned_data['phone']
-            description = ""
-            if self.type == 1: # if the user is an instructor
-                description = form.cleaned_data['description']
+            description = form.cleaned_data['description']
 
             # update the existing fields accordingly
             cursor.execute('update accounts_student '
-                           'phone = %s, description = %s '
+                           'set phone = %s, description = %s '
                            'where defaultuser_ptr_id = %s;',
                            [phone, description, self.std.defaultuser_ptr_id])
+            cursor.execute('update auth_user '
+                           'set email = %s '
+                           'where id = %s;',
+                           [email, self.std.defaultuser_ptr_id])
 
-            form.save()
+        print(form.errors)
         return HttpResponseRedirect('/account')

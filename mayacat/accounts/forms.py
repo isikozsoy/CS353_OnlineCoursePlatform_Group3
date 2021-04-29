@@ -3,14 +3,13 @@ from .models import Student
 
 
 class EditForm(forms.ModelForm):
-    username = forms.CharField(label='Username', max_length=50, widget=forms.TextInput())
     email = forms.CharField(label='Email', max_length=50, widget=forms.TextInput())
     phone = forms.CharField(label='Phone', max_length=50, widget=forms.TextInput())
     description = forms.CharField(label='Description', max_length=50, required=False, widget=forms.TextInput())
 
     class Meta:
         model = Student
-        fields = ('username', 'email', 'phone', 'description')
+        fields = ('email', 'phone', 'description')
 
 
 class Login(forms.Form):

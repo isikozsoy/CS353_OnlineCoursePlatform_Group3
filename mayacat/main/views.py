@@ -37,9 +37,13 @@ def add_to_wishlist(request, course_slug):
 
 class MainView(View):
     def get(self, request):
-        return render(request, 'main/main.html')
+        # THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
+        courses = Course.objects.raw('select * '
+                                     'from courses_course;')
+
+        topics = Topic.objects.raw('select * from main_topic order by topicname;')
+
+        return render(request, 'main/main.html', {'object_list': courses,
+                                                  'topic_list':topics})
 
 
-# Create your views here.
-def index(request):
-    return HttpResponse("MAYACAT")
