@@ -55,10 +55,7 @@ class MainView(View):
         topics = Topic.objects.raw('select * from main_topic order by topicname;')
 
         return render(request, 'main/main.html', {'object_list': courses,
-                                                  'topic_list':topics})
-
-
-
+                                                  'topic_list': topics})
 
 
 def course_detail(request, course_id):
@@ -75,25 +72,34 @@ def course_detail(request, course_id):
     comments = Finishes.objects.raw('SELECT comment FROM X WHERE cno = %s', [course_id])
 
     return render(request, 'main/course_detail.html', {'course': course, 'registered': registered,
-                                                           'lecture_count': lecture_count, 'rating': rating,
-                                                           'advertisement': advertisement, 'comments': comments})
+                                                       'lecture_count': lecture_count, 'rating': rating,
+                                                       'advertisement': advertisement, 'comments': comments})
 
 
-def shopping_cart(request):
+class ShoppingCartView(View):
 
-    # WILL BE CHANGED TO CURRENT USER ?
-    user = request.user
+    def get(self, request):
+        user = request.user
 
-    items_on_cart = Inside_Cart.objects.raw('SELECT * FROM X WHERE username = %s', [user.name]).all()
+        items_on_cart = Inside_Cart.objects.raw('SELECT * '
+                                                'FROM main_inside_cart '
+                                                'WHERE username_id = %s;', [user.id]).all()
 
-    items = Course.objects.raw('SELECT * FROM X WHERE cno = %s', [items_on_cart.cno])
+        items = Course.objects.raw('SELECT * '
+                                   'FROM courses_course '
+                                   'WHERE cno = %s', [items_on_cart.cno_id])
 
-    count = Inside_Cart.objects.filter(username = user.name).count()
+        # count = Inside_Cart.objects.filter(username=user.name).count()
+        count = Inside_Cart.objects.raw('SELECT count(*) '
+                                        'FROM main_inside_cart '
+                                        'WHERE username_id = %s;', [user.id])
 
-    total_price = Course.objects.raw('SELECT SUM(price) FROM items')
+        total_price = Course.objects.raw('SELECT SUM(price) FROM items')
 
-    return render(request, 'main/shopping_cart.html', {'items': items, 'items_on_cart': items_on_cart,
+        return render(request, 'main/shopping_cart.html', {'items': items, 'items_on_cart': items_on_cart,
                                                            'count': count, 'total_price': total_price})
 
-def checkout(self):
-    return render(request, 'main/checkout.html', {})
+
+class ShoppingCheckoutView(View):
+    def get(self, request):
+        return render(request, 'main/checkout.html')
