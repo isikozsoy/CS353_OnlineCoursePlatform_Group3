@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import CourseListView, CourseDetailView, LectureView, course_detail
+from .views import CourseListView, CourseDetailView, LectureView, Cart_View, Course_View
 
 app_name = 'courses'
 
