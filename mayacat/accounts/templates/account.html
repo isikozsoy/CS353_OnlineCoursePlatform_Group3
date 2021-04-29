@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your MayaCat Account</title>
+</head>
+    <form>
+    {% csrf_token %}
+        Username: {{ form.username }}<br>
+        Email: {{ form.email }}<br>
+        Phone: {{ form.phone }}<br>
+
+        Type:
+        {% if type == 0 %}
+            Student<br>
+        {% else %}
+            Instructor<br>
+            Your Instructor Description: {{ form.description }}<br>
+        {% endif %}
+    <button type="submit" formmethod="post">Save</button><br>
+    </form>
+</body>
+</html>

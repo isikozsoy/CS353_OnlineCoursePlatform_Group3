@@ -127,3 +127,53 @@ class RegisterView(View):
         else:
             print("Wrong form values")
         return HttpResponse('This is Register view.')
+
+
+class AccountChangeView(View):
+    template_name = "account.html"
+
+
+class AccountView(View):
+    template_name = "account.html"
+    model = DefaultUser
+    std = None
+    type = 0
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            user = request.user
+            def_user = DefaultUser.objects.raw("select * "
+                                               "from accounts_defaultuser as d "
+                                               "where d.user_ptr_id = %s;", [user.id])[0]
+            self.std = Student.objects.raw("select * "
+                                           "from accounts_student "
+                                           "where defaultuser_ptr_id = %s;", [user.id])[0]
+
+            form = EditForm(instance=self.std)
+            self.type = def_user.type
+
+            return render(request, self.template_name, {'user': user,
+                                                        'type': def_user.type,
+                                                        'phone': self.std.phone,
+                                                        'description': self.std.description,
+                                                        'form': form})
+        else:
+            HttpResponseRedirect('/')  # redirects to main page
+
+    def post(self, request):
+        form = EditForm(request.POST, instance=self.std)
+
+        if form.is_valid():
+            phone = form.cleaned_data['phone']
+            description = ""
+            if self.type == 1: # if the user is an instructor
+                description = form.cleaned_data['description']
+
+            # update the existing fields accordingly
+            cursor.execute('update accounts_student '
+                           'phone = %s, description = %s '
+                           'where defaultuser_ptr_id = %s;',
+                           [phone, description, self.std.defaultuser_ptr_id])
+
+            form.save()
+        return HttpResponseRedirect('/account')

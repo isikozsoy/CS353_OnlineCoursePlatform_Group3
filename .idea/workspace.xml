@@ -4,19 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="error: sql queries do not give any data">
-      <change afterPath="$PROJECT_DIR$/mayacat/search/admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mayacat/search/apps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mayacat/search/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mayacat/search/tests.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mayacat/search/views.py" afterDir="false" />
+    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="Transformation to sql query -in progress">
+      <change afterPath="$PROJECT_DIR$/mayacat/accounts/templates/account.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/accounts/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/courses/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/mayacat/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/mayacat/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/search/templates/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/search/templates/search.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/search/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/search/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,8 +20,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -128,7 +122,7 @@
       <workItem from="1619475880810" duration="21322000" />
       <workItem from="1619624413494" duration="1609000" />
       <workItem from="1619682801937" duration="11944000" />
-      <workItem from="1619708508013" duration="1575000" />
+      <workItem from="1619708508013" duration="2022000" />
     </task>
     <task id="LOCAL-00001" summary="Added default values to UUIDs &amp; deleted 2 unnecessary html template files">
       <created>1619438627395</created>
@@ -200,7 +194,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619649861414</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Transformation to sql query -in progress">
+      <created>1619710188023</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1619710188023</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -229,6 +230,7 @@
     <MESSAGE value="Django functions were converted into sql queries.&#10;TO DO: some default values in db are not specified (enroll, wishes)" />
     <MESSAGE value="Lecture's get_url function was modified w.r.t new file system." />
     <MESSAGE value="error: sql queries do not give any data" />
-    <option name="LAST_COMMIT_MESSAGE" value="error: sql queries do not give any data" />
+    <MESSAGE value="Transformation to sql query -in progress" />
+    <option name="LAST_COMMIT_MESSAGE" value="Transformation to sql query -in progress" />
   </component>
 </project>

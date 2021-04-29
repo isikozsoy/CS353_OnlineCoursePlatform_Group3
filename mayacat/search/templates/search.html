@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MayaCat</title>
+</head>
+<body>
+    <h1>Search Results</h1>
+    <form action="search" method="get">
+        <input name="q" type="text" placeholder="Search for a course...">
+    </form>
+    {% for object in object_list %}
+        <li><a href="{{ object.get_url }}">{{ object.cname }}</a></li>
+    {% endfor %}
+</body>
+</html>
