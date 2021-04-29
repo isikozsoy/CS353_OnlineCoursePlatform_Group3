@@ -31,6 +31,7 @@ class LectureView(View):
     # model = Lecture
 
     def get(self, request, course_slug, lecture_slug, *args, **kwargs):
+        cursor = connection.cursor()
         course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
         if len(list(course_queue)) != 0:
             course = course_queue[0]
@@ -44,19 +45,23 @@ class LectureView(View):
             lecture_no = lecture.lecture_no
         else:
             return
-
-        lectures = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s', [cno])
+        cno_uuid = uuid.UUID(cno)
+        lectures = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s', [cno_uuid])
+        # lectures_q = 'SELECT * FROM courses_lecture WHERE cno_id = %s'
+        # lectures = cursor.execute(lectures_q, [cno])
 
         announcements = Announcement.objects.raw('SELECT * FROM main_announcement WHERE cno_id = %s', [cno])
 
         notes = Takes_note.objects.raw('SELECT * FROM main_takes_note WHERE lecture_no_id = %s', [lecture_no])
 
-        # lecturecnt = len(list(lectures))
-        cursor = connection.cursor()
+        lecturecnt = len(list(lectures))
+        print(lecturecnt)
+
         row = cursor.execute('SELECT COUNT(lecture_no) FROM courses_lecture WHERE cno_id = %s', [cno])
         row = cursor.fetchone()
         lecturecnt = row[0]
-        print("lecturecnt: ", lecturecnt, ", len: ", len(list(lectures))) # both of them gives 0 for aaa but should give 2
+
+        # print("lecturecnt: ", lecturecnt, ", len: ", len(list(lectures))) # both of them gives 0 for aaa but should give 2
 
         # questions = Post.objects.raw('''SELECT postno
         #                                 FROM Post
@@ -88,14 +93,22 @@ def add_to_my_courses(request, course_slug):
     # WILL BE CHANGED TO CURRENT USER
     user_id = request.user.id
     cursor = connection.cursor()
-    my_courses = Enroll.objects.raw('SELECT * FROM main_enroll WHERE user_id = %s',
-                                    [user_id])
+
+    my_courses_q = ('SELECT * ' +
+                    'FROM main_enroll ' +
+                    'WHERE user_id = ' + str(user_id) + ' AND cno_id = ' + str(cno) + ';')
+    my_courses = Enroll.objects.raw(my_courses_q)
 
     if len(list(my_courses)) == 0:
-        cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
-                       [cno, user_id])
+        enroll_id_uuid = uuid.uuid4
+        insert_q = 'INSERT INTO main_enroll (enroll_id, cno_id, user_id) VALUES ' \
+                    '(' + str(enroll_id_uuid) + ', ' + str(cno) + ',' + str(user_id) + ');'
+        cursor.execute(insert_q)
     else:
-        cursor.execute('DELETE FROM main_enroll WHERE cno_id = %s AND user_id = %s', [cno, user_id])
+        """
+        cursor.execute('DELETE FROM main_enroll ' \
+                       'WHERE user_id = ' + str(user_id) + ' AND cno_id = "' + str(cno) + '"')
+    """
     return redirect("courses:my_courses")
 
 

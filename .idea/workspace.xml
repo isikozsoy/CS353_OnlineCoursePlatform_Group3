@@ -4,9 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="Lecture's get_url function was modified w.r.t new file system.">
+    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="error: sql queries do not give any data">
+      <change afterPath="$PROJECT_DIR$/mayacat/search/admin.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mayacat/search/apps.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mayacat/search/models.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mayacat/search/tests.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mayacat/search/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/courses/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/mayacat/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/mayacat/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/search/templates/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/search/templates/search.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,12 +26,25 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <excluded-from-favorite>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="master" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </excluded-from-favorite>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$" value="defne" />
@@ -49,6 +72,8 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/mayacat" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
@@ -102,6 +127,8 @@
       <workItem from="1619460313766" duration="7417000" />
       <workItem from="1619475880810" duration="21322000" />
       <workItem from="1619624413494" duration="1609000" />
+      <workItem from="1619682801937" duration="11944000" />
+      <workItem from="1619708508013" duration="1575000" />
     </task>
     <task id="LOCAL-00001" summary="Added default values to UUIDs &amp; deleted 2 unnecessary html template files">
       <created>1619438627395</created>
@@ -166,7 +193,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619648181627</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="error: sql queries do not give any data">
+      <created>1619649861414</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1619649861414</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -194,6 +228,7 @@
     <MESSAGE value="Register page fully done - Advertisers added.&#10;TODO: Admin login and special Admin page." />
     <MESSAGE value="Django functions were converted into sql queries.&#10;TO DO: some default values in db are not specified (enroll, wishes)" />
     <MESSAGE value="Lecture's get_url function was modified w.r.t new file system." />
-    <option name="LAST_COMMIT_MESSAGE" value="Lecture's get_url function was modified w.r.t new file system." />
+    <MESSAGE value="error: sql queries do not give any data" />
+    <option name="LAST_COMMIT_MESSAGE" value="error: sql queries do not give any data" />
   </component>
 </project>
