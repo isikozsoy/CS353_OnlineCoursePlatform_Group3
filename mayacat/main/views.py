@@ -32,6 +32,35 @@ class LectureView(View):
 def index(request):
     return HttpResponse("MAYACAT")
 
-def course_detail(request, course_id):
-    object = get_object_or_404(Course, cno = course_id)
-    return render(request, 'main/course_detail.html', {'object': object})
+class Course_View(ListView):
+
+    def course_detail(request, course_id):
+
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE course_id = %s', [course_id])
+
+        # WILL BE CHANGED TO CURRENT USER ?
+        user_id = request.user.id
+        registered = Enroll.objects.raw('SELECT enroll_id FROM X WHERE user = %s AND cno = %s', [user_id], [course_id])
+
+        lecture_count = Lecture.objects.filter(cno_id=course.cno).count()
+
+        rating = Rate.objects.raw('SELECT AVG(score) FROM X WHERE cno = %s', [course_id])
+
+        advertisement = Advertisement.objects.raw('SELECT advertisement FROM X WHERE cno = %s', [course_id])
+
+        comments = Finishes.objects.raw('SELECT comment FROM X WHERE cno = %s', [course_id])
+
+        return render(request, 'main/course_detail.html', {'course': course, 'registered': registered,
+                                                           'lecture_count': lecture_count, 'rating': rating,
+                                                           'advertisement': advertisement, 'comments': comments})
+
+
+class Cart_View(ListView):
+    def shopping_cart(request):
+
+        # WILL BE CHANGED TO CURRENT USER ?
+        user = request.user
+
+        items = Inside_Cart.objects.raw('SELECT * FROM X WHERE username = %s', [user.name])
+
+        return render(request, 'main/shopping_cart.html', {'items': items})
