@@ -25,7 +25,10 @@ admin.site.index_title = "MayaCat"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('accounts.urls', namespace='accounts')),
     path('', include('main.urls', namespace='main')),
+    path('', include(('search.urls', 'search'), namespace='search')),
+    path('', include('courses.urls', namespace='courses')),
 ]
 
 if settings.DEBUG:

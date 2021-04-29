@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register to MayaCat</title>
+</head>
+<body>
+  <h1>Register to MayaCat</h1>
+  <form action={{ path|lower }} method="POST">
+    {% csrf_token %}
+      Username: {{ form.username }}<br>
+      E-mail: {{ form.email }}<br>
+      Phone: {{ form.phone }}<br>
+
+      {% if "instructor" in path|lower %}
+        Your instructor description: {{ form.description }}<br>
+      {% elif "advertiser" in path|lower %}
+        Name & Surname: {{ form.name }}<br>
+        Company Name: {{ form.company_name }}<br>
+      {% endif %}
+
+      Password: {{ form.password }}<br>
+    <button type="submit" class="btn btn-primary">Create an account!</button><br>
+    Create an <a href="/register/instructor">instructor account</a> or
+    become an <a href="/register/advertiser">advertiser</a> now!
+    <br>
+  </form>
+</body>
+</html>
