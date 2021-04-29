@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 
 from django.views.generic import ListView, DetailView, View
@@ -31,3 +31,7 @@ class LectureView(View):
 # Create your views here.
 def index(request):
     return HttpResponse("MAYACAT")
+
+def course_detail(request, course_id):
+    object = get_object_or_404(Course, cno = course_id)
+    return render(request, 'main/course_detail.html', {'object': object})
