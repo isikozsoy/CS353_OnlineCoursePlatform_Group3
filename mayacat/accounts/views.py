@@ -97,10 +97,10 @@ class RegisterView(View):
                 company_name = form.cleaned_data['company_name']
 
                 cursor.execute(
-                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( '%s', '%s', %s)",
+                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
                     [new_user.id, password, 2])
                 cursor.execute(
-                    "insert into accounts_advertiser(defaultuser_ptr_id, name, company_name) values ( '%s', '%s', %s)",
+                    "insert into accounts_advertiser(defaultuser_ptr_id, name, company_name) values ( %s, %s, %s)",
                     [new_user.id, name, company_name])
             elif "instructor" in request.path:
                 description = form.cleaned_data['description']
@@ -116,10 +116,10 @@ class RegisterView(View):
                     new_user.id)
             else:
                 cursor.execute(
-                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( '%s', '%s', %s)",
+                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
                     [new_user.id, password, 0])
                 cursor.execute(
-                    "insert into accounts_student(defaultuser_ptr_id, phone, description) values ( '%s', '%s', '%s')",
+                    "insert into accounts_student(defaultuser_ptr_id, phone, description) values ( %s, %s, %s)",
                     [new_user.id, phone, ""])
 
             new_user.save()
