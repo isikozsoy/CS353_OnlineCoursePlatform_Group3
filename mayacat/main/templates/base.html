@@ -46,10 +46,10 @@
     <div class="navigation-bar">
 
         {% if not request.user.is_authenticated %}
-            <a href="login" class="btn btn-primary">Log in!</a>
-            <a href="register/advertiser" class="btn btn-primary">Publish your ads on MayaCat today!</a>
+            <a href="/login" class="btn btn-primary">Log in!</a>
+            <a href="/register/advertiser" class="btn btn-primary">Publish your ads on MayaCat today!</a>
         {% else %}
-            <a href="logout" class="btn btn-primary">Log out</a>
+            <a href="/logout" class="btn btn-primary">Log out</a>
             <a href="/wishlist" class="btn btn-primary">Wishlist</a>
             <a href="/my_courses" class="btn btn-primary">My Courses</a>
             <a href="/account" class="btn btn-primary">My Account</a>
@@ -77,6 +77,13 @@
     {% block main_content %}
 
     {% endblock %}
+
+    <div class="get-started-bar-bottom">
+        {% if not request.user.is_authenticated %}
+            <a href="/register" class="btn btn-primary">Become a student!</a>
+            <a href="/register/instructor" class="btn btn-primary">Teach at MayaCat!</a>
+        {% endif %}
+    </div>
 
 </body>
 </html>

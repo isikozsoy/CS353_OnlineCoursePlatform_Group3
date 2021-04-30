@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'main/base.html' %}
+
+{% block main_content %}
   <h1>Lecture Details</h1>
   {% if curlecture is not None %}
  <h3>{{ curlecture.lecture_name }}</h3>
@@ -45,5 +41,4 @@
   {% else %}
     <h2>There is no lecture by this name.</h2>
   {% endif %}
-</body>
-</html>
+{% endblock %}

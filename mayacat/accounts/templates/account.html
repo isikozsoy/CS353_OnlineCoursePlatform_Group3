@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Your MayaCat Account</title>
-</head>
+{% extends "base.html" %}
+
+{% block main_content %}
     <form>
     {% csrf_token %}
         Username: {{ user.username }}<br>
@@ -21,5 +18,4 @@
         {{ form.description }}<br>
     <button type="submit" formmethod="post">Save</button><br>
     </form>
-</body>
-</html>
+{% endblock %}

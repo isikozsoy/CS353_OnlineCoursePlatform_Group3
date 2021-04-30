@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Register to MayaCat</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block main_content %}
   <h1>Register to MayaCat</h1>
   <form action={{ path|lower }} method="POST">
     {% csrf_token %}
@@ -20,10 +16,5 @@
       {% endif %}
 
       Password: {{ form.password }}<br>
-    <button type="submit" class="btn btn-primary">Create an account!</button><br>
-    Create an <a href="/register/instructor">instructor account</a> or
-    become an <a href="/register/advertiser">advertiser</a> now!
-    <br>
   </form>
-</body>
-</html>
+{% endblock %}

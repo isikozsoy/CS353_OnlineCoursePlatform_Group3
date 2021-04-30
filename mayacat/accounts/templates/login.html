@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login to MayaCat</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block main_content %}
     <h1>Login!</h1>
     <form action="login" method="post">
         {% csrf_token %}
@@ -14,5 +10,4 @@
                 class="btn btn-primary"
                 role="button">Login!</button><br>
     </form>
-</body>
-</html>
+{% endblock %}
