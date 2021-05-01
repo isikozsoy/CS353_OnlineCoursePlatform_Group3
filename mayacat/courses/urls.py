@@ -9,5 +9,5 @@ urlpatterns = [
     path('my_courses', MyCoursesView.as_view(), name='my_courses'),
     # path('my_courses/add/<course_slug>', add_to_my_courses, name='user_mycourses'),
     path('<slug>', CourseDetailView.as_view(), name='desc'),
-    path('<course_slug>/<lecture_slug>', LectureView.as_view(), name='lecture-detail'),
+    path('<slug>/<lecture_slug>', LectureView.as_view(), name='lecture-detail'),
 ]

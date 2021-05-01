@@ -16,7 +16,7 @@
 
   <h2>{{ course.cname }}</h2>
   {% for lecture in lectures %}
-  <a href="{{ lecture.get_url }}">{{ lecture }}</a>
+  <a href="{{course.slug}}/{{lecture.lecture_slug}}">{{ lecture }}</a>
   {% endfor %}
 
   <h2>Overview</h2>

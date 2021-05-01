@@ -20,8 +20,8 @@
 
     <a href="/wishlist/add_to_wishlist/{{slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
     <ol>
-      {% for lecture in object.lecture_set.all %}
-      <li><a href="{{ lecture.get_url }}">{{ lecture.lecture_name }}</a></li>
+      {% for lecture in lecture_list %}
+      <li><a href="/{{slug}}/{{lecture.lecture_slug}}">{{ lecture.lecture_name }}</a></li>
       {% endfor %}
     </ol>
 </body>
