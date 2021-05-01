@@ -21,32 +21,34 @@ class MyCoursesView(ListView):
         return render(request, 'main/my_courses.html', context)
 
 
+# This class is not used in any place. I deleted it and nothing was affected.
 class CourseListView(ListView):
     model = Course
 
 
 class CourseDetailView(DetailView):
-    # model = Course
-
-    def get(self, request, course_slug, *args, **kwargs):
+    def get(self, request, slug, *args, **kwargs):
         form = GiftInfo()
+        '''
+        course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [slug])
+        '''
 
-        course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
-        if len(list(course_queue)) != 0:
-            course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1', [course_slug])[
-                0]
-            cno = course.cno
-        else:
-            return
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "'+ slug +'" LIMIT 1')[0]
+        cno = course.cno
 
         lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
         context = {
+            'cname': course.cname,
+            'desc': course.description,
+            'slug': slug,
             'lecture_list': lecture_list,
             'form': form
         }
         return render(request, 'course_detail.html', context)
 
-    def post(self, request, course_slug, *args, **kwargs):
+
+    def post(self, request, slug, *args, **kwargs):
+        print("icerdeyimm---------------------------------")
         form = GiftInfo(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
@@ -58,9 +60,9 @@ class CourseDetailView(DetailView):
             else:
                 cursor = connection.cursor()
                 receiver_id = users[0].user_id
-                course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
+                course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [slug])
                 if len(list(course_queue)) != 0:
-                    course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1',[course_slug])[0]
+                    course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1',[slug])[0]
                     cno = course.cno
                 else:
                     return
@@ -69,7 +71,7 @@ class CourseDetailView(DetailView):
                                [cno, receiver_id])
                 cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
                                [cno, receiver_id])
-                return HttpResponseRedirect('my_courses')
+                return HttpResponseRedirect('/')
 
 
 class LectureView(View):
@@ -164,12 +166,11 @@ def send_course_as_gift(request, course_slug, receiver):
     else:
         return
 
-        # WILL BE CHANGED TO CURRENT USER
-        s = request.user
-
-        if not Enroll.objects.raw('SELECT * FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %', [cno]):
-            Gift.objects.create(wishes_id=uuid.uuid1(), cno=course, user=s)
-        else:
-            Wishes.objects.filter(cno=course, user=s).delete()
+    # WILL BE CHANGED TO CURRENT USER
+    s = request.user
+    if not Enroll.objects.raw('SELECT * FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %', [cno]):
+        Gift.objects.create(cno=course, user=s)
+    else:
+        Wishes.objects.filter(cno=course, user=s).delete()
 
     return redirect("courses:my_courses")
