@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import ListView, DetailView, View
+from django.views.generic import ListView, DetailView
+from django.views.generic.base import View
 from django.db import connection
 from main.models import *
 from accounts.models import *
@@ -26,14 +27,14 @@ class CourseListView(ListView):
     model = Course
 
 
-class CourseDetailView(DetailView):
+class CourseDetailView(View):
     def get(self, request, slug, *args, **kwargs):
         form = GiftInfo()
         '''
         course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [slug])
         '''
 
-        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "'+ slug +'" LIMIT 1')[0]
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + slug + '" LIMIT 1')[0]
         cno = course.cno
 
         lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
@@ -46,14 +47,13 @@ class CourseDetailView(DetailView):
         }
         return render(request, 'course_detail.html', context)
 
-
-    def post(self, request, slug, *args, **kwargs):
+    def post(self, request, slug):
         print("icerdeyimm---------------------------------")
         form = GiftInfo(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             users = Student.objects.raw('SELECT * FROM accounts_student WHERE username = %s;',
-                                                [username])
+                                        [username])
             if len(list(users)) == 0:
                 pass
                 # INVALID USER
@@ -62,7 +62,7 @@ class CourseDetailView(DetailView):
                 receiver_id = users[0].user_id
                 course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [slug])
                 if len(list(course_queue)) != 0:
-                    course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1',[slug])[0]
+                    course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1', [slug])[0]
                     cno = course.cno
                 else:
                     return
@@ -77,9 +77,9 @@ class CourseDetailView(DetailView):
 class LectureView(View):
     # model = Lecture
 
-    def get(self, request, course_slug, lecture_slug, *args, **kwargs):
+    def get(self, request, slug, lecture_slug, *args, **kwargs):
         cursor = connection.cursor()
-        course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
+        course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [slug])
         if len(list(course_queue)) != 0:
             course = course_queue[0]
             cno = course.cno
@@ -125,7 +125,7 @@ class LectureView(View):
             # 'questions' : questions
         }
 
-        return render(request, 'main/lecture_detail.html', context)
+        return render(request, 'lecture_detail.html', context)
 
 
 def add_to_my_courses(request, course_slug):
@@ -147,7 +147,7 @@ def add_to_my_courses(request, course_slug):
 
     if len(list(my_courses)) == 0:
         insert_q = 'INSERT INTO main_enroll (cno_id, user_id) VALUES ' \
-                    '(' + str(cno) + ', ' + str(user_id) + ');'
+                   '(' + str(cno) + ', ' + str(user_id) + ');'
         cursor.execute(insert_q)
     else:
         # Once we buy the course we cannot delete it logical bence
