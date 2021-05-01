@@ -1,10 +1,13 @@
-from django.shortcuts import render
+from django.db import connections
+from django.shortcuts import render, redirect
 from django.views.generic.base import View, HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 
 from .forms import *
-from main.models import Student, Instructor, SiteAdmin
+from .models import DefaultUser, Student, Instructor, SiteAdmin, Advertiser
+
+cursor = connections['default'].cursor()
 
 
 class LogoutView(View):
@@ -23,18 +26,27 @@ class LoginView(View):
         form = Login()
         return render(request, self.template_name, {'form': form})
 
+    def authenticate(self, request, username, password):
+        query = 'select * ' \
+                'from accounts_defaultuser ' \
+                'inner join auth_user ' \
+                'on auth_user.id = accounts_defaultuser.user_ptr_id ' \
+                'where username = "' + username + '" and password_orig="' + password + '";'
+        user_q = User.objects.raw(query)
+        return user_q
+
     def post(self, request):
         form = Login(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
+            user_qset = self.authenticate(request, username=username, password=password)
 
-            if user is not None:
+            if user_qset:
+                user = user_qset[0]
                 login(request, user)
                 return HttpResponseRedirect('/')
             else:
-                print('Wrong username or password. Redirecting...')
                 return HttpResponseRedirect('login')
 
 
@@ -50,30 +62,125 @@ class RegisterView(View):
         return render(request, self.template_name, {'form': form,
                                                     'path': request.path})
 
+    def exists(self, username):
+        query = 'select * from auth_user where username = "' + username + '";'
+        user_q = User.objects.raw(query)
+
+        if user_q:
+            return True
+        return False
+
     def post(self, request):
         form = Register(request.POST)
         if form.is_valid():
-            # new user account that is automatically a Student as well
+            # Get the form values for the new user
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             email = form.cleaned_data['email']
             phone = form.cleaned_data['phone']
 
-            if "advertiser" in request.path:
-                new_user = Advertiser()
-                new_user.type = 2
-            elif "instructor" in request.path:
-                new_user = Instructor()
-                new_user.type = 1
-            else:
-                new_user = Student()
-                new_user.type = 0
+            # if the user already exists, return to the original registration page
+            if self.exists(username):
+                return HttpResponseRedirect('/register')
 
-            new_user.username = username; new_user.email = email; new_user.phone = phone
-            new_user.set_password(password)
+            # we first create a new User object inside the auth.models.User model
+            new_user = User(username=username, email=email, password=password)
             new_user.save()
 
-            return HttpResponseRedirect('/')  # /login
+            # Then we go on to add this model to the corresponding submodels, i.e. DefaultUser where password_orig
+            #  will be saved, Student, Instructor, Advertiser, etc. For this, we need the id of the user that we added
+            #  previously.
+
+            # The registration type is determined from the path the user takes for the account
+            if "advertiser" in request.path:
+                name = form.cleaned_data['name']
+                company_name = form.cleaned_data['company_name']
+
+                cursor.execute(
+                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
+                    [new_user.id, password, 2])
+                cursor.execute(
+                    "insert into accounts_advertiser(defaultuser_ptr_id, name, company_name) values ( %s, %s, %s)",
+                    [new_user.id, name, company_name])
+            elif "instructor" in request.path:
+                description = form.cleaned_data['description']
+
+                cursor.execute(
+                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
+                    [new_user.id, password, 1])
+                cursor.execute(
+                    "insert into accounts_student(defaultuser_ptr_id, phone, description) values ( %s, %s, %s)",
+                    [new_user.id, phone, description])
+                cursor.execute(
+                    "insert into accounts_instructor(student_ptr_id) values ( %s)",
+                    new_user.id)
+            else:
+                cursor.execute(
+                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
+                    [new_user.id, password, 0])
+                cursor.execute(
+                    "insert into accounts_student(defaultuser_ptr_id, phone, description) values ( %s, %s, %s)",
+                    [new_user.id, phone, ""])
+
+            new_user.save()
+            return HttpResponseRedirect('/login')  # /login
         else:
             print("Wrong form values")
         return HttpResponse('This is Register view.')
+
+
+class AccountChangeView(View):
+    template_name = "account.html"
+
+
+class AccountView(View):
+    template_name = "account.html"
+    model = DefaultUser
+    std = None
+    type = 0
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            user = request.user
+            def_user = DefaultUser.objects.raw("select * "
+                                               "from accounts_defaultuser as d "
+                                               "where d.user_ptr_id = %s;", [user.id])[0]
+            self.std = Student.objects.raw("select * "
+                                           "from accounts_student "
+                                           "where defaultuser_ptr_id = %s;", [user.id])[0]
+
+            form = EditForm(instance=self.std)
+            self.type = def_user.type
+
+            return render(request, self.template_name, {'user': user,
+                                                        'type': def_user.type,
+                                                        'form': form})
+        else:
+            HttpResponseRedirect('/')  # redirects to main page
+
+    def post(self, request):
+        form = EditForm(request.POST, instance=self.std)
+
+        self.std = Student.objects.raw("select * "
+                                       "from accounts_student "
+                                       "where defaultuser_ptr_id = %s;", [request.user.id])[0]
+        self.type = self.std.type
+
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            phone = form.cleaned_data['phone']
+
+            description = form.cleaned_data['description']
+
+            # update the existing fields accordingly
+            cursor.execute('update accounts_student '
+                           'set phone = %s, description = %s '
+                           'where defaultuser_ptr_id = %s;',
+                           [phone, description, self.std.defaultuser_ptr_id])
+            cursor.execute('update auth_user '
+                           'set email = %s '
+                           'where id = %s;',
+                           [email, self.std.defaultuser_ptr_id])
+
+        print(form.errors)
+        return HttpResponseRedirect('/account')
