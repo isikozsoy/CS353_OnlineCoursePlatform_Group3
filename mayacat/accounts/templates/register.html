@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "main/base.html" %}
 
 {% block main_content %}
   <h1>Register to MayaCat</h1>
@@ -16,5 +16,8 @@
       {% endif %}
 
       Password: {{ form.password }}<br>
+    <button type="submit"
+                class="btn btn-primary"
+                role="button">Create an account!</button><br>
   </form>
 {% endblock %}

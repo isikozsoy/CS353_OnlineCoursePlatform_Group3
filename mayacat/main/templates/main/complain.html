@@ -1,13 +1,12 @@
 {% extends "main/base.html" %}
 
 {% block main_content %}
-    <h1>Login!</h1>
-    <form action="login" method="post">
+    <form action="" method="POST">
         {% csrf_token %}
-        {{ form.errors }}
-        {{ form.as_table }}
+        <h1>Your Complaint:</h1>
+        {{ form.description }}<br>
         <button type="submit"
                 class="btn btn-primary"
-                role="button">Login!</button><br>
+                role="button">Send!</button><br>
     </form>
 {% endblock %}

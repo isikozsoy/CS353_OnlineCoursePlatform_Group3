@@ -23,14 +23,10 @@
         {% if registered is not None %}
 
             <h3>Continue Course</h3>
-            <a href="/{{course.cno}}/{{course.lecture_set[0]}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">
+            <a href="/{{course.cno}}/{{course.lecture_set.first}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">
 
             <h3>Lectures</h3>
-            <ol>
-                {% for lecture in course.lecture_set.all().order_by('lecture_no') %}
-                    <li><a href="{{ lecture.get_url() }}">{{ lecture.lecture_name }}</a></li>
-                {% endfor %}
-            </ol>
+
 
         {% else %}
 
@@ -42,11 +38,14 @@
 
         {% if comments is not None %}
             <ol>
-                {% for comment in comments.all() %}
+                {% for comment in comments.all %}
                     <li>{{ comment }}</li>
                 {% endfor %}
             </ol>
         {% endif %}
+
+        <br>
+        <a href="{{ course.slug }}/complain">Complain about the course...</a>
 
     {% endif %}
 

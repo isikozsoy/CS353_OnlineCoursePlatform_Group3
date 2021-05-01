@@ -1,9 +1,15 @@
+import datetime
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import ListView, DetailView, View
+from django.views.generic import ListView, DetailView
+from django.views.generic.base import View
 from django.db import connection
 from main.models import *
 from .models import *
+from .forms import ComplainForm
+
+cursor = connection.cursor()
 
 
 class MyCoursesView(ListView):
@@ -52,11 +58,11 @@ class LectureView(View):
         notes = Takes_note.objects.raw('SELECT * FROM main_takes_note WHERE lecture_no_id = %s', [lecture_no])
 
         # lecturecnt = len(list(lectures))
-        cursor = connection.cursor()
         row = cursor.execute('SELECT COUNT(lecture_no) FROM courses_lecture WHERE cno_id = %s', [cno])
         row = cursor.fetchone()
         lecturecnt = row[0]
-        print("lecturecnt: ", lecturecnt, ", len: ", len(list(lectures))) # both of them gives 0 for aaa but should give 2
+        print("lecturecnt: ", lecturecnt, ", len: ",
+              len(list(lectures)))  # both of them gives 0 for aaa but should give 2
 
         # questions = Post.objects.raw('''SELECT postno
         #                                 FROM Post
@@ -116,3 +122,70 @@ def send_course_as_gift(request, course_slug, receiver):
             Wishes.objects.filter(cno=course, user=s).delete()
 
     return redirect("courses:my_courses")
+
+
+class AddComplainView(View):
+    template_name = "main/complain.html"
+    course_slug = ""
+
+    def get(self, request, course_slug):
+        form = ComplainForm()
+        self.course_slug = course_slug
+        if request.user.is_authenticated:  # we need to check enrollments as well
+            return render(request, self.template_name, {'form': form})
+        return HttpResponseRedirect('/')
+
+    def post(self, request, course_slug):
+        self.course_slug = course_slug
+        course_q = Course.objects.raw('select * '
+                                      'from courses_course '
+                                      'where slug = %s;',
+                                      [self.course_slug])
+        course = course_q[0]
+        course_cno = course.cno
+
+        form = ComplainForm(request.POST)
+        if form.is_valid():
+            description = form.cleaned_data['description']
+            cursor.execute('insert into main_complaint (creation_date, description, course_id, s_user_id) '
+                               'values (%s, %s, %s, %s);',
+                               [datetime.datetime.now().strftime('%y-%m-%d'), description, course_cno, request.user.id])
+            return HttpResponse("Your complaint has been taken.")
+        else:
+            print("Invalid form")
+        return HttpResponseRedirect('/')
+
+
+class RefundRequestView(View):
+    template_name = "main/refund.html"
+    course_slug = ""
+
+    def get(self, request, course_slug):
+        form = ComplainForm()
+        self.course_slug = course_slug
+        if request.user.is_authenticated:  # we need to check enrollments as well
+            return render(request, self.template_name, {'form': form})
+        return HttpResponseRedirect('/')
+
+    def post(self, request, course_slug):
+        self.course_slug = course_slug
+        course_q = Course.objects.raw('select * '
+                                      'from courses_course '
+                                      'where slug = %s;',
+                                      [self.course_slug])
+        course = course_q[0]
+        course_cno = course.cno
+
+        form = ComplainForm(request.POST)
+        if form.is_valid():
+            description = form.cleaned_data['description']
+            cursor.execute('INSERT INTO main_refundrequest (reason, status, cno_id, s_username_id) '
+                           'VALUES (%s, %s, %s, %s);',
+                           [description, 0, course_cno, request.user.id])
+            return render(request, "trivial/success_message_after_submitting.html",
+                          {'success_message': 'Your refund request has been sent to the administrators. '
+                                              'You will get an answer in approximately a week. Please be patient.',
+                           'course_slug': course_slug})
+        else:
+            print("Invalid form")
+        return HttpResponseRedirect('/')
