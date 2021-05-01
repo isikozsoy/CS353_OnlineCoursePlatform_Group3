@@ -37,13 +37,12 @@ def add_to_wishlist(request, course_slug):
                                         [cno, user_id])
 
     if len(list(current_wishes)) == 0:
-        wishes_id = "wishes5"
         cursor.execute('INSERT INTO main_wishes (cno_id, user_id) VALUES (%s, %s);',
                        [cno, user_id])
     else:
         cursor.execute('DELETE FROM main_wishes WHERE cno_id = %s AND user_id = %s', [cno, user_id])
 
-    return redirect("courses:wishlist_items")
+    return redirect("main:wishlist_items")
 
 
 class MainView(View):

@@ -9,7 +9,7 @@
     <h2>{{ object.cname }}</h2>
     <h3>{{ object.description }}</h3>
 
-    <form action="/my_courses/add/{{object.slug}}" method="post">
+    <form action="my_courses" method="post">
         {% csrf_token %}
         {{ form.errors }}
         {{ form.as_table }}
@@ -20,7 +20,7 @@
 
     <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
     <ol>
-      {% for lecture in lecture_list %}
+      {% for lecture in object.lecture_set.all %}
       <li><a href="{{ lecture.get_url }}">{{ lecture.lecture_name }}</a></li>
       {% endfor %}
     </ol>

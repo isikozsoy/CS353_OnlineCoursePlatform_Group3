@@ -3,7 +3,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, View
 from django.db import connection
 from main.models import *
+from accounts.models import *
 from .models import *
+from .forms import *
 
 
 class MyCoursesView(ListView):
@@ -24,7 +26,50 @@ class CourseListView(ListView):
 
 
 class CourseDetailView(DetailView):
-    model = Course
+    # model = Course
+
+    def get(self, request, course_slug, *args, **kwargs):
+        form = GiftInfo()
+
+        course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
+        if len(list(course_queue)) != 0:
+            course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1', [course_slug])[
+                0]
+            cno = course.cno
+        else:
+            return
+
+        lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
+        context = {
+            'lecture_list': lecture_list,
+            'form': form
+        }
+        return render(request, 'course_detail.html', context)
+
+    def post(self, request, course_slug, *args, **kwargs):
+        form = GiftInfo(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            users = Student.objects.raw('SELECT * FROM accounts_student WHERE username = %s;',
+                                                [username])
+            if len(list(users)) == 0:
+                pass
+                # INVALID USER
+            else:
+                cursor = connection.cursor()
+                receiver_id = users[0].user_id
+                course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
+                if len(list(course_queue)) != 0:
+                    course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1',[course_slug])[0]
+                    cno = course.cno
+                else:
+                    return
+
+                cursor.execute('INSERT INTO main_gift (cno_id, user_id) VALUES (%s, %s);',
+                               [cno, receiver_id])
+                cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
+                               [cno, receiver_id])
+                return HttpResponseRedirect('my_courses')
 
 
 class LectureView(View):
@@ -45,8 +90,7 @@ class LectureView(View):
             lecture_no = lecture.lecture_no
         else:
             return
-        cno_uuid = uuid.UUID(cno)
-        lectures = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s', [cno_uuid])
+        lectures = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s', [cno])
         # lectures_q = 'SELECT * FROM courses_lecture WHERE cno_id = %s'
         # lectures = cursor.execute(lectures_q, [cno])
 
@@ -100,11 +144,11 @@ def add_to_my_courses(request, course_slug):
     my_courses = Enroll.objects.raw(my_courses_q)
 
     if len(list(my_courses)) == 0:
-        enroll_id_uuid = uuid.uuid4
-        insert_q = 'INSERT INTO main_enroll (enroll_id, cno_id, user_id) VALUES ' \
-                    '(' + str(enroll_id_uuid) + ', ' + str(cno) + ',' + str(user_id) + ');'
+        insert_q = 'INSERT INTO main_enroll (cno_id, user_id) VALUES ' \
+                    '(' + str(cno) + ', ' + str(user_id) + ');'
         cursor.execute(insert_q)
     else:
+        # Once we buy the course we cannot delete it logical bence
         """
         cursor.execute('DELETE FROM main_enroll ' \
                        'WHERE user_id = ' + str(user_id) + ' AND cno_id = "' + str(cno) + '"')

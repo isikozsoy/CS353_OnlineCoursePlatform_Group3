@@ -4,13 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="Transformation to sql query -in progress">
-      <change afterPath="$PROJECT_DIR$/mayacat/accounts/templates/account.html" afterDir="false" />
+    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="Errors were resolved.">
+      <change afterPath="$PROJECT_DIR$/mayacat/courses/forms.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mayacat/courses/templates/course_detail.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/search/templates/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/search/templates/search.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/search/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/search/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/courses/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/courses/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/templates/courses/course_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/templates/courses/course_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,7 +123,7 @@
       <workItem from="1619475880810" duration="21322000" />
       <workItem from="1619624413494" duration="1609000" />
       <workItem from="1619682801937" duration="11944000" />
-      <workItem from="1619708508013" duration="2022000" />
+      <workItem from="1619708508013" duration="14599000" />
     </task>
     <task id="LOCAL-00001" summary="Added default values to UUIDs &amp; deleted 2 unnecessary html template files">
       <created>1619438627395</created>
@@ -201,7 +202,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619710188023</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Errors were resolved.">
+      <created>1619710602907</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1619710602907</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -231,6 +239,7 @@
     <MESSAGE value="Lecture's get_url function was modified w.r.t new file system." />
     <MESSAGE value="error: sql queries do not give any data" />
     <MESSAGE value="Transformation to sql query -in progress" />
-    <option name="LAST_COMMIT_MESSAGE" value="Transformation to sql query -in progress" />
+    <MESSAGE value="Errors were resolved." />
+    <option name="LAST_COMMIT_MESSAGE" value="Errors were resolved." />
   </component>
 </project>
