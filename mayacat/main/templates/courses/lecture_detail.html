@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  <h1>Lecture Details</h1>
+  {% if curlecture is not None %}
+ <h3>{{ curlecture.lecture_name }}</h3>
+
+  <video width="320" height="240" controls>
+    <source src={{ curlecture.video_url }} type="video/mp4">
+    Your browser does not support embedded videos. Consider switching to another browser.
+  </video>
+
+  <h2>{{ course.cname }}</h2>
+  {% for lecture in lectures %}
+  <a href="{{ lecture.get_url }}">{{ lecture }}</a>
+  {% endfor %}
+
+  <h2>Overview</h2>
+  <h3>Description</h3>
+  <a>{{course.description}}</a>
+
+  <h3>Including</h3>
+  <a>{{lecturecnt}} lecture is included.<br></a>
+  <a>assignment</a>
+
+  <h2>Announcements</h2>
+  {% for announcement in announcements %}
+  <a>{{ announcement.ann_text }} {{ announcement.ann_date }} {{ announcement.i_user_id }}</a>
+  {% endfor %}
+
+  <h2>Notes</h2>
+   {% for note in notes %}
+  <a>{{ note.note }} {{ note.s_username_id }} </a>
+  {% endfor %}
+
+  <h2>Q&A</h2>
+    {% for question in questions %}
+  <a>{{ question.postno }}} </a>
+  {% endfor %}
+
+  {% else %}
+    <h2>There is no lecture by this name.</h2>
+  {% endif %}
+</body>
+</html>

@@ -16,10 +16,11 @@ class DefaultUser(User):
 
 class Student(DefaultUser):
     phone = models.CharField(max_length=50, blank=True)
-    description = models.TextField()
 
 
 class Instructor(Student):
+    description = models.TextField()
+
     def __str__(self):
         return self.username
 

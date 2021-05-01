@@ -6,17 +6,19 @@
 </head>
     <form>
     {% csrf_token %}
-        Username: {{ form.username }}<br>
+        Username: {{ user.username }}<br>
         Email: {{ form.email }}<br>
         Phone: {{ form.phone }}<br>
 
         Type:
         {% if type == 0 %}
             Student<br>
+            Profile Description:
         {% else %}
             Instructor<br>
-            Your Instructor Description: {{ form.description }}<br>
+            Your Instructor Description: <br>
         {% endif %}
+        {{ form.description }}<br>
     <button type="submit" formmethod="post">Save</button><br>
     </form>
 </body>
