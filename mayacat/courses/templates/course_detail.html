@@ -6,10 +6,10 @@
 </head>
 <body>
     <h1>Course Details</h1>
-    <h2>{{ object.cname }}</h2>
-    <h3>{{ object.description }}</h3>
+    <h2>{{ cname }}</h2>
+    <h3>{{ desc }}</h3>
 
-    <form action="my_courses" method="post">
+    <form action="courses:my_courses" method="post">
         {% csrf_token %}
         {{ form.errors }}
         {{ form.as_table }}
@@ -18,7 +18,7 @@
                 role="button">Buy The Course</button><br>
     </form>
 
-    <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
+    <a href="/wishlist/add_to_wishlist/{{slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
     <ol>
       {% for lecture in object.lecture_set.all %}
       <li><a href="{{ lecture.get_url }}">{{ lecture.lecture_name }}</a></li>
