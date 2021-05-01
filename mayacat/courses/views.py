@@ -150,7 +150,10 @@ class AddComplainView(View):
             cursor.execute('insert into main_complaint (creation_date, description, course_id, s_user_id) '
                                'values (%s, %s, %s, %s);',
                                [datetime.datetime.now().strftime('%y-%m-%d'), description, course_cno, request.user.id])
-            return HttpResponse("Your complaint has been taken.")
+            render(request, "trivial/success_message_after_submitting.html",
+                   {'success_message': 'Your refund request has been sent to the administrators. '
+                                       'You will get an answer in approximately a week. Please be patient.',
+                    'course_slug': course_slug})
         else:
             print("Invalid form")
         return HttpResponseRedirect('/')
