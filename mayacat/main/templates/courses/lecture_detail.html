@@ -14,13 +14,17 @@
   <iframe width="320" height="240" src={{curlecture.video_url}} allowfullscreen></iframe>
 
   <h2>{{ course.cname }}</h2>
-  {% for lecture in lectures %}
+  {% for lecture,prog in lecandprog %}
   <a href="{{ lecture.get_url }}">{{ lecture }}</a>
+  <a>{{prog}}<br></a>
   {% endfor %}
 
   <h2>Overview</h2>
   <h3>Description</h3>
   <a>{{course.description}}</a>
+  <h4>Owner</h4>
+  <a>{{ course.owner_id }} <br></a>
+  <h4>Contributors</h4>
 
   <h3>Including</h3>
   <a>{{lecturecnt}} lecture is included.<br></a>
