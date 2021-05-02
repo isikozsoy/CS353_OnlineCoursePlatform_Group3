@@ -51,3 +51,31 @@
 
 
 {% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ object.cname }}</title>
+</head>
+<body>
+    <h1>Course Details</h1>
+    <h2>{{ object.cname }}</h2>
+    <h3>{{ object.description }}</h3>
+
+    <form action="/my_courses/add/{{object.slug}}" method="post">
+        {% csrf_token %}
+        {{ form.errors }}
+        {{ form.as_table }}
+        <button type="submit"
+                class="btn btn-primary"
+                role="button">Buy The Course</button><br>
+    </form>
+
+    <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
+    <ol>
+      {% for lecture in lecture_list %}
+      <li><a href="{{ lecture.get_url }}">{{ lecture.lecture_name }}</a></li>
+      {% endfor %}
+    </ol>
+</body>
+</html>
