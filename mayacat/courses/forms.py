@@ -1,4 +1,5 @@
 from django import forms
+from .models import Course
 
 
 class ComplainForm(forms.Form):
@@ -10,24 +11,26 @@ class GiftInfo(forms.Form):
 
 
 TOPIC_CHOICES = (
-    ("1", "Design"),
-    ("2", "Development"),
-    ("3", "Marketing"),
-    ("4", "IT and Software"),
-    ("5", "Personal Development"),
-    ("6", "Business"),
-    ("7", "Music"),
-    ("8", "Other"),
+    ("Design", "Design"),
+    ("Development", "Development"),
+    ("Marketing", "Marketing"),
+    ("IT and Software", "IT and Software"),
+    ("Personal Development", "Personal Development"),
+    ("Business", "Business"),
+    ("Music", "Music"),
+    ("Other", "Other"),
 )
 
 
 class CreateCourseForm(forms.Form):
-    cname = forms.CharField(label='Course Name', max_length=50)
-    price = forms.DecimalField(label='Price', max_digits=6, decimal_places=2)
-    topic = forms.ChoiceField(label='Topic', choices=TOPIC_CHOICES)
+    course_img = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control-file',
+                                                                'enctype': 'multipart/form-data'}))
+    cname = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                         'placeholder': 'A Course Name'}))
+    price = forms.DecimalField(max_digits=6, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    topic = forms.ChoiceField(label='Topic', choices=TOPIC_CHOICES, widget=forms.Select(
+        attrs={'class': "form-control"}))
 
-    thumbnail = forms.ImageField()
+    description = forms.CharField(max_length=4000, widget=forms.Textarea(attrs={'class': 'form-control'}))
+    private = forms.BooleanField(label='Private?', required=False)
 
-    description = forms.CharField(max_length=4000, widget=forms.TextInput())
-
-    private = forms.BooleanField(label='Private?')

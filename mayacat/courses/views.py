@@ -265,27 +265,30 @@ class AddCourseView(View):
     template_name = "courses/add_course.html"
 
     def get(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+
+        cursor.execute('select count(*) '
+                       'from accounts_instructor '
+                       'where student_ptr_id = %s;', [request.user.id])
+        is_instructor = cursor.fetchone()[0]
+
+        if is_instructor == 0:  # this means that there is no instructor with the requested id
+            return HttpResponseRedirect('/')  # TODO: A page to transform student into instructor
+
         form = CreateCourseForm()
 
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect('/')
-
-        is_instructor = Course.objects.raw( 'select count(*) '
-                                            'from accounts_instructor '
-                                            'where student_ptr_id = %s;', [request.user.id])[0]
-        if is_instructor == 0: # this means that there is no instructor with the requested id
-            return HttpResponseRedirect('/register/instructor')  # TODO: A page to transform student into instructor
-
-        form = CreateCourseForm(request.POST)
+        form = CreateCourseForm(request.POST, request.FILES)
 
         if form.is_valid():
             cname = form.cleaned_data['cname']
             price = form.cleaned_data['price']
             topic = form.cleaned_data['topic']
-            thumbnail = form.cleaned_data['thumbnail']
+            thumbnail = form.cleaned_data['course_img']
+
             description = form.cleaned_data['description']
             private = form.cleaned_data['private']
 
@@ -300,10 +303,10 @@ class AddCourseView(View):
             unique = False
             uniquifier = 1
             while not unique:
-                course_slug_q = Course.objects.raw('select count(*) from courses_course where slug = %s;', [slug])
-                count = course_slug_q[0]
+                cursor.execute('select count(*) from courses_course where slug = %s;', [slug])
+                count = cursor.fetchone()[0]
                 if count != 0:
-                    slug = slug + '-' + uniquifier
+                    slug = slug + '-' + str(uniquifier)
                     uniquifier += 1
                 else:
                     unique = True
@@ -312,7 +315,11 @@ class AddCourseView(View):
                            '(cname, price, slug, situation, is_private, course_img, description, owner_id) '
                            'VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
                            [cname, price, slug, 'Pending', private, thumbnail, description, request.user.id])
+            cno = Course.objects.raw('select * from courses_course where slug = %s;', [slug])[0].cno
+            cursor.execute('INSERT INTO main_course_topic (cno_id, topicname_id) '
+                           'VALUES (%s, %s);', [cno, topic])
 
             return HttpResponse("Course addition successful. The decision on course will be made in approximately a "
                                 "week. Please be patient.")
+        print(form.errors)
         return HttpResponseRedirect('/')
