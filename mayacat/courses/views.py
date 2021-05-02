@@ -1,5 +1,5 @@
 import datetime
-
+from .forms import *
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, DetailView
@@ -8,9 +8,13 @@ from django.db import connection
 from main.models import *
 from accounts.models import *
 from .models import *
+from slugify import slugify
 
 cursor = connection.cursor()
-from .forms import *
+
+
+def get_today():
+    return datetime.datetime.now().strftime('%y-%m-%d')
 
 
 class MyCoursesView(ListView):
@@ -26,14 +30,42 @@ class MyCoursesView(ListView):
         return render(request, 'main/my_courses.html', context)
 
 
+def add_to_my_courses(request, course_slug):
+    course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
+    if len(list(course_queue)) != 0:
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1', [course_slug])[0]
+        cno = course.cno
+    else:
+        return HttpResponseRedirect('/')
+
+    user_id = request.user.id
+
+    my_courses = Enroll.objects.raw('SELECT * '
+                                    'FROM main_enroll '
+                                    'WHERE user_id = %s AND cno_id = %s;',
+                                    [user_id, cno])
+
+    if len(list(my_courses)) == 0:
+        cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
+                       [cno, user_id])
+    else:
+        print("Inside else.........")
+        # Once we buy the course we cannot delete it logical bence
+        """
+            cursor.execute('DELETE FROM main_enroll ' \
+                           'WHERE user_id = ' + str(user_id) + ' AND cno_id = "' + str(cno) + '"')
+        """
+    return HttpResponseRedirect('/my_courses/add/')
+
+
 class CourseListView(ListView):
     model = Course
 
 
-class CourseDetailView(DetailView):
+class CourseDetailView(View):
     # model = Course
 
-    def get(self, request, course_slug, *args, **kwargs):
+    def get(self, request, course_slug):
         form = GiftInfo()
 
         course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
@@ -47,34 +79,44 @@ class CourseDetailView(DetailView):
         lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
         context = {
             'lecture_list': lecture_list,
-            'form': form
+            'form': form,
+            'object': course
         }
         return render(request, 'course_detail.html', context)
 
-    def post(self, request, course_slug, *args, **kwargs):
+    def post(self, request, course_slug):
         form = GiftInfo(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
-            users = Student.objects.raw('SELECT * FROM accounts_student WHERE username = %s;',
-                                                [username])
+            users = Student.objects.raw('SELECT * '
+                                        'FROM accounts_student '
+                                        'INNER JOIN auth_user '
+                                        'ON defaultuser_ptr_id = id '
+                                        'WHERE username = %s;',
+                                        [username])
             if len(list(users)) == 0:
                 pass
                 # INVALID USER
             else:
-                cursor = connection.cursor()
                 receiver_id = users[0].user_id
-                course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
+                course_queue = Course.objects.raw('SELECT * '
+                                                  'FROM courses_course '
+                                                  'WHERE slug = %s', [course_slug])
                 if len(list(course_queue)) != 0:
-                    course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1',[course_slug])[0]
+                    course = Course.objects.raw('SELECT * '
+                                                'FROM courses_course '
+                                                'WHERE slug = %s LIMIT 1', [course_slug])[0]
                     cno = course.cno
                 else:
                     return
 
-                cursor.execute('INSERT INTO main_gift (cno_id, user_id) VALUES (%s, %s);',
-                               [cno, receiver_id])
+                cursor.execute('INSERT INTO main_gift (sender_id, receiver_id, course_id, date) VALUES (%s, %s);',
+                               [request.user.id, receiver_id, cno, get_today()])
                 cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
                                [cno, receiver_id])
                 return HttpResponseRedirect('my_courses')
+
+        return HttpResponse("Invalid input. Go back and try again...")
 
 
 class LectureView(View):
@@ -130,36 +172,6 @@ class LectureView(View):
         return render(request, 'main/lecture_detail.html', context)
 
 
-def add_to_my_courses(request, course_slug):
-    course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
-    if len(list(course_queue)) != 0:
-        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1', [course_slug])[0]
-        cno = course.cno
-    else:
-        return
-
-    # WILL BE CHANGED TO CURRENT USER
-    user_id = request.user.id
-    cursor = connection.cursor()
-
-    my_courses_q = ('SELECT * ' +
-                    'FROM main_enroll ' +
-                    'WHERE user_id = ' + str(user_id) + ' AND cno_id = ' + str(cno) + ';')
-    my_courses = Enroll.objects.raw(my_courses_q)
-
-    if len(list(my_courses)) == 0:
-        insert_q = 'INSERT INTO main_enroll (cno_id, user_id) VALUES ' \
-                    '(' + str(cno) + ', ' + str(user_id) + ');'
-        cursor.execute(insert_q)
-    else:
-        # Once we buy the course we cannot delete it logical bence
-        """
-        cursor.execute('DELETE FROM main_enroll ' \
-                       'WHERE user_id = ' + str(user_id) + ' AND cno_id = "' + str(cno) + '"')
-    """
-    return redirect("courses:my_courses")
-
-
 def send_course_as_gift(request, course_slug, receiver):
     course_queue = Course.objects.raw('SELECT * FROM courses_course as C WHERE C.slug = %s', [course_slug])
     if len(list(course_queue)) != 0:
@@ -203,8 +215,8 @@ class AddComplainView(View):
         if form.is_valid():
             description = form.cleaned_data['description']
             cursor.execute('insert into main_complaint (creation_date, description, course_id, s_user_id) '
-                               'values (%s, %s, %s, %s);',
-                               [datetime.datetime.now().strftime('%y-%m-%d'), description, course_cno, request.user.id])
+                           'values (%s, %s, %s, %s);',
+                           [get_today(), description, course_cno, request.user.id])
             render(request, "trivial/success_message_after_submitting.html",
                    {'success_message': 'Your refund request has been sent to the administrators. '
                                        'You will get an answer in approximately a week. Please be patient.',
@@ -246,4 +258,61 @@ class RefundRequestView(View):
                            'course_slug': course_slug})
         else:
             print("Invalid form")
+        return HttpResponseRedirect('/')
+
+
+class AddCourseView(View):
+    template_name = "courses/add_course.html"
+
+    def get(self, request):
+        form = CreateCourseForm()
+
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+
+        is_instructor = Course.objects.raw( 'select count(*) '
+                                            'from accounts_instructor '
+                                            'where student_ptr_id = %s;', [request.user.id])[0]
+        if is_instructor == 0: # this means that there is no instructor with the requested id
+            return HttpResponseRedirect('/register/instructor')  # TODO: A page to transform student into instructor
+
+        form = CreateCourseForm(request.POST)
+
+        if form.is_valid():
+            cname = form.cleaned_data['cname']
+            price = form.cleaned_data['price']
+            topic = form.cleaned_data['topic']
+            thumbnail = form.cleaned_data['thumbnail']
+            description = form.cleaned_data['description']
+            private = form.cleaned_data['private']
+
+            # TODO:
+            # TODO: SLUG = CNO YU YAPSAK ÇOK GÜZEL OLUR AMA TABLE'DA CNO KURSU YERLEŞTİRDİKTEN SONRA OLUŞUYOR
+            # TODO: BUNU YAPMANIN BİR YÖNTEMİ ŞÖYLE: COURSES'I SİLİYORUZ, İÇİNDE SLUG'IN REQUIRED OLMADIĞI BİR TABLE
+            #  OLUŞTURUYORUZ, SONRA CNO cursor.execute İLE OLUŞUNCA TEKRAR CNO'YU BU TABLE'DAN ÇEKİP UPDATE KOMUTU İLE
+            #  SLUG'I GÜNCELLİYORUZ
+            slug = slugify(cname)
+
+            # check for the existence of the same slug below so that the slug is unique
+            unique = False
+            uniquifier = 1
+            while not unique:
+                course_slug_q = Course.objects.raw('select count(*) from courses_course where slug = %s;', [slug])
+                count = course_slug_q[0]
+                if count != 0:
+                    slug = slug + '-' + uniquifier
+                    uniquifier += 1
+                else:
+                    unique = True
+
+            cursor.execute('INSERT INTO courses_course '
+                           '(cname, price, slug, situation, is_private, course_img, description, owner_id) '
+                           'VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
+                           [cname, price, slug, 'Pending', private, thumbnail, description, request.user.id])
+
+            return HttpResponse("Course addition successful. The decision on course will be made in approximately a "
+                                "week. Please be patient.")
         return HttpResponseRedirect('/')
