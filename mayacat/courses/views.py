@@ -135,55 +135,127 @@ class LectureView(View):
     # model = Lecture
 
     def get(self, request, course_slug, lecture_slug, *args, **kwargs):
-        cursor = connection.cursor()
-        course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
-        if len(list(course_queue)) != 0:
+
+        cursor = connections['default'].cursor()
+
+        course_queue = Course.objects.raw( '''SELECT * FROM courses_course WHERE slug = %s;''',[course_slug])
+
+        #check whether the student is enrolled into this course
+        #is course slug primary key
+
+        curuser_id = request.user.id
+        print(curuser_id)
+
+        print("=1",course_queue)
+        if len(course_queue) > 0:
             course = course_queue[0]
-            cno = course.cno
+            print("=2",course, course.cno)
         else:
-            return
+            #404 error
+            print("error no course as the stated");
 
-        lecture_queue = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE lecture_slug = %s', [lecture_slug])
-        if len(list(lecture_queue)) != 0:
-            lecture = lecture_queue[0]
-            lecture_no = lecture.lecture_no
+        lecture_q = Lecture.objects.raw( '''SELECT * FROM courses_lecture as CL WHERE CL.lecture_slug = %s;''',[lecture_slug])
+        if len(lecture_q) > 0:
+            lecture = lecture_q[0]
+            print("=3","lecture exists\n")
         else:
-            return
-        lectures = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s', [cno])
-        # lectures_q = 'SELECT * FROM courses_lecture WHERE cno_id = %s'
-        # lectures = cursor.execute(lectures_q, [cno])
+            #error no such lecture
+            print("error no lecture as the stated");
+        print("=4",lecture_q)
+        print("=5",lecture)
+        isWatched = Progress.objects.raw('''SELECT * FROM main_progress as MP 
+                                            WHERE MP.lecture_no_id = %s AND MP.s_username_id = %s;'''
+                                            , [lecture.lecture_no, curuser_id])
+        print(isWatched)
 
-        announcements = Announcement.objects.raw('SELECT * FROM main_announcement WHERE cno_id = %s', [cno])
+        cno = course.cno
+        lectures = Lecture.objects.raw('''SELECT * FROM courses_lecture as CL WHERE CL.cno_id = %s;''', [cno])
 
-        notes = Takes_note.objects.raw('SELECT * FROM main_takes_note WHERE lecture_no_id = %s', [lecture_no])
+        if (len(isWatched) == 0):
+            cursor.execute('''INSERT INTO main_progress(lecture_no_id ,s_username_id) VALUES (%s, %s) ''',
+                       [lecture.lecture_no, curuser_id])
+            prog = Progress.objects.raw( '''SELECT MP.prog_id FROM main_progress as MP
+                                            WHERE MP.s_username_id = %s AND 
+                                                  MP.lecture_no_id IN ( SELECT lecture_no
+                                                                        FROM courses_lecture 
+                                                                        WHERE cno_id = %s );'''
+                                              ,[curuser_id,cno])
+            print("prog : ", len(prog))     #raw must include primary key - cursor
+            if( len(prog) == len(lectures) ):
+                print("This course is finished")
 
-        lecturecnt = len(list(lectures))
-        print(lecturecnt)
+        print("- ",cno)
 
-        row = cursor.execute('SELECT COUNT(lecture_no) FROM courses_lecture WHERE cno_id = %s', [cno])
-        row = cursor.fetchone()
-        lecturecnt = row[0]
+        #lectures = Lecture.objects.raw('''SELECT * FROM courses_lecture;''')
+        print("=6",lecture_slug, course.cno, lectures, len(lectures))
 
-        # print("lecturecnt: ", lecturecnt, ", len: ", len(list(lectures))) # both of them gives 0 for aaa but should give 2
+        lecandprog = [None] * len(lectures)
+        for i in range(0,len(lectures)):
+            isWatched = Progress.objects.raw( '''SELECT * FROM main_progress as MP 
+                                                    WHERE MP.lecture_no_id = %s AND MP.s_username_id = %s;'''
+                                              ,[lectures[i].lecture_no,curuser_id])
+            print(isWatched)
 
-        # questions = Post.objects.raw('''SELECT postno
-        #                                 FROM Post
-        #                                 WHERE postno NOT IN (SELECT answer_no_id AS postno FROM Quest_answ ); ''')
+            if(len(isWatched) > 0):
+                lecandprog[i] = (lectures[i],"Watched")
+            else:
+                lecandprog[i] = (lectures[i], "Unwatched")
 
-        # qanda = Quest_answ.objects.all()
+
+        announcements = Announcement.objects.raw('''SELECT * FROM main_announcement as MA WHERE MA.cno_id = %s;''', [cno])
+        #announcements = Announcement.objects.filter(cno_id=course.cno)
+
+        notes = Takes_note.objects.raw( '''SELECT * FROM main_takes_note as MTN 
+                                            WHERE MTN.lecture_no_id = %s AND MTN.s_username_id = %s;''',
+                                            [lecture.lecture_no, curuser_id])  # student will be added
+        #notes = Takes_note.objects.filter(lecture_no_id=lecture.lecture_no)
+        lecturecnt = len(lectures)
+
+        questions = Post.objects.raw('''SELECT postno
+                                        FROM main_post
+                                        WHERE postno NOT IN (SELECT answer_no_id AS postno FROM main_quest_answ ) 
+                                            AND lecture_no_id = %s; ''',[lecture.lecture_no])
+
+        qanda = [None] * len(questions)
+
+        answers = [None] * len(questions)
+        for i in range(0,len(questions)):
+            answers[i] = Quest_answ.objects.raw('''SELECT *
+                                                 FROM main_quest_answ, main_post
+                                                 WHERE question_no_id = %s AND answer_no_id = postno;''',[questions[i].postno])
+            qanda[i] = (questions[i], answers[i])
+        print(qanda)
+
+        assignments =Assignment.objects.raw('''SELECT *
+                                                 FROM main_assignment
+                                                 WHERE lecture_no_id = %s;''',[lecture.lecture_no])
+        assignmentcnt  = len(assignments)
+        lecturemat = LectureMaterial.objects.raw('''SELECT *
+                                                 FROM courses_lecturematerial
+                                                 WHERE lecture_no_id = %s;''',[lecture.lecture_no])
+        lecturematcnt = len(lecturemat)
+
+        #contributors = Contributor.objects.raw( '''SELECT U.username
+        #                                         FROM main_contributor AS MC,auth_user AS U
+        #                                         WHERE MC.cno_id = %s AS MC.user_id = U.id;''',[course.cno] )
 
         context = {
             'curlecture': lecture,
             'course': course,
-            'lectures': lectures,
             'announcements': announcements,
             'notes': notes,
-            'lecturecnt': lecturecnt
-            # 'questions' : questions
+            'assignments' : assignments,
+            'assignmentcnt' : assignmentcnt,
+            'lecturemat' : lecturemat,
+            'lecturematcnt' : lecturematcnt,
+            'lecturecnt': lecturecnt,
+            'qanda' : qanda,
+            'lecandprog' : lecandprog
+            #'contributors' : contributors
         }
         cursor.close()
 
-        return render(request, 'main/lecture_detail.html', context)
+        return render(request, 'courses/lecture_detail.html', context)
 
 
 def send_course_as_gift(request, course_slug, receiver):
