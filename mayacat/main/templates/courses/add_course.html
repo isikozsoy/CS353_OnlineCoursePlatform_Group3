@@ -3,13 +3,20 @@
 {% block main_content %}
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <h1>Add a course as an instructor:</h1>
+        <h1>{{ add_message }}</h1>
 
         {{ form.errors }}
         {{ form.as_table }}<br>
 
         <button type="submit"
                 class="btn btn-primary"
-                role="button">Create a course!</button><br>
+                role="button">{{ create_button }}</button><br>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
     </form>
 {% endblock %}

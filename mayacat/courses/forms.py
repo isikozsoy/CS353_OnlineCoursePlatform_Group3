@@ -23,14 +23,23 @@ TOPIC_CHOICES = (
 
 
 class CreateCourseForm(forms.Form):
-    course_img = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control-file',
-                                                                'enctype': 'multipart/form-data'}))
-    cname = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control',
-                                                                         'placeholder': 'A Course Name'}))
-    price = forms.DecimalField(max_digits=6, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    course_img = forms.ImageField(label='Thumbnail', widget=forms.FileInput(attrs={'class': 'form-control-file',
+                                                                                   'enctype': 'multipart/form-data'}))
+    cname = forms.CharField(label='Course name:', max_length=50,
+                            widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A Course Name'}))
+    price = forms.DecimalField(label='Price (up to $9999.99)', max_digits=6, decimal_places=2,
+                               widget=forms.NumberInput(attrs={'class': 'form-control'}))
     topic = forms.ChoiceField(label='Topic', choices=TOPIC_CHOICES, widget=forms.Select(
         attrs={'class': "form-control"}))
 
-    description = forms.CharField(max_length=4000, widget=forms.Textarea(attrs={'class': 'form-control'}))
-    private = forms.BooleanField(label='Private?', required=False)
+    description = forms.CharField(label='Description', max_length=4000,
+                                  widget=forms.Textarea(attrs={'class': 'form-control'}))
+    private = forms.BooleanField(label='Private or not?', required=False)
 
+
+class CreateLectureForm(forms.Form):
+    lecture_url = forms.CharField(label='Embedded URL for Lecture', max_length=100,
+                                  widget=forms.TextInput(attrs={'class': 'form-control'}))
+    lecture_name = forms.CharField(label='Lecture Name', max_length=50,
+                                   widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                 'placeholder': 'A Lecture Name'}))

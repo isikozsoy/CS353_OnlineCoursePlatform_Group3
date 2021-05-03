@@ -1,16 +1,18 @@
 import datetime
+
+from django.contrib import messages
+
 from .forms import *
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView
 from django.views.generic.base import View
 from django.db import connection
 from main.models import *
-from accounts.models import *
+from accounts.models import Student
 from .models import *
+from main.models import Enroll, Announcement, Takes_note
 from slugify import slugify
-
-cursor = connection.cursor()
 
 
 def get_today():
@@ -19,18 +21,23 @@ def get_today():
 
 class MyCoursesView(ListView):
     def get(self, request):
-        # WILL BE CHANGED TO CURRENT USER
-        user_id = request.user.id
-        my_courses_q = Enroll.objects.raw('''SELECT *
-                                            FROM main_enroll
-                                            WHERE user_id = %s''', [user_id])
-        context = {
-            'my_courses_q': my_courses_q
-        }
-        return render(request, 'main/my_courses.html', context)
+        if request.user.is_authenticated:
+            user_id = request.user.id
+            my_courses_q = Enroll.objects.raw('''SELECT *
+                                                FROM main_enroll
+                                                WHERE user_id = %s''', [user_id])
+            context = {
+                'my_courses_q': my_courses_q
+            }
+            return render(request, 'main/my_courses.html', context)
+        return HttpResponseRedirect('/')
 
 
 def add_to_my_courses(request, course_slug):
+    if not request.user.is_authenticated:  # if the user did not login, return to main page
+        return HttpResponseRedirect('/')
+
+    cursor = connection.cursor()
     course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
     if len(list(course_queue)) != 0:
         course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1', [course_slug])[0]
@@ -55,6 +62,7 @@ def add_to_my_courses(request, course_slug):
             cursor.execute('DELETE FROM main_enroll ' \
                            'WHERE user_id = ' + str(user_id) + ' AND cno_id = "' + str(cno) + '"')
         """
+    cursor.close()
     return HttpResponseRedirect('/my_courses/add/')
 
 
@@ -85,6 +93,7 @@ class CourseDetailView(View):
         return render(request, 'course_detail.html', context)
 
     def post(self, request, course_slug):
+        cursor = connection.cursor()
         form = GiftInfo(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
@@ -112,10 +121,13 @@ class CourseDetailView(View):
 
                 cursor.execute('INSERT INTO main_gift (sender_id, receiver_id, course_id, date) VALUES (%s, %s);',
                                [request.user.id, receiver_id, cno, get_today()])
+                cursor.close()
+                cursor = connection.cursor()
                 cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
                                [cno, receiver_id])
+                cursor.close()
                 return HttpResponseRedirect('my_courses')
-
+        cursor.close()
         return HttpResponse("Invalid input. Go back and try again...")
 
 
@@ -123,6 +135,7 @@ class LectureView(View):
     # model = Lecture
 
     def get(self, request, course_slug, lecture_slug, *args, **kwargs):
+        cursor = connection.cursor()
         course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
         if len(list(course_queue)) != 0:
             course = course_queue[0]
@@ -168,6 +181,7 @@ class LectureView(View):
             'lecturecnt': lecturecnt
             # 'questions' : questions
         }
+        cursor.close()
 
         return render(request, 'main/lecture_detail.html', context)
 
@@ -175,7 +189,7 @@ class LectureView(View):
 def send_course_as_gift(request, course_slug, receiver):
     course_queue = Course.objects.raw('SELECT * FROM courses_course as C WHERE C.slug = %s', [course_slug])
     if len(list(course_queue)) != 0:
-        course = Course.objects.raw('SELECT * FROM courses_course WHERE C.slug = %s LIMIT 1', [course_slug])[0]
+        course = Course.objects.raw('SELECT * FROM courses_course as C WHERE C.slug = %s LIMIT 1', [course_slug])[0]
         cno = course.cno
     else:
         return
@@ -183,7 +197,7 @@ def send_course_as_gift(request, course_slug, receiver):
         # WILL BE CHANGED TO CURRENT USER
         s = request.user
 
-        if not Enroll.objects.raw('SELECT * FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %', [cno]):
+        if not Enroll.objects.raw('SELECT * FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s', [cno]):
             Gift.objects.create(wishes_id=uuid.uuid1(), cno=course, user=s)
         else:
             Wishes.objects.filter(cno=course, user=s).delete()
@@ -203,6 +217,7 @@ class AddComplainView(View):
         return HttpResponseRedirect('/')
 
     def post(self, request, course_slug):
+        cursor = connection.cursor()
         self.course_slug = course_slug
         course_q = Course.objects.raw('select * '
                                       'from courses_course '
@@ -217,12 +232,12 @@ class AddComplainView(View):
             cursor.execute('insert into main_complaint (creation_date, description, course_id, s_user_id) '
                            'values (%s, %s, %s, %s);',
                            [get_today(), description, course_cno, request.user.id])
-            render(request, "trivial/success_message_after_submitting.html",
-                   {'success_message': 'Your refund request has been sent to the administrators. '
-                                       'You will get an answer in approximately a week. Please be patient.',
-                    'course_slug': course_slug})
-        else:
-            print("Invalid form")
+            cursor.close()
+            return render(request, "trivial/success_message_after_submitting.html",
+                          {'success_message': 'Your refund request has been sent to the administrators. '
+                                              'You will get an answer in approximately a week. Please be patient.',
+                           'course_slug': course_slug})
+        cursor.close()
         return HttpResponseRedirect('/')
 
 
@@ -238,6 +253,7 @@ class RefundRequestView(View):
         return HttpResponseRedirect('/')
 
     def post(self, request, course_slug):
+        cursor = connection.cursor()
         self.course_slug = course_slug
         course_q = Course.objects.raw('select * '
                                       'from courses_course '
@@ -252,13 +268,38 @@ class RefundRequestView(View):
             cursor.execute('INSERT INTO main_refundrequest (reason, status, cno_id, s_username_id) '
                            'VALUES (%s, %s, %s, %s);',
                            [description, 0, course_cno, request.user.id])
+            cursor.close()
             return render(request, "trivial/success_message_after_submitting.html",
                           {'success_message': 'Your refund request has been sent to the administrators. '
                                               'You will get an answer in approximately a week. Please be patient.',
                            'course_slug': course_slug})
-        else:
-            print("Invalid form")
+        cursor.close()
         return HttpResponseRedirect('/')
+
+
+def make_slug_for_url(name, for_course=True):
+    orig_slug = slugify(name)
+
+    # check for the existence of the same slug below so that the slug is unique
+    unique = False
+    uniquifier = 1
+    slug = orig_slug
+    while not unique:
+        cursor = connection.cursor()
+        if for_course:
+            cursor.execute('select count(*) from courses_course where slug = %s;', [orig_slug])
+        else:
+            cursor.execute('select count(*) from courses_lecture where lecture_slug = %s;', [orig_slug])
+        count = cursor.fetchone()[0]
+        cursor.close()
+        if count != 0:
+            orig_slug = slug + '-' + str(uniquifier)
+            print("Result slug: ", orig_slug)
+            uniquifier += 1
+        else:
+            unique = True
+
+    return orig_slug
 
 
 class AddCourseView(View):
@@ -267,18 +308,21 @@ class AddCourseView(View):
     def get(self, request):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
+        cursor = connection.cursor()
 
         cursor.execute('select count(*) '
                        'from accounts_instructor '
                        'where student_ptr_id = %s;', [request.user.id])
         is_instructor = cursor.fetchone()[0]
+        cursor.close()
 
         if is_instructor == 0:  # this means that there is no instructor with the requested id
             return HttpResponseRedirect('/')  # TODO: A page to transform student into instructor
 
         form = CreateCourseForm()
 
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form, 'add_message': 'Add a course as an instructor:',
+                                                    'create_button': 'Create a course!'})
 
     def post(self, request):
         form = CreateCourseForm(request.POST, request.FILES)
@@ -292,35 +336,62 @@ class AddCourseView(View):
             description = form.cleaned_data['description']
             private = form.cleaned_data['private']
 
-            # TODO:
-            # TODO: SLUG = CNO YU YAPSAK ÇOK GÜZEL OLUR AMA TABLE'DA CNO KURSU YERLEŞTİRDİKTEN SONRA OLUŞUYOR
-            # TODO: BUNU YAPMANIN BİR YÖNTEMİ ŞÖYLE: COURSES'I SİLİYORUZ, İÇİNDE SLUG'IN REQUIRED OLMADIĞI BİR TABLE
-            #  OLUŞTURUYORUZ, SONRA CNO cursor.execute İLE OLUŞUNCA TEKRAR CNO'YU BU TABLE'DAN ÇEKİP UPDATE KOMUTU İLE
-            #  SLUG'I GÜNCELLİYORUZ
-            orig_slug = slugify(cname)
-
-            # check for the existence of the same slug below so that the slug is unique
-            unique = False
-            uniquifier = 1
-            slug = orig_slug
-            while not unique:
-                cursor.execute('select count(*) from courses_course where slug = %s;', [slug])
-                count = cursor.fetchone()[0]
-                if count != 0:
-                    orig_slug = slug + '-' + str(uniquifier)
-                    uniquifier += 1
-                else:
-                    unique = True
-
+            orig_slug = make_slug_for_url(cname)
+            cursor = connection.cursor()
             cursor.execute('INSERT INTO courses_course '
                            '(cname, price, slug, situation, is_private, course_img, description, owner_id) '
                            'VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
                            [cname, price, orig_slug, 'Pending', private, thumbnail, description, request.user.id])
-            cno = Course.objects.raw('select * from courses_course where slug = %s;', [slug])[0].cno
+            cno = Course.objects.raw('select * from courses_course where slug = %s;', [orig_slug])[0].cno
+            cursor.close()
+            cursor = connection.cursor()
             cursor.execute('INSERT INTO main_course_topic (cno_id, topicname_id) '
                            'VALUES (%s, %s);', [cno, topic])
+            cursor.close()
 
-            return HttpResponse("Course addition successful. The decision on course will be made in approximately a "
-                                "week. Please be patient.")
+            messages.success(request, 'Course submission successful')
+        return HttpResponseRedirect(request.path)
 
-        return HttpResponseRedirect('/')
+
+class AddLectureToCourseView(View):
+    template_name = "courses/add_course.html"
+
+    def get(self, request, course_slug):
+        cursor = connection.cursor()
+        cursor.execute('select cno, cname from courses_course where slug = %s;', [course_slug])
+        cno_row = cursor.fetchone()
+        cursor.close()
+        if not cno_row:  # no course with this course slug (i.e. URL)
+            return HttpResponseRedirect('/')  # return to main page
+        cno = cno_row[0]
+        cname = cno_row[1]
+        message = 'Add a lecture to ' + cname
+
+        form = CreateLectureForm()
+
+        return render(request, self.template_name, {'form': form, 'add_message': message,
+                                                    'create_button': 'Create a lecture!'})
+
+    def post(self, request, course_slug):
+        cursor = connection.cursor()
+        cursor.execute('select cno from courses_course where slug = %s;', [course_slug])
+        cno_row = cursor.fetchone()
+        cursor.close()
+        if not cno_row:  # no course with this course slug (i.e. URL)
+            return HttpResponseRedirect('/')  # return to main page
+        cno = cno_row[0]
+
+        form = CreateLectureForm(request.POST)
+
+        if form.is_valid():
+            lecture_name = form.cleaned_data['lecture_name']
+            lecture_url = form.cleaned_data['lecture_url']
+
+            lecture_slug = make_slug_for_url(lecture_name, for_course=False)
+
+            cursor = connection.cursor()
+            cursor.execute('INSERT INTO courses_lecture (lecture_name, lecture_slug, video_url, cno_id) VALUES '
+                           '(%s, %s, %s, %s);', [lecture_name, lecture_slug, lecture_url, cno])
+            messages.success(request, 'Lecture submission successful')
+
+        return HttpResponseRedirect(request.path)

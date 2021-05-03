@@ -8,6 +8,7 @@ app_name = 'courses'
 urlpatterns = [
     path('list', MainView.as_view(), name='list'),  # we can delete this one
     path('add', AddCourseView.as_view(), name='add_course'),
+    path('add/<course_slug>', AddLectureToCourseView.as_view(), name='add_lecture'),
     path('my_courses', MyCoursesView.as_view(), name='my_courses'),
     path('my_courses/add/<course_slug>', add_to_my_courses, name='user_mycourses'),
     path('<course_slug>/complain', AddComplainView.as_view(), name='complaint'),
