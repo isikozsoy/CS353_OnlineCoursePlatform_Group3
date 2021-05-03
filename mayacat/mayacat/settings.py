@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'main',
     "accounts",
     "courses",
-    "search"
+    "search",
+    "adminpanel",
 ]
 
 MIDDLEWARE = [

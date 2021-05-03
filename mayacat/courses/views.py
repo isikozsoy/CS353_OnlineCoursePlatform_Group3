@@ -297,16 +297,17 @@ class AddCourseView(View):
             # TODO: BUNU YAPMANIN BİR YÖNTEMİ ŞÖYLE: COURSES'I SİLİYORUZ, İÇİNDE SLUG'IN REQUIRED OLMADIĞI BİR TABLE
             #  OLUŞTURUYORUZ, SONRA CNO cursor.execute İLE OLUŞUNCA TEKRAR CNO'YU BU TABLE'DAN ÇEKİP UPDATE KOMUTU İLE
             #  SLUG'I GÜNCELLİYORUZ
-            slug = slugify(cname)
+            orig_slug = slugify(cname)
 
             # check for the existence of the same slug below so that the slug is unique
             unique = False
             uniquifier = 1
+            slug = orig_slug
             while not unique:
                 cursor.execute('select count(*) from courses_course where slug = %s;', [slug])
                 count = cursor.fetchone()[0]
                 if count != 0:
-                    slug = slug + '-' + str(uniquifier)
+                    orig_slug = slug + '-' + str(uniquifier)
                     uniquifier += 1
                 else:
                     unique = True
@@ -314,12 +315,44 @@ class AddCourseView(View):
             cursor.execute('INSERT INTO courses_course '
                            '(cname, price, slug, situation, is_private, course_img, description, owner_id) '
                            'VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-                           [cname, price, slug, 'Pending', private, thumbnail, description, request.user.id])
+                           [cname, price, orig_slug, 'Pending', private, thumbnail, description, request.user.id])
             cno = Course.objects.raw('select * from courses_course where slug = %s;', [slug])[0].cno
             cursor.execute('INSERT INTO main_course_topic (cno_id, topicname_id) '
                            'VALUES (%s, %s);', [cno, topic])
 
             return HttpResponse("Course addition successful. The decision on course will be made in approximately a "
                                 "week. Please be patient.")
-        print(form.errors)
+
+        return HttpResponseRedirect('/')
+
+
+class RateView(View):
+    template_name = "courses/evaluate.html"
+
+    def get(self, request, course_slug):
+        if request.user.is_authenticated:
+            # check if the user is a student
+            cursor.execute('select * from accounts_student where defaultuser_ptr_id = %s;', [request.user.id])
+            student_check_row = cursor.fetchone()
+            if not student_check_row:  # if a student like this does not exist, return to main page
+                return HttpResponseRedirect('/')
+
+            # check for a course with the parameter course_slug
+            cursor.execute('select cno from courses_course where slug = %s;', [course_slug])
+            cno_row = cursor.fetchone()
+
+            if not cno_row:  # if a course like this does not exist, return to main page
+                return HttpResponseRedirect('/')
+
+            cno = cno_row[0] # course exists
+
+            # check if the user is enrolled
+            cursor.execute('select * from main_enroll where cno_id = %s and user_id = %s;', [cno, request.user.id])
+            enroll_row = cursor.fetchone()
+
+            if not enroll_row:  # return to main page if not enrolled in the course
+                return HttpResponseRedirect('/')
+
+            return render(request, self.template_name) # now the user can evaluate the course
+
         return HttpResponseRedirect('/')

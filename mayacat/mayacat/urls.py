@@ -24,8 +24,9 @@ admin.site.site_title = "MayaCat Admin Portal"
 admin.site.index_title = "MayaCat"
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),  # this will be deleted at some point
     path('', include('accounts.urls', namespace='accounts')),
+    #path('', include('adminpanel.urls', namespace='adminpanel')),
     path('', include('main.urls', namespace='main')),
     path('', include(('search.urls', 'search'), namespace='search')),
     path('', include('courses.urls', namespace='courses')),

@@ -1,4 +1,4 @@
-from django.db import connections
+from django.db import connection
 from django.shortcuts import render, redirect
 from django.views.generic.base import View, HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
@@ -6,8 +6,6 @@ from django.contrib.auth import login, logout
 
 from .forms import *
 from .models import DefaultUser, Student, Instructor, SiteAdmin, Advertiser
-
-cursor = connections['default'].cursor()
 
 
 class LogoutView(View):
@@ -72,6 +70,7 @@ class RegisterView(View):
 
     def post(self, request):
         form = Register(request.POST)
+        cursor = connection.cursor()
         if form.is_valid():
             # Get the form values for the new user
             username = form.cleaned_data['username']
@@ -99,28 +98,39 @@ class RegisterView(View):
                 cursor.execute(
                     "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
                     [new_user.id, password, 2])
+                cursor.close()
+                cursor = connection.cursor()
                 cursor.execute(
-                    "insert into accounts_advertiser(defaultuser_ptr_id, name, company_name) values ( %s, %s, %s)",
-                    [new_user.id, name, company_name])
+                    "insert into accounts_advertiser(defaultuser_ptr_id, name, company_name, phone) "
+                    "values ( %s, %s, %s, %s)",
+                    [new_user.id, name, company_name, phone])
             elif "instructor" in request.path:
                 description = form.cleaned_data['description']
 
                 cursor.execute(
                     "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
                     [new_user.id, password, 1])
+                cursor.close()
+                cursor = connection.cursor()
                 cursor.execute(
-                    "insert into accounts_student(defaultuser_ptr_id, phone, description) values ( %s, %s, %s)",
-                    [new_user.id, phone, description])
+                    "insert into accounts_student(defaultuser_ptr_id, phone) values ( %s, %s)",
+                    [new_user.id, phone])
+                cursor.close()
+                cursor = connection.cursor()
                 cursor.execute(
-                    "insert into accounts_instructor(student_ptr_id) values ( %s)",
-                    new_user.id)
+                    "insert into accounts_instructor(student_ptr_id, description) values ( %s, %s, %s)",
+                    [new_user.id, description])
             else:
                 cursor.execute(
                     "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
                     [new_user.id, password, 0])
+                cursor.close()
+                cursor = connection.cursor()
                 cursor.execute(
                     "insert into accounts_student(defaultuser_ptr_id, phone, description) values ( %s, %s, %s)",
                     [new_user.id, phone, ""])
+
+            cursor.close()
 
             new_user.save()
             return HttpResponseRedirect('/login')  # /login
@@ -129,58 +139,121 @@ class RegisterView(View):
         return HttpResponse('This is Register view.')
 
 
-class AccountChangeView(View):
+class UserView(View):
     template_name = "account.html"
+
+    def get(self, request, username):
+        cursor = connection.cursor()
+        cursor.execute('select id from auth_user where username = %s;', [username])
+        user_id_row = cursor.fetchone()
+        cursor.close()
+        if not user_id_row:  # this means that the user with the username does not exist
+            return HttpResponseRedirect('/')  # redirect to the main page
+
+        user_id = user_id_row[0]
+
+        # now we need to get the user type
+        cursor = connection.cursor()
 
 
 class AccountView(View):
     template_name = "account.html"
-    model = DefaultUser
-    std = None
-    type = 0
 
     def get(self, request):
+        cursor = connection.cursor()
         if request.user.is_authenticated:
-            user = request.user
-            def_user = DefaultUser.objects.raw("select * "
-                                               "from accounts_defaultuser as d "
-                                               "where d.user_ptr_id = %s;", [user.id])[0]
-            self.std = Student.objects.raw("select * "
-                                           "from accounts_student "
-                                           "where defaultuser_ptr_id = %s;", [user.id])[0]
+            user_id = request.user.id
+            # find the type of the user
+            cursor.execute('select type '
+                           'from auth_user '
+                           'inner join accounts_defaultuser on id = user_ptr_id '
+                           'where id = %s;', [user_id])
+            user_type = cursor.fetchone()[0]
+            cursor.close()
 
-            form = EditForm(instance=self.std)
-            self.type = def_user.type
+            form = None
+
+            if user_type == 0: # it is a Student account
+                user = Student.objects.raw('select * from accounts_student where defaultuser_ptr_id = %s;',
+                                           [user_id])[0]
+                form = StudentEditForm(instance=user)
+            elif user_type == 1: # it is an Instructor account
+                user = Instructor.objects.raw('select * from accounts_instructor where student_ptr_id = %s;',
+                                              [user_id])[0]
+                form = InstructorEditForm(instance=user)
+            elif user_type == 2: # advertiser account
+                user = Advertiser.objects.raw('select * from accounts_advertiser where defaultuser_ptr_id = %s;',
+                                              [user_id])[0]
+                form = AdvertiserEditForm(instance=user)
 
             return render(request, self.template_name, {'user': user,
-                                                        'type': def_user.type,
+                                                        'type': user_type,
                                                         'form': form})
-        else:
-            HttpResponseRedirect('/')  # redirects to main page
+        return HttpResponseRedirect('/')  # redirects to main page if user did not login yet
 
     def post(self, request):
-        form = EditForm(request.POST, instance=self.std)
+        cursor = connection.cursor()
+        user_id = request.user.id
+        # find the type of the user
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser on id = user_ptr_id '
+                       'where id = %s;', [user_id])
+        user_type = cursor.fetchone()[0]
+        cursor.close()
+        cursor = connection.cursor()
 
-        self.std = Student.objects.raw("select * "
-                                       "from accounts_student "
-                                       "where defaultuser_ptr_id = %s;", [request.user.id])[0]
-        self.type = self.std.type
+        form = None
 
-        if form.is_valid():
+        if user_type == 0:  # it is a Student account
+            user = Student.objects.raw('select * from accounts_student where defaultuser_ptr_id = %s;',
+                                       [user_id])[0]
+            form = StudentEditForm(request.POST, instance=user)
+        elif user_type == 1:  # it is an Instructor account
+            user = Instructor.objects.raw('select * from accounts_instructor where student_ptr_id = %s;',
+                                          [user_id])[0]
+            form = InstructorEditForm(request.POST, instance=user)
+        elif user_type == 2:  # advertiser account
+            user = Advertiser.objects.raw('select * from accounts_advertiser where defaultuser_ptr_id = %s;',
+                                          [user_id])[0]
+            form = AdvertiserEditForm(request.POST, instance=user)
+
+        if form and form.is_valid():
             email = form.cleaned_data['email']
-            phone = form.cleaned_data['phone']
+            phone = form.cleaned_data['phone'] # every user has a phone field
 
-            description = form.cleaned_data['description']
-
-            # update the existing fields accordingly
-            cursor.execute('update accounts_student '
-                           'set phone = %s, description = %s '
-                           'where defaultuser_ptr_id = %s;',
-                           [phone, description, self.std.defaultuser_ptr_id])
+            # update inside auth_user
             cursor.execute('update auth_user '
                            'set email = %s '
                            'where id = %s;',
-                           [email, self.std.defaultuser_ptr_id])
+                           [email, user_id])
+            cursor.close()
+            cursor = connection.cursor()
+
+            if user_type == 0:  # student
+                cursor.execute('update accounts_student '
+                               'set phone = %s '
+                               'where defaultuser_ptr_id = %s;',
+                               [phone, user_id])
+            elif user_type == 1:
+                description = form.cleaned_data['description']
+                cursor.execute('update accounts_instructor '
+                               'set phone = %s, description = %s '
+                               'where student_ptr_id = %s;',
+                               [phone, description, user_id])
+            elif user_type == 2:  # advertiser
+                name = form.cleaned_data['name']
+                company_name = form.cleaned_data['company_name']
+                cursor.execute('update accounts_advertiser '
+                               'set phone = %s, name = %s, company_name = %s '
+                               'where defaultuser_ptr_id = %s;',
+                               [phone, name, company_name, user_id])
 
         print(form.errors)
+        cursor.close()
         return HttpResponseRedirect('/account')
+
+
+class AdminView(View):
+    def get(self, request):
+        return HttpResponseRedirect('/')

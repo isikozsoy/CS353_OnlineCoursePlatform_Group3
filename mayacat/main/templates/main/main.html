@@ -1,6 +1,10 @@
 {% extends "main/base.html" %}
 
 {% block main_content %}
+    {% if user_type == 1 %} <!-- the user is an instructor -->
+        <a href="/add" class="btn btn-primary">Request to add a course!</a><br>
+    {% endif %}
+
     <h1>Courses List</h1>
 
     {% for object in object_list %}

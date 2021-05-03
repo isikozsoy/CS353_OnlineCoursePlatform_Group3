@@ -1,5 +1,7 @@
 {% extends "main/base.html" %}
 
+<!-- This template is to be used only for viewing accounts and not changing them
+
 {% block main_content %}
     <form>
     {% csrf_token %}
@@ -8,7 +10,7 @@
         Phone: {{ form.phone }}<br>
 
         Type:
-        {% if type == 0 %} <!-- student -->
+        {% if type == 0 %}
             Student<br>
         {% elif type == 1 %} <!-- instructor -->
             Instructor<br>
@@ -17,6 +19,5 @@
             Company name: {{ form.company_name }} <br>
             Name & Surname: {{ form.name }} <br>
         {% endif %}
-    <button type="submit" formmethod="post">Save</button><br>
     </form>
 {% endblock %}

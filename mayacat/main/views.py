@@ -1,11 +1,12 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
-import uuid
 
 from django.views.generic import ListView, DetailView, View
 from .models import *
 from accounts.models import *
+
+cursor = connection.cursor()
 
 
 class WishlistView(ListView):
@@ -29,7 +30,6 @@ def add_to_wishlist(request, course_slug):
     else:
         return
 
-    # WILL BE CHANGED TO CURRENT USER
     user_id = request.user.id
     cursor = connection.cursor()
 
@@ -47,14 +47,26 @@ def add_to_wishlist(request, course_slug):
 
 class MainView(View):
     def get(self, request):
-        # THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
+        # TODO: THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
+        #  also the courses that are not private will be listed here
         courses = Course.objects.raw('select * '
                                      'from courses_course;')
 
         topics = Topic.objects.raw('select * from main_topic order by topicname;')
 
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
         return render(request, 'main/main.html', {'object_list': courses,
-                                                  'topic_list': topics})
+                                                  'topic_list': topics,
+                                                  'user_type': user_type})
 
 
 def course_detail(request, course_id):
