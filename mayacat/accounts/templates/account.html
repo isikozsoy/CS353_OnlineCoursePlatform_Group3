@@ -14,9 +14,12 @@
             Instructor<br>
             Your Instructor Description: {{ form.description }}<br>
         {% elif type == 2 %} <!-- advertiser -->
+            Advertiser<br>
             Company name: {{ form.company_name }} <br>
             Name & Surname: {{ form.name }} <br>
         {% endif %}
-    <button type="submit" formmethod="post">Save</button><br>
+    {% if not readonly %}
+        <button type="submit" formmethod="post">Save</button><br>
+    {% endif %}
     </form>
 {% endblock %}

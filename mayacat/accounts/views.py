@@ -147,13 +147,44 @@ class UserView(View):
         cursor.execute('select id from auth_user where username = %s;', [username])
         user_id_row = cursor.fetchone()
         cursor.close()
+
         if not user_id_row:  # this means that the user with the username does not exist
             return HttpResponseRedirect('/')  # redirect to the main page
 
         user_id = user_id_row[0]
 
+        if request.user.is_authenticated and request.user.id == user_id:
+            return HttpResponseRedirect('/account')
+
         # now we need to get the user type
         cursor = connection.cursor()
+
+        # find the type of the user
+        cursor.execute('select type '
+                       'from accounts_defaultuser '
+                       'where user_ptr_id = %s;', [user_id])
+        user_type = cursor.fetchone()[0]
+        cursor.close()
+
+        form = None
+
+        if user_type == 0:  # it is a Student account
+            user = Student.objects.raw('select * from accounts_student where defaultuser_ptr_id = %s;',
+                                       [user_id])[0]
+            form = StudentEditForm(instance=user, readonly=True)
+        elif user_type == 1:  # it is an Instructor account
+            user = Instructor.objects.raw('select * from accounts_instructor where student_ptr_id = %s;',
+                                          [user_id])[0]
+            form = InstructorEditForm(instance=user, readonly=True)
+        elif user_type == 2:  # advertiser account
+            user = Advertiser.objects.raw('select * from accounts_advertiser where defaultuser_ptr_id = %s;',
+                                          [user_id])[0]
+            form = AdvertiserEditForm(instance=user, readonly=True)
+
+        return render(request, self.template_name, {'user': user,
+                                                    'type': user_type,
+                                                    'form': form,
+                                                    'readonly': True})
 
 
 class AccountView(View):
@@ -173,22 +204,23 @@ class AccountView(View):
 
             form = None
 
-            if user_type == 0: # it is a Student account
+            if user_type == 0:  # it is a Student account
                 user = Student.objects.raw('select * from accounts_student where defaultuser_ptr_id = %s;',
                                            [user_id])[0]
                 form = StudentEditForm(instance=user)
-            elif user_type == 1: # it is an Instructor account
+            elif user_type == 1:  # it is an Instructor account
                 user = Instructor.objects.raw('select * from accounts_instructor where student_ptr_id = %s;',
                                               [user_id])[0]
                 form = InstructorEditForm(instance=user)
-            elif user_type == 2: # advertiser account
+            elif user_type == 2:  # advertiser account
                 user = Advertiser.objects.raw('select * from accounts_advertiser where defaultuser_ptr_id = %s;',
                                               [user_id])[0]
                 form = AdvertiserEditForm(instance=user)
 
             return render(request, self.template_name, {'user': user,
                                                         'type': user_type,
-                                                        'form': form})
+                                                        'form': form,
+                                                        'readonly': False})
         return HttpResponseRedirect('/')  # redirects to main page if user did not login yet
 
     def post(self, request):
@@ -220,7 +252,7 @@ class AccountView(View):
 
         if form and form.is_valid():
             email = form.cleaned_data['email']
-            phone = form.cleaned_data['phone'] # every user has a phone field
+            phone = form.cleaned_data['phone']  # every user has a phone field
 
             # update inside auth_user
             cursor.execute('update auth_user '

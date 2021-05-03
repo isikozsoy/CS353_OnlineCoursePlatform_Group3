@@ -8,6 +8,13 @@ class StudentEditForm(forms.ModelForm):
     phone = forms.CharField(label='Phone', max_length=50,
                             widget=forms.TextInput(attrs={'class': 'form-control'}))
 
+    def __init__(self, readonly=False, *args, **kwargs):
+        super(StudentEditForm, self).__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        if instance and instance.pk:
+            self.fields['email'].widget.attrs['readonly'] = readonly
+            self.fields['phone'].widget.attrs['readonly'] = readonly
+
     class Meta:
         model = Student
         fields = ('email', 'phone')
@@ -21,6 +28,14 @@ class InstructorEditForm(forms.ModelForm):
     description = forms.CharField(label='Description', max_length=50, required=False,
                                   widget=forms.TextInput(attrs={'class': 'form-control',
                                                                 'placeholder': 'A description'}))
+
+    def __init__(self, readonly=False, *args, **kwargs):
+        super(InstructorEditForm, self).__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        if instance and instance.pk:
+            self.fields['email'].widget.attrs['readonly'] = readonly
+            self.fields['phone'].widget.attrs['readonly'] = readonly
+            self.fields['description'].widget.attrs['readonly'] = readonly
 
     class Meta:
         model = Instructor
@@ -43,7 +58,10 @@ class AdvertiserEditForm(forms.ModelForm):
         super(AdvertiserEditForm, self).__init__(*args, **kwargs)
         instance = getattr(self, 'instance', None)
         if instance and instance.pk:
-            self.fields.widget.attrs['readonly'] = readonly
+            self.fields['email'].widget.attrs['readonly'] = readonly
+            self.fields['phone'].widget.attrs['readonly'] = readonly
+            self.fields['name'].widget.attrs['readonly'] = readonly
+            self.fields['company_name'].widget.attrs['readonly'] = readonly
 
     class Meta:
         model = Advertiser
