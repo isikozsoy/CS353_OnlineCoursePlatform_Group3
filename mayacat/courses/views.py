@@ -324,35 +324,3 @@ class AddCourseView(View):
                                 "week. Please be patient.")
 
         return HttpResponseRedirect('/')
-
-
-class RateView(View):
-    template_name = "courses/evaluate.html"
-
-    def get(self, request, course_slug):
-        if request.user.is_authenticated:
-            # check if the user is a student
-            cursor.execute('select * from accounts_student where defaultuser_ptr_id = %s;', [request.user.id])
-            student_check_row = cursor.fetchone()
-            if not student_check_row:  # if a student like this does not exist, return to main page
-                return HttpResponseRedirect('/')
-
-            # check for a course with the parameter course_slug
-            cursor.execute('select cno from courses_course where slug = %s;', [course_slug])
-            cno_row = cursor.fetchone()
-
-            if not cno_row:  # if a course like this does not exist, return to main page
-                return HttpResponseRedirect('/')
-
-            cno = cno_row[0] # course exists
-
-            # check if the user is enrolled
-            cursor.execute('select * from main_enroll where cno_id = %s and user_id = %s;', [cno, request.user.id])
-            enroll_row = cursor.fetchone()
-
-            if not enroll_row:  # return to main page if not enrolled in the course
-                return HttpResponseRedirect('/')
-
-            return render(request, self.template_name) # now the user can evaluate the course
-
-        return HttpResponseRedirect('/')
