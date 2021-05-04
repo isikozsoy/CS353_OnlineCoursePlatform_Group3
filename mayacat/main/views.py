@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
+import uuid
 
 from django.views.generic import ListView, DetailView, View
 from .models import *
@@ -23,13 +24,10 @@ class WishlistView(ListView):
 
 
 def add_to_wishlist(request, course_slug):
-    course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
-    if len(list(course_queue)) != 0:
-        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1', [course_slug])[0]
-        cno = course.cno
-    else:
-        return
+    course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1', [course_slug])[0]
+    cno = course.cno
 
+    # WILL BE CHANGED TO CURRENT USER
     user_id = request.user.id
     cursor = connection.cursor()
 
@@ -49,10 +47,19 @@ class MainView(View):
     def get(self, request):
         # TODO: THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
         #  also the courses that are not private will be listed here
+        cursor = connection.cursor()
+
+        # THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
         courses = Course.objects.raw('select * '
                                      'from courses_course;')
 
         topics = Topic.objects.raw('select * from main_topic order by topicname;')
+        if request.user.is_authenticated:
+            user_id = request.user.id
+            gift_not = cursor.execute('SELECT * FROM main_gift WHERE receiver_id = %s ORDER BY date DESC LIMIT 5',
+                                         [user_id])
+            announcement_not = cursor.execute('SELECT * FROM main_announcement A, main_enroll E WHERE E.user_id = %s'\
+                                                ' AND A.cno_id = E.cno_id ORDER BY A.ann_date DESC LIMIT 5', [user_id])
 
         cursor.execute('select type '
                        'from auth_user '

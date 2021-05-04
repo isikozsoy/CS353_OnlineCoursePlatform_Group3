@@ -14,7 +14,11 @@
                 role="button">Buy The Course</button><br>
     </form>
 
-    <a href="/wishlist/add_to_wishlist/{{slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
+    {% if is_wish == 0 %}
+        <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
+    {% else %}
+        <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Wishlist</a>
+    {% endif %}
     <ol>
       {% for lecture in lecture_list %}
       <li><a href="/{{slug}}/{{lecture.lecture_slug}}">{{ lecture.lecture_name }}</a></li>

@@ -76,19 +76,17 @@ class CourseDetailView(View):
     def get(self, request, course_slug):
         form = GiftInfo()
 
-        course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
-        if len(list(course_queue)) != 0:
-            course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1', [course_slug])[
-                0]
-            cno = course.cno
-        else:
-            return
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
+        cno = course.cno
 
         lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
+
+        is_wish = len(list(Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s;', [cno, request.user.id])))
         context = {
             'lecture_list': lecture_list,
             'form': form,
-            'object': course
+            'object': course,
+            'is_wish': is_wish
         }
         return render(request, 'course_detail.html', context)
 
