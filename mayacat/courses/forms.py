@@ -43,3 +43,10 @@ class CreateLectureForm(forms.Form):
     lecture_name = forms.CharField(label='Lecture Name', max_length=50,
                                    widget=forms.TextInput(attrs={'class': 'form-control',
                                                                  'placeholder': 'A Lecture Name'}))
+
+
+class CreateAssignmentAndLectureMaterialForm(forms.Form):
+    pdf_url_assignment = forms.CharField(label='PDF Link from Google Drive', max_length=100,
+                                         widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+    pdf_url_lecmat = forms.CharField(label='PDF Link from Google Drive', max_length=100,
+                                     widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)

@@ -14,5 +14,5 @@ urlpatterns = [
     path('<course_slug>/complain', AddComplainView.as_view(), name='complaint'),
     path('<course_slug>/refund', RefundRequestView.as_view(), name='refund'),
     path('<course_slug>', CourseDetailView.as_view(), name='desc'),
-    path('<course_slug>/<lecture_slug>', LectureView.as_view(), name='lecture-detail'),
+    path('<course_slug>/<lecture_slug>', LectureView.as_view(), name='lecture_detail'),
 ]

@@ -9,6 +9,10 @@
 
   <iframe width="320" height="240" src={{curlecture.video_url}} allowfullscreen></iframe>
 
+      {% if course.owner_id == request.user.id %}
+          {% include "courses/lecture_assignment_material_addition.html" %}
+      {% endif %}
+
   <h2>{{ course.cname }}</h2>
   {% for lecture,prog in lecandprog %}
   <a href="{{ lecture.get_url }}">{{ lecture }}</a>
