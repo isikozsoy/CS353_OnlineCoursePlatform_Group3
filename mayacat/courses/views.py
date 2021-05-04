@@ -26,9 +26,23 @@ class MyCoursesView(ListView):
             my_courses_q = Enroll.objects.raw('''SELECT *
                                                 FROM main_enroll
                                                 WHERE user_id = %s''', [user_id])
+
+            cursor = connection.cursor()
+            cursor.execute('select type '
+                           'from auth_user '
+                           'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                           'where id = %s;', [user_id])
+
+            row = cursor.fetchone()
+            user_type = -1
+            if row:
+                user_type = row[0]
+
             context = {
-                'my_courses_q': my_courses_q
+                'my_courses_q': my_courses_q,
+                'user_type': user_type
             }
+
             return render(request, 'main/my_courses.html', context)
         return HttpResponseRedirect('/')
 
@@ -81,12 +95,26 @@ class CourseDetailView(View):
 
         lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
 
-        is_wish = len(list(Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s;', [cno, request.user.id])))
+        is_wish = len(list(Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
+                                              [cno, request.user.id])))
+
+        cursor = connection.cursor()
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
         context = {
             'lecture_list': lecture_list,
             'form': form,
             'object': course,
-            'is_wish': is_wish
+            'is_wish': is_wish,
+            'user_type': user_type
         }
         return render(request, 'course_detail.html', context)
 
@@ -241,6 +269,17 @@ class LectureView(View):
 
         form_lecmat_assignment = CreateAssignmentAndLectureMaterialForm()
 
+        cursor = connection.cursor()
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
         context = {
             'curlecture': lecture,
             'course': course,
@@ -254,6 +293,7 @@ class LectureView(View):
             'qanda': qanda,
             'lecandprog': lecandprog,
             'form_lecmat_assignment': form_lecmat_assignment,
+            'user_type': user_type,
             # 'contributors' : contributors
         }
         cursor.close()
@@ -317,7 +357,19 @@ class AddComplainView(View):
         form = ComplainForm()
         self.course_slug = course_slug
         if request.user.is_authenticated:  # we need to check enrollments as well
-            return render(request, self.template_name, {'form': form})
+            cursor = connection.cursor()
+            cursor.execute('select type '
+                           'from auth_user '
+                           'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                           'where id = %s;', [request.user.id])
+
+            row = cursor.fetchone()
+            user_type = -1
+            if row:
+                user_type = row[0]
+
+            return render(request, self.template_name, {'form': form,
+                                                        'user_type': user_type})
         return HttpResponseRedirect('/')
 
     def post(self, request, course_slug):
@@ -353,7 +405,19 @@ class RefundRequestView(View):
         form = ComplainForm()
         self.course_slug = course_slug
         if request.user.is_authenticated:  # we need to check enrollments as well
-            return render(request, self.template_name, {'form': form})
+            cursor = connection.cursor()
+            cursor.execute('select type '
+                           'from auth_user '
+                           'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                           'where id = %s;', [request.user.id])
+
+            row = cursor.fetchone()
+            user_type = -1
+            if row:
+                user_type = row[0]
+
+            return render(request, self.template_name, {'form': form,
+                                                        'user_type': user_type})
         return HttpResponseRedirect('/')
 
     def post(self, request, course_slug):
@@ -425,7 +489,20 @@ class AddCourseView(View):
 
         form = CreateCourseForm()
 
-        return render(request, self.template_name, {'form': form, 'add_message': 'Add a course as an instructor:',
+        cursor = connection.cursor()
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
+        return render(request, self.template_name, {'user_type': user_type,
+                                                    'form': form,
+                                                    'add_message': 'Add a course as an instructor:',
                                                     'create_button': 'Create a course!'})
 
     def post(self, request):
@@ -478,7 +555,18 @@ class AddLectureToCourseView(View):
 
         form = CreateLectureForm()
 
-        return render(request, self.template_name, {'form': form, 'add_message': message,
+        cursor = connection.cursor()
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
+        return render(request, self.template_name, {'user_type': user_type, 'form': form, 'add_message': message,
                                                     'create_button': 'Create a lecture!'})
 
     def post(self, request, course_slug):
@@ -504,3 +592,21 @@ class AddLectureToCourseView(View):
             messages.success(request, 'Lecture submission successful')
 
         return HttpResponseRedirect(request.path)
+
+
+class OfferAdView(View):
+    def get(self, request, course_slug):
+        template_name = "courses/offer_add.html"
+
+        cursor = connection.cursor()
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+        context = {'user_type': user_type}
+        return render(request, self.template_name, context)

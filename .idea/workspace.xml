@@ -4,11 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="Lecture detailed view was fixed.">
+    <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="Merged with master.">
+      <change afterPath="$PROJECT_DIR$/mayacat/courses/templates/offer_ad.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mayacat/main/templates/main/offers.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/templates/account.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/templates/account.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/templates/unchangeable_account.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/templates/unchangeable_account.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/accounts/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/courses/templates/course_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/templates/course_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/courses/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/courses/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/templates/main/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/templates/main/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/templates/main/main.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/templates/main/main.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/views.py" afterDir="false" />
     </list>
@@ -21,8 +28,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
-        <option value="HTML File" />
         <option value="CSS File" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -129,7 +136,8 @@
       <workItem from="1619961028224" duration="16400000" />
       <workItem from="1620055069301" duration="271000" />
       <workItem from="1620111066184" duration="3991000" />
-      <workItem from="1620118889012" duration="3912000" />
+      <workItem from="1620118889012" duration="7286000" />
+      <workItem from="1620128366403" duration="9210000" />
     </task>
     <task id="LOCAL-00001" summary="Added default values to UUIDs &amp; deleted 2 unnecessary html template files">
       <created>1619438627395</created>
@@ -257,7 +265,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619912803647</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Merged with master.">
+      <created>1620122825446</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1620122825446</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -292,6 +307,7 @@
     <MESSAGE value="workspace.xml is changed" />
     <MESSAGE value="Wishlist was fixed." />
     <MESSAGE value="Lecture detailed view was fixed." />
-    <option name="LAST_COMMIT_MESSAGE" value="Lecture detailed view was fixed." />
+    <MESSAGE value="Merged with master." />
+    <option name="LAST_COMMIT_MESSAGE" value="Merged with master." />
   </component>
 </project>

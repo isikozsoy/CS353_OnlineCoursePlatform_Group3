@@ -5,19 +5,31 @@
     <h3>{{ object.description }}</h3>
 
     <!-- aşağıda action=my_courses/add/{ { object.slug }} demek istemiş olabilirsin belki belki -->
-    <form action="courses:my_courses" method="post">
-        {% csrf_token %}
-        {{ form.errors }}
-        {{ form.as_table }}
-        <button type="submit"
-                class="btn btn-primary"
-                role="button">Buy The Course</button><br>
-    </form>
-
-    {% if is_wish == 0 %}
-        <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
+    {% if user_type == 2 %}
+        <a href="/offer_ad" class="btn btn-primary">Offer Ad</a><br>
     {% else %}
-        <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Wishlist</a>
+        <form action="courses:my_courses" method="post">
+            {% csrf_token %}
+            {{ form.errors }}
+            {{ form.as_table }}
+            <button type="submit"
+                    class="btn btn-primary"
+                    role="button">Buy The Course</button><br>
+        </form>
+    {% endif %}
+
+    {% if user_type == 2 %}
+        {% if is_wish == 0 %}
+            <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Favorites</a>
+        {% else %}
+            <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Favorites</a>
+        {% endif %}
+    {% else %}
+        {% if is_wish == 0 %}
+            <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
+        {% else %}
+            <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Wishlist</a>
+        {% endif %}
     {% endif %}
     <ol>
       {% for lecture in lecture_list %}

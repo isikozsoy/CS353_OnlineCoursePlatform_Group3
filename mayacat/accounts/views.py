@@ -57,8 +57,21 @@ class RegisterView(View):
             print(request.user)
             return HttpResponseRedirect('/')
         form = Register()
+
+        cursor = connection.cursor()
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
         return render(request, self.template_name, {'form': form,
-                                                    'path': request.path})
+                                                    'path': request.path,
+                                                    'user_type': user_type})
 
     def exists(self, username):
         query = 'select * from auth_user where username = "' + username + '";'
@@ -182,7 +195,7 @@ class UserView(View):
             form = AdvertiserEditForm(instance=user, readonly=True)
 
         return render(request, self.template_name, {'user': user,
-                                                    'type': user_type,
+                                                    'user_type': user_type,
                                                     'form': form,
                                                     'readonly': True})
 
@@ -218,7 +231,7 @@ class AccountView(View):
                 form = AdvertiserEditForm(instance=user)
 
             return render(request, self.template_name, {'user': user,
-                                                        'type': user_type,
+                                                        'user_type': user_type,
                                                         'form': form,
                                                         'readonly': False})
         return HttpResponseRedirect('/')  # redirects to main page if user did not login yet

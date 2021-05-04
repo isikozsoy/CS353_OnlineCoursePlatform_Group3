@@ -15,4 +15,5 @@ urlpatterns = [
     path('<course_slug>/refund', RefundRequestView.as_view(), name='refund'),
     path('<course_slug>', CourseDetailView.as_view(), name='desc'),
     path('<course_slug>/<lecture_slug>', LectureView.as_view(), name='lecture_detail'),
+    path('offer_ad/<course_slug>', OfferAdView.as_view(), name='offer_ad')
 ]

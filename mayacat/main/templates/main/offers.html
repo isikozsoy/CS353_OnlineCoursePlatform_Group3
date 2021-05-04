@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+
+{% block main_navigators %}
+  <a href="/wishlist" class="btn btn-primary">Favorites</a>
+  <a href="/offers" class="btn btn-primary">Offers</a>
+{% endblock %}
+
+{% block main_content %}
+    <h1>Welcome Your Offers</h1>
+    <h2>Offerings</h2>
+    {% for offer in offers_q %}
+        <p>{{ offer.cno }}</p>
+    {% endfor %}
+{% endblock %}

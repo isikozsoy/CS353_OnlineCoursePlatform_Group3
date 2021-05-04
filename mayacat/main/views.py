@@ -17,10 +17,48 @@ class WishlistView(ListView):
         wishlist_q = Wishes.objects.raw('''SELECT *
                                             FROM main_wishes
                                             WHERE user_id = %s''', [user_id])
+
+        cursor = connection.cursor()
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
         context = {
-            'wishlist_q': wishlist_q
+            'wishlist_q': wishlist_q,
+            'user_type': user_type
         }
         return render(request, 'main/wishlist.html', context)
+
+class OffersView(ListView):
+    def get(self, request):
+        # WILL BE CHANGED TO CURRENT USER
+        user_id = request.user.id
+        offers_q = Advertisement.objects.raw('''SELECT *
+                                            FROM main_advertisement
+                                            WHERE ad_username_id = %s''', [user_id])
+
+        cursor = connection.cursor()
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
+        context = {
+            'offers_q': offers_q,
+            'user_type': user_type
+        }
+        return render(request, 'main/offers.html', context)
 
 
 def add_to_wishlist(request, course_slug):
@@ -89,7 +127,18 @@ def course_detail(request, course_id):
 
     comments = Finishes.objects.raw('SELECT comment FROM X WHERE cno = %s', [course_id])
 
-    return render(request, 'main/course_detail.html', {'course': course, 'registered': registered,
+    cursor = connection.cursor()
+    cursor.execute('select type '
+                   'from auth_user '
+                   'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                   'where id = %s;', [request.user.id])
+
+    row = cursor.fetchone()
+    user_type = -1
+    if row:
+        user_type = row[0]
+
+    return render(request, 'main/course_detail.html', {'user_type': user_type, 'course': course, 'registered': registered,
                                                        'lecture_count': lecture_count, 'rating': rating,
                                                        'advertisement': advertisement, 'comments': comments})
 
@@ -114,10 +163,32 @@ class ShoppingCartView(View):
 
         total_price = Course.objects.raw('SELECT SUM(price) FROM items')
 
-        return render(request, 'main/shopping_cart.html', {'items': items, 'items_on_cart': items_on_cart,
+        cursor = connection.cursor()
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
+        return render(request, 'main/shopping_cart.html', {'user_type': user_type, 'items': items, 'items_on_cart': items_on_cart,
                                                            'count': count, 'total_price': total_price})
 
 
 class ShoppingCheckoutView(View):
     def get(self, request):
-        return render(request, 'main/checkout.html')
+        cursor = connection.cursor()
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
+        return render(request, 'main/checkout.html', {'user_type': user_type})
