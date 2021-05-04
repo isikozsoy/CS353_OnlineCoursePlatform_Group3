@@ -6,6 +6,8 @@ from main.models import *
 from courses.models import *
 from accounts.models import *
 
+from .forms import *
+
 class MyCoursesView(ListView):
     def get(self, request):
         # WILL BE CHANGED TO CURRENT USER
@@ -77,11 +79,8 @@ class LectureView(View):
             print("prog : ", len(prog))     #raw must include primary key - cursor
             if( len(prog) == len(lectures) ):
                 print("This course is finished")
+                return HttpResponseRedirect('/'+course_slug+'/'+lecture_slug+'/finish')
 
-        print("- ",cno)
-
-        #lectures = Lecture.objects.raw('''SELECT * FROM courses_lecture;''')
-        print("=6",lecture_slug, course.cno, lectures, len(lectures))
 
         lecandprog = [None] * len(lectures)
         for i in range(0,len(lectures)):
@@ -144,12 +143,30 @@ class LectureView(View):
             'lecturematcnt' : lecturematcnt,
             'lecturecnt': lecturecnt,
             'qanda' : qanda,
-            'lecandprog' : lecandprog
+            'lecandprog' : lecandprog,
+            'url' : '/'+course_slug+'/'+lecture_slug
             #'contributors' : contributors
         }
 
+        form = AskQuestion()
+        print(form)
         return render(request, 'courses/lecture_detail.html', context)
 
+    def post(self, request):
+        form = AskQuestion(request.POST)
+        if form.is_valid():
+            question = form.cleaned_data['question']
+            print("Question : ",question)
+
+
+
+
+class CourseFinishView(View):
+    def get(self, request, course_slug, lecture_slug, *args, **kwargs):
+        context = {
+            'curlecture': 'CURLECTURE'
+        }
+        return render(request, 'courses/course_finish.html', context)
 
 def add_to_my_courses(request, course_slug):
     course_queue = Course.objects.filter(slug=course_slug)
