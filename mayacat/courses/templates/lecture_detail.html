@@ -1,31 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'main/base.html' %}
+
+{% block main_content %}
   <h1>Lecture Details</h1>
   {% if curlecture is not None %}
  <h3>{{ curlecture.lecture_name }}</h3>
 
-  <video width="320" height="240" controls>
-    <source src={{ curlecture.video_url }} type="video/mp4">
-    Your browser does not support embedded videos. Consider switching to another browser.
-  </video>
+
+
+  <iframe width="320" height="240" src={{curlecture.video_url}} allowfullscreen></iframe>
+
+      {% if course.owner_id == request.user.id %}
+          {% include "courses/lecture_assignment_material_addition.html" %}
+      {% endif %}
 
   <h2>{{ course.cname }}</h2>
   {% for lecture in lectures %}
   <a href="{{course.slug}}/{{lecture.lecture_slug}}">{{ lecture }}</a>
+  <a>{{prog}}<br></a>
   {% endfor %}
 
   <h2>Overview</h2>
   <h3>Description</h3>
   <a>{{course.description}}</a>
+  <h4>Owner</h4>
+  <a>{{ course.owner_id }} <br></a>
+  <h4>Contributors</h4>
 
   <h3>Including</h3>
   <a>{{lecturecnt}} lecture is included.<br></a>
-  <a>assignment</a>
+  <a>{{assignmentcnt}} assignment<br></a>
+  <a>{{lecturematcnt}} lecture material<br></a>
+
+  <h3>Assignments</h3>
+  {% for assignment in assignments %}
+  <a>{{ assignment }} <br></a>
+  <iframe src={{assignment.assignment}} width="320" height="240"></iframe>
+  {% endfor %}
+
+  <h3>Lecture Materials</h3>
+  {% for lm in lecturemat %}
+  <a>{{ lm }} <br></a>
+  <iframe src={{lm.material}} width="320" height="240"></iframe>
+
+  {% endfor %}
+
+
+
 
   <h2>Announcements</h2>
   {% for announcement in announcements %}
@@ -33,17 +53,20 @@
   {% endfor %}
 
   <h2>Notes</h2>
-   {% for note in notes %}
+  {% for note in notes %}
   <a>{{ note.note }} {{ note.s_username_id }} </a>
   {% endfor %}
 
   <h2>Q&A</h2>
-    {% for question in questions %}
-  <a>{{ question.postno }}} </a>
+  {% for question,answers in qanda %}
+  <a>Question : {{ question.postno }} {{ question.post }}<br> </a>
+  {% for a in answers %}
+  <a>Answer : {{ a.postno }} {{ a.post }}<br> </a>
+  {% endfor %}
+  <br>
   {% endfor %}
 
   {% else %}
     <h2>There is no lecture by this name.</h2>
   {% endif %}
-</body>
-</html>
+{% endblock %}

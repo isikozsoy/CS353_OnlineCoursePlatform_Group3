@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ object.cname }}</title>
-</head>
-<body>
+{% extends "main/base.html" %}
+{% block main_content %}
     <h1>Course Details</h1>
-    <h2>{{ cname }}</h2>
-    <h3>{{ desc }}</h3>
+    <h2>{{ object.cname }}</h2>
+    <h3>{{ object.description }}</h3>
 
+    <!-- aşağıda action=my_courses/add/{ { object.slug }} demek istemiş olabilirsin belki belki -->
     <form action="courses:my_courses" method="post">
         {% csrf_token %}
         {{ form.errors }}
@@ -24,5 +20,4 @@
       <li><a href="/{{slug}}/{{lecture.lecture_slug}}">{{ lecture.lecture_name }}</a></li>
       {% endfor %}
     </ol>
-</body>
-</html>
+{% endblock %}

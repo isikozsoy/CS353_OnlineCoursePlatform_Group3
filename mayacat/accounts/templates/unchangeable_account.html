@@ -1,0 +1,23 @@
+{% extends "main/base.html" %}
+
+<!-- This template is to be used only for viewing accounts and not changing them
+
+{% block main_content %}
+    <form>
+    {% csrf_token %}
+        Username: {{ user.username }}<br>
+        Email: {{ form.email }}<br>
+        Phone: {{ form.phone }}<br>
+
+        Type:
+        {% if type == 0 %}
+            Student<br>
+        {% elif type == 1 %} <!-- instructor -->
+            Instructor<br>
+            Your Instructor Description: {{ form.description }}<br>
+        {% elif type == 2 %} <!-- advertiser -->
+            Company name: {{ form.company_name }} <br>
+            Name & Surname: {{ form.name }} <br>
+        {% endif %}
+    </form>
+{% endblock %}
