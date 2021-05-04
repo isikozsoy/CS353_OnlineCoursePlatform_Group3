@@ -85,8 +85,6 @@ class CourseListView(ListView):
 
 
 class CourseDetailView(View):
-    # model = Course
-
     def get(self, request, course_slug):
         form = GiftInfo()
 
@@ -97,6 +95,9 @@ class CourseDetailView(View):
 
         is_wish = len(list(Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
                                               [cno, request.user.id])))
+
+        is_enrolled = len(list(Enroll.objects.raw('SELECT * FROM main_enroll WHERE cno_id = %s AND user_id = %s;',
+                                                  [cno, request.user.id])))
 
         cursor = connection.cursor()
         cursor.execute('select type '
@@ -114,6 +115,7 @@ class CourseDetailView(View):
             'form': form,
             'object': course,
             'is_wish': is_wish,
+            'is_enrolled': is_enrolled,
             'user_type': user_type
         }
         return render(request, 'course_detail.html', context)
@@ -158,8 +160,6 @@ class CourseDetailView(View):
 
 
 class LectureView(View):
-    # model = Lecture
-
     def get(self, request, course_slug, lecture_slug, *args, **kwargs):
 
         cursor = connections['default'].cursor()
@@ -595,9 +595,9 @@ class AddLectureToCourseView(View):
 
 
 class OfferAdView(View):
-    def get(self, request, course_slug):
-        template_name = "courses/offer_add.html"
+    template_name = "offer_ad.html"
 
+    def get(self, request, course_slug):
         cursor = connection.cursor()
         cursor.execute('select type '
                        'from auth_user '
@@ -608,5 +608,7 @@ class OfferAdView(View):
         user_type = -1
         if row:
             user_type = row[0]
+
         context = {'user_type': user_type}
+        print("-------------icerdeyizzzz")
         return render(request, self.template_name, context)

@@ -1,4 +1,6 @@
 {% extends "main/base.html" %}
+
+
 {% block main_content %}
     <h1>Course Details</h1>
     <h2>{{ object.cname }}</h2>
@@ -6,7 +8,7 @@
 
     <!-- aşağıda action=my_courses/add/{ { object.slug }} demek istemiş olabilirsin belki belki -->
     {% if user_type == 2 %}
-        <a href="/offer_ad" class="btn btn-primary">Offer Ad</a><br>
+        <a href="/offer_ad/{{ object.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
     {% else %}
         <form action="courses:my_courses" method="post">
             {% csrf_token %}
@@ -33,7 +35,11 @@
     {% endif %}
     <ol>
       {% for lecture in lecture_list %}
-      <li><a href="/{{slug}}/{{lecture.lecture_slug}}">{{ lecture.lecture_name }}</a></li>
+        {% if is_enrolled == 0 %}
+            <li><p>{{ lecture.lecture_name }}</p></li>
+        {% else %}
+            <li><a href="/{{course_slug}}/{{lecture.lecture_slug}}">{{ lecture.lecture_name }}</a></li>
+        {% endif %}
       {% endfor %}
     </ol>
 {% endblock %}
