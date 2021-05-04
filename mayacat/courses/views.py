@@ -594,8 +594,26 @@ class AddLectureToCourseView(View):
         return HttpResponseRedirect(request.path)
 
 
+def change_course_settings(request, course_slug):
+    cursor = connection.cursor()
+    cursor.execute('select owner_id from courses_course where slug = %s;', [course_slug])
+    owner_id_row = cursor.fetchone()
+    if not owner_id_row:  # meaning this course does not exist
+        return HttpResponseRedirect('/')  # return to main page
+
+    owner_id = owner_id_row[0]
+
+    if request.user.id != owner_id:  # return to main page if the owner is not
+        return HttpResponseRedirect('/' + course_slug)
+
+    if request.method == "POST":
+        return
+    else:
+        return HttpResponseRedirect('/' + course_slug)
+
+
 class OfferAdView(View):
-    template_name = "offer_ad.html"
+    template_name = "courses/offer_ad.html"
 
     def get(self, request, course_slug):
         cursor = connection.cursor()
