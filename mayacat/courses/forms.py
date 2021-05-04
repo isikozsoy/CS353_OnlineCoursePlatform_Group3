@@ -1,6 +1,8 @@
 from django import forms
 from .models import Course
 
+class AskQuestion(forms.Form):
+    question = forms.CharField(label='question', max_length=500)
 
 class ComplainForm(forms.Form):
     description = forms.CharField(label='Description', max_length=1000)
