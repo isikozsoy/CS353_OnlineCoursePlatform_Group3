@@ -1,198 +1,67 @@
-import datetime
-
-from django.contrib import messages
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse, HttpResponseRedirect
+from django.views.generic import ListView, DetailView, View
+from django.db import connections
+from main.models import *
+from courses.models import *
+from accounts.models import *
 
 from .forms import *
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import ListView
-from django.views.generic.base import View
-from django.db import connection, connections
-from main.models import *
-from accounts.models import Student
-from .models import *
-from main.models import Enroll, Announcement, Takes_note
-from slugify import slugify
-
-
-def get_today():
-    return datetime.datetime.now().strftime('%y-%m-%d')
-
 
 class MyCoursesView(ListView):
     def get(self, request):
-        if request.user.is_authenticated:
-            user_id = request.user.id
-            my_courses_q = Enroll.objects.raw('''SELECT *
-                                                FROM main_enroll
-                                                WHERE user_id = %s''', [user_id])
-
-            cursor = connection.cursor()
-            cursor.execute('select type '
-                           'from auth_user '
-                           'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
-                           'where id = %s;', [user_id])
-
-            row = cursor.fetchone()
-            user_type = -1
-            if row:
-                user_type = row[0]
-
-            context = {
-                'my_courses_q': my_courses_q,
-                'user_type': user_type
-            }
-
-            return render(request, 'main/my_courses.html', context)
-        return HttpResponseRedirect('/')
-
-
-def add_to_my_courses(request, course_slug):
-    if not request.user.is_authenticated:  # if the user did not login, return to main page
-        return HttpResponseRedirect('/')
-
-    cursor = connection.cursor()
-    course_queue = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s', [course_slug])
-    if len(list(course_queue)) != 0:
-        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1', [course_slug])[0]
-        cno = course.cno
-    else:
-        return HttpResponseRedirect('/')
-
-    user_id = request.user.id
-
-    my_courses = Enroll.objects.raw('SELECT * '
-                                    'FROM main_enroll '
-                                    'WHERE user_id = %s AND cno_id = %s;',
-                                    [user_id, cno])
-
-    if len(list(my_courses)) == 0:
-        cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
-                       [cno, user_id])
-    else:
-        print("Inside else.........")
-        # Once we buy the course we cannot delete it logical bence
-        """
-            cursor.execute('DELETE FROM main_enroll ' \
-                           'WHERE user_id = ' + str(user_id) + ' AND cno_id = "' + str(cno) + '"')
-        """
-    cursor.close()
-    return HttpResponseRedirect('/my_courses/add/')
+        # WILL BE CHANGED TO CURRENT USER
+        s = request.user
+        my_courses_q = Enroll.objects.filter(user=s)
+        context = {
+            'my_courses_q': my_courses_q
+        }
+        return render(request, 'main/my_courses.html', context)
 
 
 class CourseListView(ListView):
     model = Course
 
 
-class CourseDetailView(View):
-    def get(self, request, course_slug):
-        form = GiftInfo()
-
-        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
-        cno = course.cno
-
-        lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
-
-        is_wish = len(list(Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
-                                              [cno, request.user.id])))
-
-        is_enrolled = len(list(Enroll.objects.raw('SELECT * FROM main_enroll WHERE cno_id = %s AND user_id = %s;',
-                                                  [cno, request.user.id])))
-
-        cursor = connection.cursor()
-        cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
-                       'where id = %s;', [request.user.id])
-
-        row = cursor.fetchone()
-        user_type = -1
-        if row:
-            user_type = row[0]
-
-        context = {
-            'lecture_list': lecture_list,
-            'form': form,
-            'object': course,
-            'is_wish': is_wish,
-            'is_enrolled': is_enrolled,
-            'user_type': user_type
-        }
-        return render(request, 'course_detail.html', context)
-
-    def post(self, request, course_slug):
-        cursor = connection.cursor()
-        form = GiftInfo(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            users = Student.objects.raw('SELECT * '
-                                        'FROM accounts_student '
-                                        'INNER JOIN auth_user '
-                                        'ON defaultuser_ptr_id = id '
-                                        'WHERE username = %s;',
-                                        [username])
-            if len(list(users)) == 0:
-                pass
-                # INVALID USER
-            else:
-                receiver_id = users[0].user_id
-                course_queue = Course.objects.raw('SELECT * '
-                                                  'FROM courses_course '
-                                                  'WHERE slug = %s', [course_slug])
-                if len(list(course_queue)) != 0:
-                    course = Course.objects.raw('SELECT * '
-                                                'FROM courses_course '
-                                                'WHERE slug = %s LIMIT 1', [course_slug])[0]
-                    cno = course.cno
-                else:
-                    return
-
-                cursor.execute('INSERT INTO main_gift (sender_id, receiver_id, course_id, date) VALUES (%s, %s);',
-                               [request.user.id, receiver_id, cno, get_today()])
-                cursor.close()
-                cursor = connection.cursor()
-                cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
-                               [cno, receiver_id])
-                cursor.close()
-                return HttpResponseRedirect('my_courses')
-        cursor.close()
-        return HttpResponse("Invalid input. Go back and try again...")
+class CourseDetailView(DetailView):
+    model = Course
 
 
 class LectureView(View):
+    # model = Lecture
+
     def get(self, request, course_slug, lecture_slug, *args, **kwargs):
 
         cursor = connections['default'].cursor()
 
-        course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
+        course_queue = Course.objects.raw( '''SELECT * FROM courses_course WHERE slug = %s;''',[course_slug])
 
-        # check whether the student is enrolled into this course
-        # is course slug primary key
+        #check whether the student is enrolled into this course
+        #is course slug primary key
 
         curuser_id = request.user.id
         print(curuser_id)
 
-        print("=1", course_queue)
+        print("=1",course_queue)
         if len(course_queue) > 0:
             course = course_queue[0]
-            print("=2", course, course.cno)
+            print("=2",course, course.cno)
         else:
-            # 404 error
+            #404 error
             print("error no course as the stated");
 
-        lecture_q = Lecture.objects.raw('''SELECT * FROM courses_lecture as CL WHERE CL.lecture_slug = %s;''',
-                                        [lecture_slug])
+        lecture_q = Lecture.objects.raw( '''SELECT * FROM courses_lecture as CL WHERE CL.lecture_slug = %s;''',[lecture_slug])
         if len(lecture_q) > 0:
             lecture = lecture_q[0]
-            print("=3", "lecture exists\n")
+            print("=3","lecture exists\n")
         else:
-            # error no such lecture
+            #error no such lecture
             print("error no lecture as the stated");
-        print("=4", lecture_q)
-        print("=5", lecture)
+        print("=4",lecture_q)
+        print("=5",lecture)
         isWatched = Progress.objects.raw('''SELECT * FROM main_progress as MP 
                                             WHERE MP.lecture_no_id = %s AND MP.s_username_id = %s;'''
-                                         , [lecture.lecture_no, curuser_id])
+                                            , [lecture.lecture_no, curuser_id])
         print(isWatched)
 
         cno = course.cno
@@ -200,16 +69,17 @@ class LectureView(View):
 
         if (len(isWatched) == 0):
             cursor.execute('''INSERT INTO main_progress(lecture_no_id ,s_username_id) VALUES (%s, %s) ''',
-                           [lecture.lecture_no, curuser_id])
-            prog = Progress.objects.raw('''SELECT MP.prog_id FROM main_progress as MP
+                       [lecture.lecture_no, curuser_id])
+            prog = Progress.objects.raw( '''SELECT MP.prog_id FROM main_progress as MP
                                             WHERE MP.s_username_id = %s AND 
                                                   MP.lecture_no_id IN ( SELECT lecture_no
                                                                         FROM courses_lecture 
                                                                         WHERE cno_id = %s );'''
-                                        , [curuser_id, cno])
-            print("prog : ", len(prog))  # raw must include primary key - cursor
-            if (len(prog) == len(lectures)):
+                                              ,[curuser_id,cno])
+            print("prog : ", len(prog))     #raw must include primary key - cursor
+            if( len(prog) == len(lectures) ):
                 print("This course is finished")
+                return HttpResponseRedirect('/'+course_slug+'/'+lecture_slug+'/finish')
 
         print("- ", cno)
 
@@ -217,53 +87,52 @@ class LectureView(View):
         print("=6", lecture_slug, course.cno, lectures, len(lectures))
 
         lecandprog = [None] * len(lectures)
-        for i in range(0, len(lectures)):
-            isWatched = Progress.objects.raw('''SELECT * FROM main_progress as MP 
+        for i in range(0,len(lectures)):
+            isWatched = Progress.objects.raw( '''SELECT * FROM main_progress as MP 
                                                     WHERE MP.lecture_no_id = %s AND MP.s_username_id = %s;'''
-                                             , [lectures[i].lecture_no, curuser_id])
+                                              ,[lectures[i].lecture_no,curuser_id])
             print(isWatched)
 
-            if (len(isWatched) > 0):
-                lecandprog[i] = (lectures[i], "Watched")
+            if(len(isWatched) > 0):
+                lecandprog[i] = (lectures[i],"Watched")
             else:
                 lecandprog[i] = (lectures[i], "Unwatched")
 
-        announcements = Announcement.objects.raw('''SELECT * FROM main_announcement as MA WHERE MA.cno_id = %s;''',
-                                                 [cno])
-        # announcements = Announcement.objects.filter(cno_id=course.cno)
 
-        notes = Takes_note.objects.raw('''SELECT * FROM main_takes_note as MTN 
+        announcements = Announcement.objects.raw('''SELECT * FROM main_announcement as MA WHERE MA.cno_id = %s;''', [cno])
+        #announcements = Announcement.objects.filter(cno_id=course.cno)
+
+        notes = Takes_note.objects.raw( '''SELECT * FROM main_takes_note as MTN 
                                             WHERE MTN.lecture_no_id = %s AND MTN.s_username_id = %s;''',
-                                       [lecture.lecture_no, curuser_id])  # student will be added
-        # notes = Takes_note.objects.filter(lecture_no_id=lecture.lecture_no)
+                                            [lecture.lecture_no, curuser_id])  # student will be added
+        #notes = Takes_note.objects.filter(lecture_no_id=lecture.lecture_no)
         lecturecnt = len(lectures)
 
         questions = Post.objects.raw('''SELECT postno
                                         FROM main_post
                                         WHERE postno NOT IN (SELECT answer_no_id AS postno FROM main_quest_answ ) 
-                                            AND lecture_no_id = %s; ''', [lecture.lecture_no])
+                                            AND lecture_no_id = %s; ''',[lecture.lecture_no])
 
         qanda = [None] * len(questions)
 
         answers = [None] * len(questions)
-        for i in range(0, len(questions)):
+        for i in range(0,len(questions)):
             answers[i] = Quest_answ.objects.raw('''SELECT *
                                                  FROM main_quest_answ, main_post
-                                                 WHERE question_no_id = %s AND answer_no_id = postno;''',
-                                                [questions[i].postno])
+                                                 WHERE question_no_id = %s AND answer_no_id = postno;''',[questions[i].postno])
             qanda[i] = (questions[i], answers[i])
         print(qanda)
 
-        assignments = Assignment.objects.raw('''SELECT *
+        assignments =Assignment.objects.raw('''SELECT *
                                                  FROM main_assignment
-                                                 WHERE lecture_no_id = %s;''', [lecture.lecture_no])
-        assignmentcnt = len(assignments)
+                                                 WHERE lecture_no_id = %s;''',[lecture.lecture_no])
+        assignmentcnt  = len(assignments)
         lecturemat = LectureMaterial.objects.raw('''SELECT *
                                                  FROM courses_lecturematerial
-                                                 WHERE lecture_no_id = %s;''', [lecture.lecture_no])
+                                                 WHERE lecture_no_id = %s;''',[lecture.lecture_no])
         lecturematcnt = len(lecturemat)
 
-        # contributors = Contributor.objects.raw( '''SELECT U.username
+        #contributors = Contributor.objects.raw( '''SELECT U.username
         #                                         FROM main_contributor AS MC,auth_user AS U
         #                                         WHERE MC.cno_id = %s AS MC.user_id = U.id;''',[course.cno] )
 
@@ -290,14 +159,17 @@ class LectureView(View):
             'lecturemat': lecturemat,
             'lecturematcnt': lecturematcnt,
             'lecturecnt': lecturecnt,
-            'qanda': qanda,
-            'lecandprog': lecandprog,
+            'qanda' : qanda,
+            'lecandprog' : lecandprog,
+            'url' : '/'+course_slug+'/'+lecture_slug
+            #'contributors' : contributors
             'form_lecmat_assignment': form_lecmat_assignment,
             'user_type': user_type,
-            # 'contributors' : contributors
         }
         cursor.close()
 
+        form = AskQuestion()
+        print(form)
         return render(request, 'courses/lecture_detail.html', context)
 
     def post(self, request, course_slug, lecture_slug, *args, **kwargs):
@@ -325,6 +197,20 @@ class LectureView(View):
             if pdf_url_assignment:
                 cursor.execute('insert into main_assignment (assignment, lecture_no_id) values (%s, %s);',
                                [pdf_url_assignment, lecture_no])
+        form = AskQuestion(request.POST)
+        if form.is_valid():
+            question = form.cleaned_data['question']
+            print("Question : ",question)
+
+
+
+
+class CourseFinishView(View):
+    def get(self, request, course_slug, lecture_slug, *args, **kwargs):
+        context = {
+            'curlecture': 'CURLECTURE'
+        }
+        return render(request, 'courses/course_finish.html', context)
 
         cursor.close()
         return HttpResponseRedirect(request.path)
