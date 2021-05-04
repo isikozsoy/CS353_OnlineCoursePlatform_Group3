@@ -58,9 +58,19 @@
   {% endfor %}
 
   <h2>Q&A</h2>
+
+
+  <form action="{{url}}" method="post">
+   {% csrf_token %}
+    <label for="question">Your Question: </label>
+    <input id="question" type="text" name="question" value="{{ question }}">
+    <input type="submit" value="OK">
+ </form>
+
   {% for question,answers in qanda %}
   <a>Question : {{ question.postno }} {{ question.post }}<br> </a>
   {% for a in answers %}
+
   <a>Answer : {{ a.postno }} {{ a.post }}<br> </a>
   {% endfor %}
   <br>
