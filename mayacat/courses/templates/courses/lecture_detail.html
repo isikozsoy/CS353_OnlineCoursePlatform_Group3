@@ -1,6 +1,10 @@
-{% extends 'main/base.html' %}
-
-{% block main_content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
   <h1>Lecture Details</h1>
   {% if curlecture is not None %}
  <h3>{{ curlecture.lecture_name }}</h3>
@@ -14,8 +18,8 @@
       {% endif %}
 
   <h2>{{ course.cname }}</h2>
-  {% for lecture in lectures %}
-  <a href="{{course.slug}}/{{lecture.lecture_slug}}">{{ lecture }}</a>
+  {% for lecture,prog in lecandprog %}
+  <a href="{{ lecture.get_url }}">{{ lecture }}</a>
   <a>{{prog}}<br></a>
   {% endfor %}
 
@@ -58,6 +62,15 @@
   {% endfor %}
 
   <h2>Q&A</h2>
+
+
+  <form action="{{url}}" method="post">
+   {% csrf_token %}
+    <label for="question">Your Question: </label>
+    <input id="question" type="text" name="question" value="{{ question }}">
+    <input type="submit" value="OK">
+ </form>
+
   {% for question,answers in qanda %}
   <a>Question : {{ question.postno }} {{ question.post }}<br> </a>
   {% for a in answers %}
@@ -69,4 +82,5 @@
   {% else %}
     <h2>There is no lecture by this name.</h2>
   {% endif %}
-{% endblock %}
+</body>
+</html>
