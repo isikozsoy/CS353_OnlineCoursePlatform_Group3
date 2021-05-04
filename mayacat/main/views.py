@@ -138,7 +138,7 @@ def course_detail(request, course_id):
     if row:
         user_type = row[0]
 
-    return render(request, 'main/course_detail.html', {'user_type': user_type, 'course': course, 'registered': registered,
+    return render(request, 'courses/course_detail.html', {'user_type': user_type, 'course': course, 'registered': registered,
                                                        'lecture_count': lecture_count, 'rating': rating,
                                                        'advertisement': advertisement, 'comments': comments})
 

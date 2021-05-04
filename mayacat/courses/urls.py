@@ -1,4 +1,5 @@
-from django.urls import path
+from django.conf.urls import url
+from django.urls import path, re_path
 from .views import *
 from main.views import MainView
 from courses.views import AddComplainView
@@ -11,6 +12,7 @@ urlpatterns = [
     path('add/<course_slug>', AddLectureToCourseView.as_view(), name='add_lecture'),
     path('my_courses', MyCoursesView.as_view(), name='my_courses'),
     path('my_courses/add/<course_slug>', add_to_my_courses, name='user_mycourses'),
+    path('<course_slug>/edit', change_course_settings, name='course_edit'),
     path('<course_slug>/complain', AddComplainView.as_view(), name='complaint'),
     path('<course_slug>/refund', RefundRequestView.as_view(), name='refund'),
     path('<course_slug>', CourseDetailView.as_view(), name='desc'),
