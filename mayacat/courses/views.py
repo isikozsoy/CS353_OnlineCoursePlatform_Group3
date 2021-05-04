@@ -598,6 +598,8 @@ class OfferAdView(View):
     template_name = "offer_ad.html"
 
     def get(self, request, course_slug):
+        form = OfferAdForm()
+
         cursor = connection.cursor()
         cursor.execute('select type '
                        'from auth_user '
@@ -609,6 +611,7 @@ class OfferAdView(View):
         if row:
             user_type = row[0]
 
-        context = {'user_type': user_type}
-        print("-------------icerdeyizzzz")
+        context = {'user_type': user_type,
+                   'form': form}
+
         return render(request, self.template_name, context)

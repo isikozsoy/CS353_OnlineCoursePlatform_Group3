@@ -1,5 +1,6 @@
 from django import forms
 from .models import Course
+from datetime import datetime, date, timedelta
 
 
 class ComplainForm(forms.Form):
@@ -35,6 +36,15 @@ class CreateCourseForm(forms.Form):
     description = forms.CharField(label='Description', max_length=4000,
                                   widget=forms.Textarea(attrs={'class': 'form-control'}))
     private = forms.BooleanField(label='Private or not?', required=False)
+
+
+class OfferAdForm(forms.Form):
+    add_img = forms.ImageField(label='Advertisement Image', widget=forms.FileInput(
+                               attrs={'class': 'form-control-file', 'enctype': 'multipart/form-data'}))
+    price = forms.DecimalField(label='Offered Price (TL)', max_digits=6, decimal_places=2,
+                               widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    start_date = forms.DateField(label='Start Date', initial=date.today)
+    end_date = forms.CharField(label='End Date', initial=date.today)
 
 
 class CreateLectureForm(forms.Form):
