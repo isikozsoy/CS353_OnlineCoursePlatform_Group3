@@ -27,6 +27,44 @@ class CourseDetailView(DetailView):
     model = Course
 
 
+class AddAnswerView(View):
+    # model = Lecture
+
+    def get(self, request, course_slug, lecture_slug,question_no, *args, **kwargs):
+        answer = "to be completed"
+        form = AnswerQuestion()
+        context = {
+            'question_no' : question_no,
+            'answer' : answer
+        }
+        return render(request, 'courses/add_answer.html', context)
+    def post(self, request, course_slug, lecture_slug,question_no, *args, **kwargs):
+        form = AnswerQuestion(request.POST)
+        cursor = connection.cursor()
+        if form.is_valid():
+            answer = form.cleaned_data['answer']
+        print("course_slug",course_slug,"lecture_slug",lecture_slug,"question_no ",question_no)
+        cursor.execute('select lecture_no from courses_lecture where lecture_slug = %s;', [lecture_slug])
+        lecture_no_row = cursor.fetchone()
+        cursor.close()
+        if not lecture_no_row:
+            return HttpResponseRedirect('/')
+        cursor = connection.cursor()
+
+        lecture_no = lecture_no_row[0]
+        cursor.execute('insert into main_post (post, lecture_no_id, username_id) values (%s, %s, %s);',
+                       [answer, lecture_no, request.user.id])
+        cursor.execute('select LAST_INSERT_ID()')
+        row = cursor.fetchone()
+        print("row",row)
+        if row:
+            ans_no = row[0]
+            print("In post of addanswerview",ans_no)
+            cursor.execute('insert into main_quest_answ (answer_no_id, question_no_id) values (%s, %s);',
+                           [ans_no, question_no])
+        cursor.close()
+        return HttpResponseRedirect("/"+course_slug+"/"+lecture_slug)
+
 class LectureView(View):
     # model = Lecture
 
