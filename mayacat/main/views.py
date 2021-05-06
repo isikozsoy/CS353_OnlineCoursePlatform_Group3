@@ -8,6 +8,18 @@ from .models import *
 from accounts.models import *
 
 
+class MainView(View):
+    def get(self, request):
+        # THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
+        courses = Course.objects.raw('select * '
+                                     'from courses_course;')
+
+        topics = Topic.objects.raw('select * from main_topic order by topicname;')
+
+        return render(request, 'main/main.html', {'object_list': courses,
+                                                  'topic_list':topics})
+
+
 class WishlistView(ListView):
     def get(self, request):
         # WILL BE CHANGED TO CURRENT USER
