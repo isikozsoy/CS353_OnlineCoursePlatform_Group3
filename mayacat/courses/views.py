@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, View
-from django.db import connections
+from django.db import connection, connections
 from main.models import *
 from courses.models import *
 from accounts.models import *
