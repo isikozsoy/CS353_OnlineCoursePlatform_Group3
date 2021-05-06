@@ -1,14 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>MayaCat E-Learning Platform</title>
-</head>
-<body>
+{% extends "main/base.html" %}
+
+{% block main_content %}
     <h1>My Courses</h1>
     <h2>Items Added To My Courses</h2>
     {% for course in my_courses_q %}
         <p>{{ course.cno }}</p>
     {% endfor %}
-</body>
-</html>
+{% endblock %}

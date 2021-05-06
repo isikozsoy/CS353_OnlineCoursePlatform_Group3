@@ -35,7 +35,7 @@ class Course(models.Model):
         return self.cname
 
     def get_url(self):
-        return reverse('courses:desc', kwargs={'slug': self.slug})
+        return reverse('courses:desc', kwargs={'course_slug': self.slug})
 
     # so that we can call it as course.lecture_list() directly
     @property
@@ -56,7 +56,7 @@ class Lecture(models.Model):
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def get_url(self):
-        return reverse('courses:lecture-detail',
+        return reverse('courses:lecture_detail',
                        kwargs={
                            'course_slug': self.cno.slug,
                            'lecture_slug': self.lecture_slug

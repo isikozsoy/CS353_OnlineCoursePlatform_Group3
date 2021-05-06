@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Your MayaCat Account</title>
-</head>
+{% extends "main/base.html" %}
+
+{% block main_content %}
     <form>
     {% csrf_token %}
         Username: {{ user.username }}<br>
@@ -11,15 +8,19 @@
         Phone: {{ form.phone }}<br>
 
         Type:
-        {% if type == 0 %}
-            Student<br>
-            Profile Description:
+        {% if user_type == 2 %}
+            Advertiser<br>
+            Company Name: {{ user.company_name }}<br>
         {% else %}
-            Instructor<br>
-            Your Instructor Description: <br>
+            {% if user_type == 0 %}
+                Student<br>
+                Profile Description:
+            {% else %}
+                Instructor<br>
+                Your Instructor Description: <br>
+            {% endif %}
+            {{ form.description }}<br>
         {% endif %}
-        {{ form.description }}<br>
-    <button type="submit" formmethod="post">Save</button><br>
+        <button type="submit" formmethod="post">Save</button><br>
     </form>
-</body>
-</html>
+{% endblock %}

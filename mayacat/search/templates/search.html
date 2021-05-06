@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>MayaCat</title>
-</head>
-<body>
+{% extends 'main/base.html' %}
+
+{% block main_content %}
     <h1>Search Results</h1>
     <form action="search" method="get">
         <input name="q" type="text" placeholder="Search for a course...">
@@ -12,5 +8,4 @@
     {% for object in object_list %}
         <li><a href="{{ object.get_url }}">{{ object.cname }}</a></li>
     {% endfor %}
-</body>
-</html>
+{% endblock %}

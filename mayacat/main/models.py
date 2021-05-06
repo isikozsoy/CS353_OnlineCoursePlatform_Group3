@@ -13,6 +13,7 @@ class Gift(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
     receiver = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='receiver')
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
 
 
 class Complaint(models.Model):
