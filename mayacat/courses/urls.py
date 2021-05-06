@@ -17,5 +17,8 @@ urlpatterns = [
     path('<course_slug>/refund', RefundRequestView.as_view(), name='refund'),
     path('<course_slug>', CourseDetailView.as_view(), name='desc'),
     path('offer_ad/<course_slug>', OfferAdView.as_view(), name='offer_ad'),
-    path('<course_slug>/<lecture_slug>', LectureView.as_view(), name='lecture_detail')
+    path('<course_slug>/<lecture_slug>', LectureView.as_view(), name='lecture_detail'),
+    path('<course_slug>/<lecture_slug>/finish', CourseFinishView.as_view(), name='course_finish'),
+    path('<course_slug>/<lecture_slug>/answer/<question_no>', AddAnswerView.as_view(),name = 'add_answer'),
+
 ]
