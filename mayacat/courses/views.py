@@ -96,8 +96,16 @@ class CourseDetailView(View):
         is_wish = len(list(Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
                                               [cno, request.user.id])))
 
-        is_enrolled = len(list(Enroll.objects.raw('SELECT * FROM main_enroll WHERE cno_id = %s AND user_id = %s;',
+        registered = len(list(Enroll.objects.raw('SELECT * FROM main_enroll WHERE cno_id = %s AND user_id = %s;',
                                                   [cno, request.user.id])))
+
+        lecture_count = Lecture.objects.filter(cno_id=course.cno).count()
+
+        rating = Rate.objects.raw('SELECT AVG(score) FROM main_rate WHERE cno_id = %s', [course_id])
+        advertisement = Advertisement.objects.raw('SELECT advertisement FROM main_advertisement WHERE cno_id = %s',
+                                                  [course_id])
+
+        comments = Finishes.objects.raw('SELECT comment FROM main_finishes WHERE cno_id = %s', [course_id])
 
         cursor = connection.cursor()
         cursor.execute('select type '
@@ -115,9 +123,14 @@ class CourseDetailView(View):
             'form': form,
             'object': course,
             'is_wish': is_wish,
-            'is_enrolled': is_enrolled,
-            'user_type': user_type
+            'registered': registered,
+            'user_type': user_type,
+            'lecture_count': lecture_count,
+            'rating': rating,
+            'advertisement': advertisement,
+            'comments': comments
         }
+
         return render(request, 'course_detail.html', context)
 
     def post(self, request, course_slug):

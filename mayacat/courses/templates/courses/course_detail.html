@@ -4,13 +4,39 @@
 {% block main_content %}
 
     <h1>Course Details</h1>
-    <h2>{{ object.cname }}</h2>
-    <h3>{{ object.description }}</h3>
+    <h1>{{ course.cname }}</h1>
+    <h2>by {{ course.owner }}</h2>
 
-    <!-- aşağıda action=my_courses/add/{ { object.slug }} demek istemiş olabilirsin belki belki -->
+    <h2>Rating: {{rating}}</h2>
+
+    <h3>Description</h3>
+    <a>{{ course.description }}</a>
+
+    <h3>Including</h3>
+    <a>{{ lecture_count }} lecture is included.<br></a>
+
+    <img src = {{ course.course_img }} width="290" height="180" ></img>
+
+    {% if advertisement is not None %}
+        <img src = {{ advertisement }} width="290" height="180" ></img>
+    {% endif %}
+
+    <!-- aşağıda action=my_courses/add/{ { course.slug }} demek istemiş olabilirsin belki belki -->
     {% if user_type == 2 %}
-        <a href="/offer_ad/{{ object.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
+        <a href="/offer_ad/{{ course.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
+
+        {% if is_wish == 0 %}
+            <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Favorites</a>
+        {% else %}
+            <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Favorites</a>
+        {% endif %}
+
+    {% else if registered is not None %}
+
+        <a href="/{{course.cno}}/{{course.lecture_set[0]}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Continue Course</a>
+
     {% else %}
+        <h3>Price {{course.price}}</h3>
         <form action="courses:my_courses" method="post">
             {% csrf_token %}
             {{ form.errors }}
@@ -19,28 +45,33 @@
                     class="btn btn-primary"
                     role="button">Buy The Course</button><br>
         </form>
+
+        {% if is_wish == 0 %}
+            <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
+        {% else %}
+            <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Wishlist</a>
+        {% endif %}
+
     {% endif %}
 
-    {% if user_type == 2 %}
-        {% if is_wish == 0 %}
-            <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Favorites</a>
-        {% else %}
-            <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Favorites</a>
-        {% endif %}
-    {% else %}
-        {% if is_wish == 0 %}
-            <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
-        {% else %}
-            <a href="/wishlist/add_to_wishlist/{{object.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Wishlist</a>
-        {% endif %}
-    {% endif %}
+
     <ol>
       {% for lecture in lecture_list %}
-        {% if is_enrolled == 0 %}
+        {% if registered == 0 %}
             <li><p>{{ lecture.lecture_name }}</p></li>
         {% else %}
             <li><a href="/{{course_slug}}/{{lecture.lecture_slug}}">{{ lecture.lecture_name }}</a></li>
         {% endif %}
       {% endfor %}
     </ol>
+
+
+    {% if comments is not None %}
+        <ol>
+        {% for comment in comments.all() %}
+            <li>{{ comment }}</li>
+        {% endfor %}
+        </ol>
+    {% endif %}
+
 {% endblock %}
