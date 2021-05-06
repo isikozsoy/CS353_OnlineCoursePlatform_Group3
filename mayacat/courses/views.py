@@ -187,6 +187,7 @@ class LectureView(View):
         if row:
             user_type = row[0]
 
+        form_question = AskQuestion()
         context = {
             'curlecture': lecture,
             'course': course,
@@ -239,7 +240,11 @@ class LectureView(View):
         if form.is_valid():
             question = form.cleaned_data['question']
             print("Question : ",question)
+            cursor.execute('insert into main_post (post, lecture_no_id, username_id) values (%s, %s, %s);',
+                           [question,lecture_no,request.user.id])
 
+        cursor.close()
+        return HttpResponseRedirect(request.path)
 
 
 
