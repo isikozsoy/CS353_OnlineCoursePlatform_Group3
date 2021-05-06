@@ -31,10 +31,6 @@
             <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Favorites</a>
         {% endif %}
 
-    {% else if registered is not None %}
-
-        <a href="/{{course.cno}}/{{course.lecture_set[0]}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Continue Course</a>
-
     {% else %}
         <h3>Price {{course.price}}</h3>
         <form action="courses:my_courses" method="post">
@@ -68,7 +64,7 @@
 
     {% if comments is not None %}
         <ol>
-        {% for comment in comments.all() %}
+        {% for comment in comments %}
             <li>{{ comment }}</li>
         {% endfor %}
         </ol>

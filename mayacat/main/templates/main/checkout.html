@@ -1,0 +1,15 @@
+{% extends "main/base.html" %}
+
+{% block main_content %}
+
+    <form action="checkout" method="post">
+        {% csrf_token %}
+        Card Name: {{ form.card_name }}<br>
+        Card Number: {{ form.card_number }}<br>
+        Expiry Date: {{ form.expiry_date }}<br>
+        Security Code: {{ form.security_code }}<br>
+
+        <button type="submit" class="btn btn-primary" role="button">BUY</button><br>
+  </form>
+
+{% endblock %}

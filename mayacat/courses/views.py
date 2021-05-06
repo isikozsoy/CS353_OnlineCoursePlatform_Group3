@@ -101,6 +101,8 @@ class CourseDetailView(View):
 
         lecture_count = Lecture.objects.filter(cno_id=course.cno).count()
 
+        course_id = course.cno
+
         rating = Rate.objects.raw('SELECT AVG(score) FROM main_rate WHERE cno_id = %s', [course_id])
         advertisement = Advertisement.objects.raw('SELECT advertisement FROM main_advertisement WHERE cno_id = %s',
                                                   [course_id])
@@ -131,7 +133,7 @@ class CourseDetailView(View):
             'comments': comments
         }
 
-        return render(request, 'course_detail.html', context)
+        return render(request, 'courses/course_detail.html', context)
 
     def post(self, request, course_slug):
         cursor = connection.cursor()
