@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="046cfbfd-f7bf-49f8-8623-90326c64ae5e" name="Default Changelist" comment="Lecture's get_url function was modified w.r.t new file system.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -45,6 +44,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="DatabaseDriversLRU" value="mysql" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
@@ -103,6 +103,7 @@
       <workItem from="1619460313766" duration="7417000" />
       <workItem from="1619475880810" duration="21322000" />
       <workItem from="1619624413494" duration="1609000" />
+      <workItem from="1620301579739" duration="1744000" />
     </task>
     <task id="LOCAL-00001" summary="Added default values to UUIDs &amp; deleted 2 unnecessary html template files">
       <created>1619438627395</created>

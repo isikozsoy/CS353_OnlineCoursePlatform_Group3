@@ -70,18 +70,32 @@ class MainView(View):
                                                   'topic_list': topics})
 
 
-def course_detail(request, course_id):
+def course_detail(request, course_slug):
+    course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
+
+    # check whether the student is enrolled into this course
+    # is course slug primary key
+
+    if len(course_queue) > 0:
+        course = course_queue[0]
+        print("=2", course, course.cno)
+    else:
+        # 404 error
+        print("error no course as the stated");
+
+    cno = course.cno
+
     course = Course.objects.raw('SELECT * FROM courses_course WHERE course_id = %s', [course_id])
     # WILL BE CHANGED TO CURRENT USER ?
     user_id = request.user.id
-    registered = Enroll.objects.raw('SELECT enroll_id FROM X WHERE user = %s AND cno = %s', [user_id], [course_id])
+    registered = Enroll.objects.raw('SELECT enroll_id FROM main_enroll WHERE user_id = %s AND cno_id = %s', [user_id], [course_id])
 
     lecture_count = Lecture.objects.filter(cno_id=course.cno).count()
 
-    rating = Rate.objects.raw('SELECT AVG(score) FROM X WHERE cno = %s', [course_id])
-    advertisement = Advertisement.objects.raw('SELECT advertisement FROM X WHERE cno = %s', [course_id])
+    rating = Rate.objects.raw('SELECT AVG(score) FROM main_rate WHERE cno_id = %s', [course_id])
+    advertisement = Advertisement.objects.raw('SELECT advertisement FROM main_advertisement WHERE cno_id = %s', [course_id])
 
-    comments = Finishes.objects.raw('SELECT comment FROM X WHERE cno = %s', [course_id])
+    comments = Finishes.objects.raw('SELECT comment FROM main_finishes WHERE cno_id = %s', [course_id])
 
     return render(request, 'main/course_detail.html', {'course': course, 'registered': registered,
                                                        'lecture_count': lecture_count, 'rating': rating,
