@@ -6,6 +6,7 @@ from django.contrib.auth import login, logout
 
 from .forms import *
 from .models import DefaultUser, Student, Instructor, SiteAdmin, Advertiser
+from main.models import *
 
 
 class LogoutView(View):
@@ -204,8 +205,8 @@ class AccountView(View):
     template_name = "account.html"
 
     def get(self, request):
-        cursor = connection.cursor()
         if request.user.is_authenticated:
+            cursor = connection.cursor()
             user_id = request.user.id
             # find the type of the user
             cursor.execute('select type '
@@ -221,6 +222,13 @@ class AccountView(View):
                 user = Student.objects.raw('select * from accounts_student where defaultuser_ptr_id = %s;',
                                            [user_id])[0]
                 form = StudentEditForm(instance=user)
+
+                cursor = connection.cursor()
+                interests = cursor.execute('select topicname from main_interested_in '
+                                           'where s_username_id = %s;', [request.user.id])
+                not_in_interests = cursor.execute('select * from main_topic except select topicname '
+                                                  'from main_interested_in where s_username_id = %s', [request.user.id])
+
             elif user_type == 1:  # it is an Instructor account
                 user = Instructor.objects.raw('select * from accounts_instructor where student_ptr_id = %s;',
                                               [user_id])[0]
@@ -233,7 +241,9 @@ class AccountView(View):
             return render(request, self.template_name, {'user': user,
                                                         'user_type': user_type,
                                                         'form': form,
-                                                        'readonly': False})
+                                                        'readonly': False,
+                                                        'interests': interests,
+                                                        'not_interests': not_in_interests})
         return HttpResponseRedirect('/')  # redirects to main page if user did not login yet
 
     def post(self, request):
@@ -302,3 +312,19 @@ class AccountView(View):
 class AdminView(View):
     def get(self, request):
         return HttpResponseRedirect('/')
+
+
+def add_interested_topic(request, topicname):
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO main_interested_in(topicname, s_username_id) values (%s, %s)",
+                    [topicname, request.user.id])
+    cursor.close()
+    return HttpResponseRedirect('/account')
+
+
+def remove_interested_topic(request, topicname):
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM main_interested_in(topicname, s_username_id) values (%s, %s)",
+                    [topicname, request.user.id])
+    cursor.close()
+    return HttpResponseRedirect('/account')

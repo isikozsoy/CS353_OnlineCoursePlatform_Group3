@@ -14,7 +14,6 @@
         {% else %}
             {% if user_type == 0 %}
                 Student<br>
-                Profile Description:
             {% else %}
                 Instructor<br>
                 Your Instructor Description: <br>
@@ -23,4 +22,14 @@
         {% endif %}
         <button type="submit" formmethod="post">Save</button><br>
     </form>
+
+    <h3>Interests</h3>
+    {% for interested_topic in interest %}
+        <a href="/interested_in/add/{{interested_topic}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">REMOVE {{interested_topic}}</a>
+    {% endfor %}
+
+    <h3>All Topics</h3>
+    {% for topic in interest %}
+        <a href="/interested_in/remove/{{topic}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">ADD {{topic}}</a>
+    {% endfor %}
 {% endblock %}

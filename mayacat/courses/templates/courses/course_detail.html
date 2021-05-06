@@ -11,14 +11,23 @@
     {% if user_type == 2 %}
         <a href="/offer_ad/{{ object.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
     {% else %}
-        <form action="courses:my_courses" method="post">
-            {% csrf_token %}
-            {{ form.errors }}
-            {{ form.as_table }}
-            <button type="submit"
-                    class="btn btn-primary"
-                    role="button">Buy The Course</button><br>
-        </form>
+        {% if not is_gift %}
+            <form action={{ path|lower }} method="POST">
+                {% csrf_token %}
+                {{ form.errors }}
+                {{ form.as_table }}
+                <button type="submit"
+                        class="btn btn-primary"
+                        role="button">Add To Cart</button><br>
+            </form>
+        {% else %}
+            <form action={{ path|lower }} method="POST">
+                {% csrf_token %}
+                <button type="submit"
+                        class="btn btn-primary"
+                        role="button">Add To Cart As Gift</button><br>
+            </form>
+        {% endif %}
     {% endif %}
 
     {% if user_type == 2 %}

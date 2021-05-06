@@ -8,7 +8,7 @@ class ComplainForm(forms.Form):
 
 
 class GiftInfo(forms.Form):
-    username = forms.CharField(label='Username', max_length=50)
+    is_gift = forms.BooleanField(label='Add to cart as a gift.', required=False)
 
 
 TOPIC_CHOICES = (
