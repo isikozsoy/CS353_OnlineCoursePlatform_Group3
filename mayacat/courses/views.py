@@ -92,7 +92,12 @@ class CourseDetailView(View):
         course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
         cno = course.cno
 
-        lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
+        cursor.execute('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
+
+        lecture_list = cursor.fetchone()
+
+        if lecture_list:
+            lecture_list = cursor.fetchone()[0]
 
         is_wish = len(list(Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
                                               [cno, request.user.id])))
