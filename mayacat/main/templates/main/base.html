@@ -56,10 +56,8 @@
     {% else %}
         <a href="/logout" class="btn btn-primary">Log out</a>
         {% if user_type == 2 %} <!-- the user is an advertiser -->
-            <a href="/wishlist" class="btn btn-primary">Favorites</a>
             <a href="/offers" class="btn btn-primary">Offers</a>
         {% elif user_type == 1 %} <!-- the user is an instructor -->
-            <a href="/wishlist" class="btn btn-primary">Wishlist</a>
             <a href="/my_courses" class="btn btn-primary">Enrolled Courses</a>
             <a href="#tought_courses" class="btn btn-primary">My Courses</a>
         {% else %} <!-- the user is an student -->

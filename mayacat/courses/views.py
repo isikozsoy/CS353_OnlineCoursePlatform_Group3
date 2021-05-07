@@ -87,6 +87,7 @@ class CourseListView(ListView):
 class CourseDetailView(View):
     def get(self, request, course_slug):
         form = GiftInfo()
+        cursor = connection.cursor()
 
         course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
         cno = course.cno
@@ -103,13 +104,18 @@ class CourseDetailView(View):
 
         course_id = course.cno
 
-        rating = Rate.objects.raw('SELECT AVG(score) FROM main_rate WHERE cno_id = %s', [course_id])
-        advertisement = Advertisement.objects.raw('SELECT advertisement FROM main_advertisement WHERE cno_id = %s',
+        cursor.execute('SELECT AVG(score) FROM main_rate WHERE cno_id = %s', [course_id])
+        rating = cursor.fetchone()[0]
+
+
+        cursor.execute('SELECT advertisement FROM main_advertisement WHERE cno_id = %s',
                                                   [course_id])
+        advertisement = cursor.fetchone()[0]
 
-        comments = Finishes.objects.raw('SELECT comment FROM main_finishes WHERE cno_id = %s', [course_id])
+        cursor.execute('SELECT comment FROM main_finishes WHERE cno_id = %s', [course_id])
 
-        cursor = connection.cursor()
+        comments = cursor.fetchone()[0]
+
         cursor.execute('select type '
                        'from auth_user '
                        'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
