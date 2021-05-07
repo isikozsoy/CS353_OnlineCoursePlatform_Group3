@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
-import uuid
+import datetime
 from courses.models import *
 from accounts.models import *
 
@@ -110,7 +110,8 @@ class Teaches(models.Model):
 
 
 class Topic(models.Model):
-    topicname = models.CharField(primary_key=True, max_length=100)
+    topic_id = models.AutoField(primary_key=True)
+    topicname = models.CharField(max_length=100)
 
 
 class Course_Topic(models.Model):
@@ -125,7 +126,7 @@ class Interested_in(models.Model):
     # new primary key because Django does not support composite primary keys
     interested_in_id = models.AutoField(primary_key=True)
 
-    cno = models.ForeignKey(Course, on_delete=models.CASCADE)
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     s_username = models.ForeignKey(Student, on_delete=models.CASCADE)
 
 
@@ -201,5 +202,5 @@ class Inside_Cart(models.Model):
 
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
     username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='buyer')
-    receiver_username = models.ForeignKey(Student, on_delete=models.CASCADE, blank=True,
+    receiver_username = models.ForeignKey(Student, on_delete=models.CASCADE, blank=True, null=True,
                                           related_name='insidecart_receiver')

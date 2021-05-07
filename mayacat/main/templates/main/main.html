@@ -9,7 +9,8 @@
     <h1>Courses List</h1>
 
     {% for object in object_list %}
-        <img src={{ object.course_img }}><br><a href="{{ object.get_url }}">{{ object }}</a><br><br>
+        <iframe src="{{ object.course_img }}" name="imgbox"></iframe>
+        <br><a href="{{ object.get_url }}">{{ object }}</a><br><br>
     {% endfor %}
 
 {% endblock %}

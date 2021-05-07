@@ -71,7 +71,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('defaultuser_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='accounts.defaultuser')),
                 ('phone', models.CharField(blank=True, max_length=50)),
-                ('description', models.TextField()),
             ],
             options={
                 'verbose_name': 'user',
@@ -87,6 +86,7 @@ class Migration(migrations.Migration):
             name='Instructor',
             fields=[
                 ('student_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='accounts.student')),
+                ('description', models.TextField()),
             ],
             options={
                 'verbose_name': 'user',

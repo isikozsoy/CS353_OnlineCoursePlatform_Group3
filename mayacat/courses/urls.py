@@ -12,10 +12,10 @@ urlpatterns = [
     path('add/<course_slug>', AddLectureToCourseView.as_view(), name='add_lecture'),
     path('my_courses', MyCoursesView.as_view(), name='my_courses'),
     path('my_courses/add/<course_slug>', add_to_my_courses, name='user_mycourses'),
-    path('<course_slug>/edit', change_course_settings, name='course_edit'),
+    path('<course_slug>/edit', ChangeCourseSettingsView.as_view(), name='course_edit'),
     path('<course_slug>/complain', AddComplainView.as_view(), name='complaint'),
     path('<course_slug>/refund', RefundRequestView.as_view(), name='refund'),
-    path('<course_slug>', CourseDetailView.as_view(), name='desc'),
+    path('<course_slug>/', CourseDetailView.as_view(), name='desc'),
     path('offer_ad/<course_slug>', OfferAdView.as_view(), name='offer_ad'),
     path('<course_slug>/<lecture_slug>', LectureView.as_view(), name='lecture_detail')
 ]

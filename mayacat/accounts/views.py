@@ -283,9 +283,9 @@ class AccountView(View):
             elif user_type == 1:
                 description = form.cleaned_data['description']
                 cursor.execute('update accounts_instructor '
-                               'set phone = %s, description = %s '
+                               'set description = %s '
                                'where student_ptr_id = %s;',
-                               [phone, description, user_id])
+                               [description, user_id])
             elif user_type == 2:  # advertiser
                 name = form.cleaned_data['name']
                 company_name = form.cleaned_data['company_name']

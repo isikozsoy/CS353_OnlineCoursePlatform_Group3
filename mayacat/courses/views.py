@@ -11,7 +11,7 @@ from django.db import connection, connections
 from main.models import *
 from accounts.models import Student
 from .models import *
-from main.models import Enroll, Announcement, Takes_note
+from main.models import Enroll, Announcement, Takes_note, Course_Topic
 from slugify import slugify
 
 
@@ -88,7 +88,11 @@ class CourseDetailView(View):
     def get(self, request, course_slug):
         form = GiftInfo()
 
-        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')
+        if len(list(course)) != 0:
+            course = course[0]
+        else:
+            return HttpResponseRedirect('/')
         cno = course.cno
 
         lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
@@ -118,7 +122,7 @@ class CourseDetailView(View):
             'is_enrolled': is_enrolled,
             'user_type': user_type
         }
-        return render(request, 'course_detail.html', context)
+        return render(request, 'courses/course_detail.html', context)
 
     def post(self, request, course_slug):
         cursor = connection.cursor()
@@ -594,21 +598,62 @@ class AddLectureToCourseView(View):
         return HttpResponseRedirect(request.path)
 
 
-def change_course_settings(request, course_slug):
-    cursor = connection.cursor()
-    cursor.execute('select owner_id from courses_course where slug = %s;', [course_slug])
-    owner_id_row = cursor.fetchone()
-    if not owner_id_row:  # meaning this course does not exist
-        return HttpResponseRedirect('/')  # return to main page
+class ChangeCourseSettingsView(View):
+    template_name = "courses/course_edit.html"
 
-    owner_id = owner_id_row[0]
+    def check_validity(self, course_slug):
+        cursor = connection.cursor()
+        cursor.execute('select cno from courses_course where slug = %s;', [course_slug])
+        cno_row = cursor.fetchone()
+        if not cno_row:  # this means that the course does not exist
+            return -1
+        cno = cno_row[0]
 
-    if request.user.id != owner_id:  # return to main page if the owner is not
-        return HttpResponseRedirect('/' + course_slug)
+        cursor.execute('select course_topic_id, topicname_id from main_course_topic where cno_id = %s;', [cno])
+        course_topic_id = cursor.fetchone()[0]
 
-    if request.method == "POST":
-        return
-    else:
+        cursor.close()
+
+        return cno, course_topic_id
+
+    def get(self, request, course_slug):
+        if request.user.is_authenticated:  # if the user has logged in
+            cno_course_topic_id = self.check_validity(course_slug)
+
+            if cno_course_topic_id == -1:
+                return HttpResponseRedirect('/')
+            cno, course_topic_id = cno_course_topic_id[0], cno_course_topic_id[1]
+
+            course = Course.objects.raw('select * from courses_course where cno = %s;', [cno])[0]
+            if course.owner_id != request.user.id:
+                return HttpResponseRedirect('/')
+
+            course_form = EditCourseForm(instance=course)
+            return render(request, self.template_name, {'course_form': course_form, 'course': course})
+        return HttpResponseRedirect('/')
+
+    def post(self, request, course_slug):
+        cno_course_topic_id = self.check_validity(course_slug)
+
+        if cno_course_topic_id == -1:
+            return HttpResponseRedirect('/')
+        cno, course_topic_id = cno_course_topic_id[0], cno_course_topic_id[1]
+        course_form = EditCourseForm(request.POST, request.FILES,
+                                     instance=Course.objects.raw('select * from courses_course where cno = %s;',
+                                                                 [cno])[0])
+        if course_form.is_valid():
+            cname = course_form.cleaned_data['cname']
+            price = course_form.cleaned_data['price']
+            course_img = course_form.cleaned_data['course_img']
+            description = course_form.cleaned_data['description']
+            private = course_form.cleaned_data['private']
+
+            cursor = connection.cursor()
+            cursor.execute('update courses_course '
+                           'set cname = %s, price = %s, course_img = %s, description = %s, is_private = %s '
+                           'where cno = %s;', [cname, price, course_img, description, private, cno])
+            cursor.close()
+
         return HttpResponseRedirect('/' + course_slug)
 
 

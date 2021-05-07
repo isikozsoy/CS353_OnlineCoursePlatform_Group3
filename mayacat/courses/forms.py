@@ -1,5 +1,6 @@
 from django import forms
 from .models import Course
+from main.models import Course_Topic
 
 
 class ComplainForm(forms.Form):
@@ -35,6 +36,33 @@ class CreateCourseForm(forms.Form):
     description = forms.CharField(label='Description', max_length=4000,
                                   widget=forms.Textarea(attrs={'class': 'form-control'}))
     private = forms.BooleanField(label='Private or not?', required=False)
+
+
+class EditCourseForm(forms.ModelForm):
+    course_img = forms.ImageField(label='Thumbnail', widget=forms.FileInput(attrs={'class': 'form-control-file',
+                                                                                   'enctype': 'multipart/form-data',
+                                                                                   'onchange': 'showPreview(event)',
+                                                                                   'id':'img-add'}))
+    cname = forms.CharField(label='Course name:', max_length=50,
+                            widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A Course Name'}))
+    price = forms.DecimalField(label='Price (up to $9999.99)', max_digits=6, decimal_places=2,
+                               widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    description = forms.CharField(label='Description', max_length=4000,
+                                  widget=forms.Textarea(attrs={'class': 'form-control'}))
+    private = forms.BooleanField(label='Private or not?', required=False)
+
+    class Meta:
+        model = Course
+        fields = ('course_img', 'cname', 'price', 'description', 'is_private')
+
+
+class EditTopicForm(forms.ModelForm):
+    topic = forms.ChoiceField(label='Topic', choices=TOPIC_CHOICES, widget=forms.Select(
+        attrs={'class': "form-control"}))
+
+    class Meta:
+        model = Course_Topic
+        fields = ('topicname',)
 
 
 class CreateLectureForm(forms.Form):
