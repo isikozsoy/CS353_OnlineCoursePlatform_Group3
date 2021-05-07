@@ -1,0 +1,31 @@
+{% extends "main/base.html" %}
+
+
+{% block main_content %}
+    <h1>{{curcourse.cname}} is finished by {{user}}</h1>
+
+    {% if curcomment == "" %}
+    <form action="{{url}}" method="post">
+       {% csrf_token %}
+        <label for="comment">Your Comment: </label>
+        <input id="comment" type="text" name="comment" value="{{ comment }}">
+        <input type="submit" value="OK">
+    </form>
+    {%else%}
+    <a>{{curcomment}}</a>
+    <br>
+    {% endif %}
+    {% if currate == 0 %}
+    <form action="{{url}}" method="post">
+   {% csrf_token %}
+    <label for="rate">Your Rate: </label>
+    <input id="rate" type="text" name="rate" value="{{ rate }}">
+    <input type="submit" value="OK">
+  </form>
+    {%else%}
+    <a>{{currate}}</a>
+    <br>
+    {% endif %}
+
+
+{% endblock %}
