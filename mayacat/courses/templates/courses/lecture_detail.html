@@ -31,10 +31,15 @@
   <h4>Owner</h4>
   <a>{{ course.owner_id }} <br></a>
 
-  <h4>Contributors</h4>
+    <h4>Contributors</h4>
     {% for contributor in contributors %}
-  <a href = /{{contributor}}>{{contributor}} {{ contributor.username }} <br></a>
-  {% endfor %}
+      <a href = /{{contributor}}>{{contributor}} {{ contributor.username }} <br></a>
+    {% endfor %}
+
+    <h4>Teaches</h4>
+    {% for teacher in teaches %}
+        <a href = /{{teacher}}>{{teacher}} {{ teacher.username }} <br></a>
+    {% endfor %}
 
   <h3>Including</h3>
   <a>{{lecturecnt}} lecture is included.<br></a>
@@ -59,7 +64,7 @@
 
   <h2>Announcements</h2>
   {% for announcement in announcements %}
-  <a>{{ announcement.ann_text }} {{ announcement.ann_date }} {{ announcement.i_user_id }}</a>
+  <a>{{ announcement.ann_text }} {{ announcement.ann_date }} {{ announcement.i_user_id }} {{announcement.username}}</a>
   {% endfor %}
 
   <h2>Notes</h2>

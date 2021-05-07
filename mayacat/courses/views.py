@@ -149,7 +149,8 @@ class LectureView(View):
                 lecandprog[i] = (lectures[i], "Unwatched")
 
 
-        announcements = Announcement.objects.raw('''SELECT * FROM main_announcement as MA WHERE MA.cno_id = %s;''', [cno])
+        announcements = Announcement.objects.raw('''SELECT * FROM main_announcement as MA,auth_user as U 
+                                                    WHERE MA.cno_id = %s and MA.i_user_id = U.id;''', [cno])
         #announcements = Announcement.objects.filter(cno_id=course.cno)
 
         notes = Takes_note.objects.raw( '''SELECT * FROM main_takes_note as MTN 
@@ -193,6 +194,17 @@ class LectureView(View):
             print(contributor_list[i][0])
         print("Contributors:",contributors)
 
+        cursor.execute('''SELECT U.username 
+                                FROM main_teaches AS MT,auth_user AS U
+                                WHERE MT.lecture_no_id = %s AND MT.user_id = U.id;''', [lecture.lecture_no])
+
+        teaches_list = cursor.fetchall()
+        teaches = [None] * len(teaches_list)
+        for i in range(0, len(teaches)):
+            teaches[i] = teaches_list[i][0]
+            print(teaches_list[i][0])
+        print("Teaches:", teaches)
+
         form_lecmat_assignment = CreateAssignmentAndLectureMaterialForm()
 
         cursor = connection.cursor()
@@ -223,7 +235,8 @@ class LectureView(View):
             'contributors' : contributors,
             'form_lecmat_assignment': form_lecmat_assignment,
             'user_type': user_type,
-            'isFinished' : isFinished
+            'isFinished' : isFinished,
+            'teaches' : teaches
         }
         cursor.close()
 
