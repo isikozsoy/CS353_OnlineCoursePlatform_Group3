@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "main/base.html" %}
+
+
+{% block main_content %}
   <h1>Lecture Details</h1>
   {% if curlecture is not None %}
- <h3>{{ curlecture.lecture_name }}</h3>
+  <h3>{{ curlecture.lecture_name }}</h3>
 
 
 
@@ -19,16 +16,25 @@
 
   <h2>{{ course.cname }}</h2>
   {% for lecture,prog in lecandprog %}
-  <a href="{{ lecture.get_url }}">{{ lecture }}</a>
-  <a>{{prog}}<br></a>
+    <a href="{{ lecture.get_url }}">{{ lecture }}</a>
+    <a>{{prog}}<br></a>
   {% endfor %}
+
+  {% if isFinished == 1 %}
+    <a>{{ course.slug }}/finish</a>
+    <a href="{{ course.get_url }}/finish">Finish</a>
+  {% endif %}
 
   <h2>Overview</h2>
   <h3>Description</h3>
   <a>{{course.description}}</a>
   <h4>Owner</h4>
   <a>{{ course.owner_id }} <br></a>
+
   <h4>Contributors</h4>
+    {% for contributor in contributors %}
+  <a href = /{{contributor}}>{{contributor}} {{ contributor.username }} <br></a>
+  {% endfor %}
 
   <h3>Including</h3>
   <a>{{lecturecnt}} lecture is included.<br></a>
@@ -57,10 +63,18 @@
   {% endfor %}
 
   <h2>Notes</h2>
-  {% for note in notes %}
-  <a>{{ note.note }} {{ note.s_username_id }} </a>
-  {% endfor %}
 
+  <form action="{{url}}" method="post">
+   {% csrf_token %}
+    <label for="note">New Note: </label>
+    <input id="note" type="text" name="note" value="{{ note }}">
+    <input type="submit" value="OK">
+  </form>
+  <br>
+  {% for note in notes %}
+  <a>{{ note.note }} {{ note.s_username_id }} <br></a>
+  {% endfor %}
+ <br>
   <h2>Q&A</h2>
 
 
@@ -69,18 +83,25 @@
     <label for="question">Your Question: </label>
     <input id="question" type="text" name="question" value="{{ question }}">
     <input type="submit" value="OK">
- </form>
+  </form>
+  <br>
 
   {% for question,answers in qanda %}
   <a>Question : {{ question.postno }} {{ question.post }}<br> </a>
   {% for a in answers %}
   <a>Answer : {{ a.postno }} {{ a.post }}<br> </a>
   {% endfor %}
+  <form action="{{url}}/answer/{{question.postno}}" method="post">
+   {% csrf_token %}
+    <label for="answer">Your Answer: </label>
+    <input id="answer" type="text" name="answer" value="{{ answer }}">
+    <input type="submit" value="OK">
+  </form>
   <br>
   {% endfor %}
 
   {% else %}
     <h2>There is no lecture by this name.</h2>
   {% endif %}
-</body>
-</html>
+
+{% endblock %}
