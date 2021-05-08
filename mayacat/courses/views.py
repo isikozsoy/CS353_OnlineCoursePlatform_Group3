@@ -5,6 +5,7 @@ from django.db import connection, connections
 from main.models import *
 from courses.models import *
 from accounts.models import *
+from datetime import date
 
 from .forms import *
 
@@ -23,8 +24,137 @@ class CourseListView(ListView):
     model = Course
 
 
-class CourseDetailView(DetailView):
-    model = Course
+class CourseDetailView(View):
+    def get(self, request, course_slug):
+        #form = GiftInfo()
+        cursor = connection.cursor()
+
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
+
+        cno = course.cno
+
+        cursor.execute('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
+
+        lecture_list = cursor.fetchone()
+
+        if lecture_list:
+            lecture_list = cursor.fetchone()[0]
+
+        is_wish = len(list(Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
+                                              [cno, request.user.id])))
+
+        registered = len(list(Enroll.objects.raw('SELECT * FROM main_enroll WHERE cno_id = %s AND user_id = %s;',
+                                                  [cno, request.user.id])))
+
+        lectures = Lecture.objects.raw('''SELECT * FROM courses_lecture as CL WHERE CL.cno_id = %s;''', [cno])
+        lecture_count = len(lectures)
+
+        cursor.execute('SELECT AVG(score) FROM main_finishes WHERE cno_id = %s AND score !=0', [cno])
+        rating = cursor.fetchone()[0]
+        print("Rating:",rating)
+
+        cursor.execute('SELECT * '
+                       'FROM main_advertisement '
+                       'WHERE cno_id = %s AND status = 1 '
+                       'AND (CURRENT_TIMESTAMP BETWEEN startdate AND finishdate) ',[cno])
+
+        advertisement_list = cursor.fetchone()
+        print("advertisement",advertisement_list)
+
+        advertisement = {
+            'advertisement' : advertisement_list[1],
+            'ad_username_id': advertisement_list[6],
+            'startdate' : advertisement_list[4]
+        }
+
+
+        cursor.execute('SELECT comment FROM main_finishes WHERE cno_id = %s;', [cno])
+
+        comment_list = cursor.fetchall()
+        comments = [None]*len(comment_list)
+        for i in range(0,len(comment_list)):
+            comments[i] = comment_list[i][0]
+
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
+        discounted_price = course.price
+
+
+        today = date.today()
+        print("Today:",today)
+
+        cursor.execute('''SELECT * FROM main_discount AS MD 
+                            WHERE MD.cno_id = %s AND (CURRENT_TIMESTAMP BETWEEN MD.startdate AND MD.finishdate) 
+                                AND MD.situation = 1 ;''',
+                                   [course.cno])
+        discounts = cursor.fetchall()
+        print("Discount: ",discounts)
+        if(len(discounts)>0):
+            print("NEW PRICE",discounts[0][2])
+            discounted_price = discounts[0][2]
+
+        context = {
+            'lecture_list': lecture_list,
+            #'form': form,
+            'course': course,
+            'is_wish': is_wish,
+            'registered': registered,
+            'user_type': user_type,
+            'lecture_count': lecture_count,
+            'rating': rating,
+            'advertisement': advertisement,
+            'comments': comments,
+            'discounted_price' : discounted_price
+        }
+
+        cursor.close()
+        return render(request, 'courses/course_detail.html', context)
+
+    def post(self, request, course_slug):
+        cursor = connection.cursor()
+        form = GiftInfo(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            users = Student.objects.raw('SELECT * '
+                                        'FROM accounts_student '
+                                        'INNER JOIN auth_user '
+                                        'ON defaultuser_ptr_id = id '
+                                        'WHERE username = %s;',
+                                        [username])
+            if len(list(users)) == 0:
+                pass
+                # INVALID USER
+            else:
+                receiver_id = users[0].user_id
+                course_queue = Course.objects.raw('SELECT * '
+                                                  'FROM courses_course '
+                                                  'WHERE slug = %s', [course_slug])
+                if len(list(course_queue)) != 0:
+                    course = Course.objects.raw('SELECT * '
+                                                'FROM courses_course '
+                                                'WHERE slug = %s LIMIT 1', [course_slug])[0]
+                    cno = course.cno
+                else:
+                    return
+
+                cursor.execute('INSERT INTO main_gift (sender_id, receiver_id, course_id, date) VALUES (%s, %s);',
+                               [request.user.id, receiver_id, cno, get_today()])
+                cursor.close()
+                cursor = connection.cursor()
+                cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
+                               [cno, receiver_id])
+                cursor.close()
+                return HttpResponseRedirect('my_courses')
+        cursor.close()
+        return HttpResponse("Invalid input. Go back and try again...")
 
 
 class AddAnswerView(View):
