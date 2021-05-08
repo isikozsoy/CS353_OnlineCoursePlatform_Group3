@@ -658,18 +658,25 @@ class OfferAdView(View):
         return render(request, self.template_name, context)
 
     def post(self, request, course_slug):
-        form = OfferAdForm(request.POST)
-        print("-----------I am not  valid----------")
+        form = OfferAdForm(request.POST, request.FILES)
         if form.is_valid():
-            print("-----------I am valid----------")
             ad_img = form.cleaned_data["ad_img"]
             status = 1
             price = form.cleaned_data["price"]
             startdate = form.cleaned_data["start_date"]
             finishdate = form.cleaned_data["end_date"]
+
             cursor = connection.cursor()
-            cursor.execute('INSERT INTO main_advertisement (advertisement, status, payment, startdate, finishdate)'
-                           ' VALUES (%s, %s, %s, %s, %s);',
-                           [ad_img, status, price, startdate, finishdate])
+            cursor.execute('select cno from courses_course where slug = %s;', [course_slug])
+            cno_row = cursor.fetchone()
+            cursor.close()
+            if not cno_row:  # no course with this course slug (i.e. URL)
+                return HttpResponseRedirect('/')  # return to main page
+            cno = cno_row[0]
+
+            cursor = connection.cursor()
+            cursor.execute('INSERT INTO main_advertisement (advertisement, status, payment, startdate, finishdate,'
+                           ' ad_username_id, cno_id) VALUES (%s, %s, %s, %s, %s, %s, %s);',
+                           [ad_img, status, price, startdate, finishdate, request.user.id, cno])
             cursor.close()
         return redirect("main:offers")

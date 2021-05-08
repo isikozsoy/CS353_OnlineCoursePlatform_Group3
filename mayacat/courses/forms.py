@@ -39,7 +39,7 @@ class CreateCourseForm(forms.Form):
 
 
 class OfferAdForm(forms.Form):
-    add_img = forms.ImageField(label='Advertisement Image', widget=forms.FileInput(
+    ad_img = forms.ImageField(label='Advertisement Image', widget=forms.FileInput(
                                attrs={'class': 'form-control-file', 'enctype': 'multipart/form-data'}))
     price = forms.DecimalField(label='Offered Price (TL)', max_digits=6, decimal_places=2,
                                widget=forms.NumberInput(attrs={'class': 'form-control'}))
