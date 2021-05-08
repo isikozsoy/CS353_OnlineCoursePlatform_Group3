@@ -90,14 +90,9 @@ class CourseDetailView(View):
         form = GiftInfo()
         cursor = connection.cursor()
 
-        course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
-
-        if len(course_queue) > 0:
-            course = course_queue[0]
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
 
         cno = course.cno
-
-        course = Course.objects.raw('SELECT * FROM courses_course WHERE cno = %s', [cno])
 
         cursor.execute('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
 

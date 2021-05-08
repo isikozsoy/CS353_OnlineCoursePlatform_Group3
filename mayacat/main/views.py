@@ -208,6 +208,14 @@ class ShoppingCartView(View):
         return render(request, 'main/shopping_cart.html', {'user_type': user_type, 'items': items_on_cart,
                                                            'count': count, 'total_price': total_price})
 
+def get(self, request, course_slug):
+    cursor = connection.cursor()
+
+    course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
+    cno = course.cno
+
+    cursor.execute('INSERT INTO main_inside_cart (cno_id, user_id) VALUES (%s, %s);', [cno, request.user_id])
+    return get(self, request)
 
 class ShoppingCheckoutView(View):
     def get(self, request):
