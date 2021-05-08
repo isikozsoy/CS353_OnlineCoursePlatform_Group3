@@ -8,7 +8,7 @@ app_name = 'main'
 urlpatterns = [
 
     path('', MainView.as_view(), name='list'),
-    path('<course_slug>/cart', get, name='add_to_cart'),
+    path('<course_slug>/cart', add_to_cart, name='add_to_cart'),
     path('cart', ShoppingCartView.as_view(), name='shopping_cart'),
     path('checkout', ShoppingCheckoutView.as_view(), name='checkout'),
     path('wishlist', WishlistView.as_view(), name='wishlist_items'),

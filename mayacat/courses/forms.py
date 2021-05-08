@@ -50,10 +50,3 @@ class CreateAssignmentAndLectureMaterialForm(forms.Form):
                                          widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     pdf_url_lecmat = forms.CharField(label='PDF Link from Google Drive', max_length=100,
                                      widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
-
-
-class Checkout(forms.Form):
-    card_name = forms.CharField(label='Card Name', max_length=50)
-    card_number = forms.CharField(label='Card Number', max_length=50)
-    expiry_date = forms.CharField(label='Expiry Date', max_length=50)
-    security_code = forms.CharField(label='Security Code', max_length=50)

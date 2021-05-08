@@ -87,7 +87,7 @@ class CourseListView(ListView):
 
 class CourseDetailView(View):
     def get(self, request, course_slug):
-        form = GiftInfo()
+        #form = GiftInfo()
         cursor = connection.cursor()
 
         course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
@@ -142,8 +142,8 @@ class CourseDetailView(View):
 
         context = {
             'lecture_list': lecture_list,
-            'form': form,
-            'object': course,
+            #'form': form,
+            'course': course,
             'is_wish': is_wish,
             'registered': registered,
             'user_type': user_type,
@@ -153,6 +153,7 @@ class CourseDetailView(View):
             'comments': comments
         }
 
+        cursor.close()
         return render(request, 'courses/course_detail.html', context)
 
     def post(self, request, course_slug):

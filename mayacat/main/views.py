@@ -208,14 +208,15 @@ class ShoppingCartView(View):
         return render(request, 'main/shopping_cart.html', {'user_type': user_type, 'items': items_on_cart,
                                                            'count': count, 'total_price': total_price})
 
-def get(self, request, course_slug):
+def add_to_cart(self, request, course_slug):
     cursor = connection.cursor()
 
     course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
     cno = course.cno
 
     cursor.execute('INSERT INTO main_inside_cart (cno_id, user_id) VALUES (%s, %s);', [cno, request.user_id])
-    return get(self, request)
+
+    return ShoppingCartView.get(self, request)
 
 class ShoppingCheckoutView(View):
     def get(self, request):
@@ -231,3 +232,23 @@ class ShoppingCheckoutView(View):
             user_type = row[0]
 
         return render(request, 'main/checkout.html', {'user_type': user_type})
+
+    def post(self, request):
+        cursor = connection.cursor()
+
+        cursor.execute('DELETE FROM main_inside_cart WHERE user_id = %s', [request.user_id])
+
+        cursor.execute('SELECT slug '
+                       'FROM courses_course '
+                       'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
+                       'WHERE mic.username_id = %s;', [request.user.id])
+
+        items_on_cart = cursor.fetchone()
+
+        if (items_on_cart):
+            items_on_cart = cursor.fetchone()[0]
+
+        #for item in items_on_cart:
+         #   courses.add_to_my_courses(request, item):
+
+        return ShoppingCartView.get(self, request)
