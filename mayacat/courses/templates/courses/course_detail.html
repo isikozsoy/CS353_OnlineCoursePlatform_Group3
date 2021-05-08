@@ -3,64 +3,88 @@
 
 {% block main_content %}
 
-    <h1>Course Details</h1>
-    <h1>{{ course.cname }}</h1>
-    <h2>by {{ course.owner }}</h2>
+    {% if course is not None %}
 
-    <!-- <h2>Rating: {{rating}}</h2> -->
+        <h1>Course Details</h1>
+        <h1>{{ course.cname }}</h1>
+        <h3>by {{ course.owner }}<br></h3>
 
-    <h3>Description</h3>
-    <a>{{ course.description }}</a>
+        <h3>Rating: {{rating}}</h3>
 
-    <h3>Including</h3>
-    <a>{{ lecture_count }} lecture is included.<br></a>
+        <h3>Description</h3>
+        <a>{{ course.description }}</a>
 
-    <img src = {{ course.course_img }} width="290" height="180" ></img>
+        <h3>Including</h3>
+        <a>{{ lecture_count }} lecture is included.<br></a>
 
-<!--
-    {% if advertisement is not None %}
-        <img src = {{ advertisement }} width="290" height="180" ></img>
-    {% endif %}
--->
-    {% if user_type == 2 %}
-        <a href="/offer_ad/{{ course.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
+        <img src = {{ course.course_img }} width="290" height="180" ></img>
 
-        {% if is_wish == 0 %}
-            <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Favorites</a>
+
+        {% if advertisement is not None %}
+            <a><br>Advertisement<br></a>
+            <a>{{advertisement.startdate}} ad username: {{advertisement.ad_username_id}}<br></a>
+            <img src = {{ advertisement.advertisement }} width="290" height="180" ></img>
+        {% endif %}
+
+
+        {% if user_type == 2 %}
+            <a href="/offer_ad/{{ course.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
+
+            {% if is_wish == 0 %}
+                <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Favorites</a>
+            {% else %}
+                <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Favorites</a>
+            {% endif %}
+
         {% else %}
-            <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Favorites</a>
+            <h3>Price {{course.price}}</h3>
+
+            {% if course.price != discounted_price %}
+                <h3>Discounted Price {{discounted_price}}</h3>
+            {% endif %}
+
+            <a href="{{course.slug}}/cart" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Cart</a>
+
+            {% if is_wish == 0 %}
+                <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
+            {% else %}
+                <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Wishlist</a>
+            {% endif %}
+
+        {% endif %}
+
+        {% if comments is not None %}
+            <ol>
+                <h3><br>Lectures:<br></h3>
+                {% for lecture in lecture_list %}
+                    {% if registered == 0 %}
+                        <li><p>{{ lecture.lecture_name }}</p></li>
+                    {% else %}
+                        <li><a href="/{{course_slug}}/{{lecture.lecture_slug}}">{{ lecture.lecture_name }}</a></li>
+                    {% endif %}
+              {% endfor %}
+            </ol>
+
+        {% else %}
+            <h3><br>No lectures in this course :(<br></h3>
+        {% endif %}
+
+
+        {% if comments is not None %}
+            <h3><br>Comments:<br></h3>
+            <ol>
+            {% for comment in comments %}
+                <li>{{ comment }}</li>
+            {% endfor %}
+            </ol>
+        {% else %}
+            <h3><br>No comments for this course :(<br></h3>
         {% endif %}
 
     {% else %}
-        <h3>Price {{course.price}}</h3>
-        <a href="{{course.slug}}/cart" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Cart</a>
 
-        {% if is_wish == 0 %}
-            <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
-        {% else %}
-            <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Wishlist</a>
-        {% endif %}
+        <h1>There is no such course in our database :/</h1>
 
-    {% endif %}
-
-
-    <ol>
-      {% for lecture in lecture_list %}
-        {% if registered == 0 %}
-            <li><p>{{ lecture.lecture_name }}</p></li>
-        {% else %}
-            <li><a href="/{{course_slug}}/{{lecture.lecture_slug}}">{{ lecture.lecture_name }}</a></li>
-        {% endif %}
-      {% endfor %}
-    </ol>
-
-
-    {% if comments is not None %}
-        <ol>
-        {% for comment in comments %}
-            <li>{{ comment }}</li>
-        {% endfor %}
-        </ol>
     {% endif %}
 
 {% endblock %}

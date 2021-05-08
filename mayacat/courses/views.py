@@ -13,6 +13,7 @@ from accounts.models import Student
 from .models import *
 from main.models import Enroll, Announcement, Takes_note
 from slugify import slugify
+from datetime import date
 
 
 def get_today():
@@ -96,10 +97,17 @@ class CourseDetailView(View):
 
         cursor.execute('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
 
-        lecture_list = cursor.fetchone()
+        lecture_list = cursor.fetchall()
 
-        if lecture_list:
-            lecture_list = cursor.fetchone()[0]
+        if (len(lecture_list) > 0):
+            lectures = [None] * len(lecture_list)
+            for i in range(0, len(lecture_list)):
+                lectures[i] = {
+                    'lecture_slug': lecture_list[i][2],
+                    'lecture_name': lecture_list[i][1],
+                }
+        else:
+            lectures = None
 
         is_wish = len(list(Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
                                               [cno, request.user.id])))
@@ -110,25 +118,34 @@ class CourseDetailView(View):
         lectures = Lecture.objects.raw('''SELECT * FROM courses_lecture as CL WHERE CL.cno_id = %s;''', [cno])
         lecture_count = len(lectures)
 
-        #cursor.execute('SELECT AVG(score) FROM main_rate WHERE cno_id = %s', [course_id])
-        #rating = cursor.fetchone()[0]
+        cursor.execute('SELECT AVG(score) FROM main_finishes WHERE cno_id = %s AND score !=0', [cno])
+        rating = cursor.fetchone()[0]
+        print("Rating:",rating)
 
-        #now = datetime.date.today()
+        cursor.execute('SELECT * '
+                       'FROM main_advertisement '
+                       'WHERE cno_id = %s AND status = 1 '
+                       'AND (CURRENT_TIMESTAMP BETWEEN startdate AND finishdate) ',[cno])
 
-        #cursor.execute('SELECT advertisement '
-         #              'FROM main_advertisement '
-          #             'WHERE cno_id = %s AND status = 1 '
-           #            'AND now > startdate '
-            #           'AND now < finishdate',[cno])
+        advertisement_list = cursor.fetchone()
+        print("advertisement",advertisement_list)
 
-        #advertisement = cursor.fetchone()[0]
+        advertisement = None
+
+        if (advertisement_list is not None ):
+            advertisement = {
+                'advertisement' : advertisement_list[1],
+                'ad_username_id': advertisement_list[6],
+                'startdate' : advertisement_list[4]
+            }
+
 
         cursor.execute('SELECT comment FROM main_finishes WHERE cno_id = %s;', [cno])
 
-        comments = cursor.fetchone()
-
-        if comments:
-            comments = cursor.fetchone()[0]
+        comment_list = cursor.fetchall()
+        comments = [None]*len(comment_list)
+        for i in range(0,len(comment_list)):
+            comments[i] = comment_list[i][0]
 
         cursor.execute('select type '
                        'from auth_user '
@@ -140,17 +157,34 @@ class CourseDetailView(View):
         if row:
             user_type = row[0]
 
+        discounted_price = course.price
+
+
+        today = date.today()
+        print("Today:",today)
+
+        cursor.execute('''SELECT * FROM main_discount AS MD 
+                            WHERE MD.cno_id = %s AND (CURRENT_TIMESTAMP BETWEEN MD.startdate AND MD.finishdate) 
+                                AND MD.situation = 1 ;''',
+                                   [course.cno])
+        discounts = cursor.fetchall()
+        print("Discount: ",discounts)
+        if(len(discounts)>0):
+            print("NEW PRICE",discounts[0][2])
+            discounted_price = discounts[0][2]
+
         context = {
-            'lecture_list': lecture_list,
+            'lecture_list': lectures,
             #'form': form,
             'course': course,
             'is_wish': is_wish,
             'registered': registered,
             'user_type': user_type,
             'lecture_count': lecture_count,
-            #'rating': rating,
-            #'advertisement': advertisement,
-            'comments': comments
+            'rating': rating,
+            'advertisement': advertisement,
+            'comments': comments,
+            'discounted_price' : discounted_price
         }
 
         cursor.close()

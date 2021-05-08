@@ -207,6 +207,7 @@ class ShoppingCartView(View):
             cursor.execute('INSERT INTO main_inside_cart (cno_id, username_id) VALUES (%s, %s);',
                            [cno, request.user.id])
 
+            '''
             if not (len(list(my_courses)) == 0 or len(list(my_cart)) == 0):
                 cursor.execute('INSERT INTO main_gift ( course_id, sender_id) VALUES (%s, %s);',
                                [cno, request.user.id])
@@ -214,7 +215,8 @@ class ShoppingCartView(View):
                 cursor.execute('UPDATE main_inside_cart '
                                 'SET receviver_username_id = 1 '
                                 'WHERE cno_id = %s AND username_id = %s);', [cno, request.user.id])
-
+            
+            '''
 
         user = request.user
 
@@ -246,7 +248,7 @@ class ShoppingCartView(View):
                     'slug': items_on_cart[i][3],
                     'course_img': items_on_cart[i][6],
                     'owner_id': items_on_cart[i][8],
-                    'isGift': items_on_cart[i][9],
+                    #'isGift': items_on_cart[i][9],
                 }
         else:
             items = None
