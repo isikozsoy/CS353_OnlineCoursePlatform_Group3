@@ -185,18 +185,36 @@ class ShoppingCartView(View):
         if row:
             user_type = row[0]
 
-
+        # log in before buy anything
         if user_type == -1:
             return HttpResponseRedirect('/')
 
-
+        # The function is called from (add to cart) button
         if(course_slug is not None):
 
             course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
             cno = course.cno
 
+
+            my_courses = Enroll.objects.raw('SELECT * '
+                                            'FROM main_enroll '
+                                            'WHERE user_id = %s AND cno_id = %s;', [request.user.id, cno])
+
+            my_cart = Inside_Cart.objects.raw('SELECT * '
+                                              'FROM main_inside_cart '
+                                              'WHERE username_id = %s AND cno_id = %s;', [request.user.id, cno])
+
             cursor.execute('INSERT INTO main_inside_cart (cno_id, username_id) VALUES (%s, %s);',
                            [cno, request.user.id])
+
+            if not (len(list(my_courses)) == 0 or len(list(my_cart)) == 0):
+                cursor.execute('INSERT INTO main_gift ( course_id, sender_id) VALUES (%s, %s);',
+                               [cno, request.user.id])
+
+                cursor.execute('UPDATE main_inside_cart '
+                                'SET receviver_username_id = 1 '
+                                'WHERE cno_id = %s AND username_id = %s);', [cno, request.user.id])
+
 
         user = request.user
 
@@ -213,7 +231,7 @@ class ShoppingCartView(View):
         total_price = cursor.fetchone()[0]
 
 
-        cursor.execute('SELECT cno, cname, price, slug, situation, is_private, course_img, description, owner_id '
+        cursor.execute('SELECT cno, cname, price, slug, situation, is_private, course_img, description, owner_id, receiver_username_id '
                        'FROM courses_course AS cc, main_inside_cart AS mic '
                        'WHERE cc.cno = mic.cno_id AND mic.username_id = %s;', [request.user.id])
         items_on_cart = cursor.fetchall()
@@ -228,6 +246,7 @@ class ShoppingCartView(View):
                     'slug': items_on_cart[i][3],
                     'course_img': items_on_cart[i][6],
                     'owner_id': items_on_cart[i][8],
+                    'isGift': items_on_cart[i][9],
                 }
         else:
             items = None
@@ -241,12 +260,32 @@ class ShoppingCartView(View):
         cursor = connection.cursor()
 
         course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
+        cno = course.cno
 
         cursor.execute('DELETE '
                        'FROM main_inside_cart '
-                       'WHERE course.slug = %s AND username_id = %s', [course_slug, request.user.id])
+                       'WHERE cno_id = %s AND username_id = %s', [cno, request.user.id])
 
-        course_slug = None
+        return HttpResponseRedirect('/cart')
+
+    def post(self, request, course_slug):
+        cursor = connection.cursor()
+
+        pull = Gift(request.POST)
+
+        if pull.is_valid():
+
+            receiver_id = pull.cleaned_data['receiver_id']
+
+            course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
+            cno = course.cno
+
+            if(receiver_id):
+                cursor.execute('UPDATE main_gift '
+                               'SET receviver_id = %s '
+                               'WHERE course_id = %s AND sender_id = %s',[receiver_id, cno, request.user.id])
+
+
         return HttpResponseRedirect(request.path)
 
 class ShoppingCheckoutView(View):
@@ -267,7 +306,7 @@ class ShoppingCheckoutView(View):
     def post(self, request):
         cursor = connection.cursor()
 
-        cursor.execute('SELECT slug '
+        cursor.execute('SELECT slug, receiver_username_id '
                        'FROM courses_course '
                        'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
                        'WHERE mic.username_id = %s;', [request.user.id])
@@ -279,6 +318,7 @@ class ShoppingCheckoutView(View):
             for i in range(0, len(items_on_cart)):
                 items[i] = {
                     'slug': items_on_cart[i][0],
+                    #'isGift': items_on_cart[i][1],
                 }
         else:
             items = None
@@ -291,10 +331,11 @@ class ShoppingCheckoutView(View):
         return HttpResponseRedirect('/cart')
 
 
-def add_to_my_courses(request, course_slug):
+def add_to_my_courses(request, item):
 
     cursor = connection.cursor()
-    course_slug = course_slug.get('slug')
+    course_slug = item.get('slug')
+    #isGift = item.get('isGift')
 
     course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
     cno = course.cno
@@ -305,6 +346,12 @@ def add_to_my_courses(request, course_slug):
                                     'FROM main_enroll '
                                     'WHERE user_id = %s AND cno_id = %s;',
                                     [user_id, cno])
+    '''
+    
+    if isGift != 0:
+        cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
+                       [isGift, user_id])
+    '''
 
     if len(list(my_courses)) == 0:
         cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',

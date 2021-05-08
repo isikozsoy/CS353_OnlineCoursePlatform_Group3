@@ -6,3 +6,6 @@ class Checkout(forms.Form):
     card_number = forms.CharField(label='Card Number', max_length = 16)
     expiry_date = forms.CharField(label='Expiry Date', max_length = 5) # will be worked on
     security_code = forms.CharField(label='Security Code', max_length = 3)
+
+class Gift(forms.Form):
+    receiver_id = forms.CharField(label='Receiver ID', max_length = 11)
