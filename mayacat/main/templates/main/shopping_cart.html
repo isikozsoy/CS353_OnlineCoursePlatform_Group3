@@ -14,9 +14,13 @@
 
         <ol>
             {% for item in items %}
-                <li>{{ item.course_img }}{{ item.cname }}\n{{ item.price }}
+                <li>
+                    <img src = {{ course.course_img }} width="290" height="180" ></img>
+                    <br />Name: {{ item.cname }} <br />Price: {{ item.price }} <br />
                     <a href="wishlist/add_to_wishlist/{{course_slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Wishlist</a>
-                    <a href="" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Trash</a>
+                    <form action = "/shopping_cart" method = "trash">
+                        <a class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Trash</a>
+                    </form>
                 </li>
             {% endfor %}
         </ol>
