@@ -172,7 +172,23 @@ def course_detail(request, course_slug):
 class ShoppingCartView(View):
 
     def get(self, request, course_slug = None):
+
         cursor = connection.cursor()
+
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
+
+        if user_type == -1:
+            return HttpResponseRedirect('/')
+
 
         if(course_slug is not None):
 
@@ -219,17 +235,6 @@ class ShoppingCartView(View):
             total_price = 0
 
 
-        cursor = connection.cursor()
-        cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
-                       'where id = %s;', [request.user.id])
-
-        row = cursor.fetchone()
-        user_type = -1
-        if row:
-            user_type = row[0]
-
         return render(request, 'main/shopping_cart.html', {'user_type': user_type, 'items': items,
                                                            'count': count, 'total_price': total_price})
     def trash(self, request, course_slug):
@@ -262,19 +267,47 @@ class ShoppingCheckoutView(View):
     def post(self, request):
         cursor = connection.cursor()
 
-        cursor.execute('DELETE FROM main_inside_cart WHERE username_id = %s', [request.user.id])
-
         cursor.execute('SELECT slug '
                        'FROM courses_course '
                        'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
                        'WHERE mic.username_id = %s;', [request.user.id])
 
-        items_on_cart = cursor.fetchone()
+        items_on_cart = cursor.fetchall()
 
-        if (items_on_cart):
-            items_on_cart = cursor.fetchone()[0]
+        if (len(items_on_cart) > 0):
+            items = [None] * len(items_on_cart)
+            for i in range(0, len(items_on_cart)):
+                items[i] = {
+                    'slug': items_on_cart[i][0],
+                }
+        else:
+            items = None
 
-        #for item in items_on_cart:
-         #   courses.add_to_my_courses(request, item):
+        for item in items:
+            add_to_my_courses(request, item)
+
+        cursor.execute('DELETE FROM main_inside_cart WHERE username_id = %s', [request.user.id])
 
         return HttpResponseRedirect('/cart')
+
+
+def add_to_my_courses(request, course_slug):
+
+    cursor = connection.cursor()
+    course_slug = course_slug.get('slug')
+
+    course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
+    cno = course.cno
+
+    user_id = request.user.id
+
+    my_courses = Enroll.objects.raw('SELECT * '
+                                    'FROM main_enroll '
+                                    'WHERE user_id = %s AND cno_id = %s;',
+                                    [user_id, cno])
+
+    if len(list(my_courses)) == 0:
+        cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
+                       [cno, user_id])
+
+    cursor.close()
