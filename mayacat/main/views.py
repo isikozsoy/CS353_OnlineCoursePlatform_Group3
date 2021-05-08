@@ -173,10 +173,18 @@ class ShoppingCartView(View):
 
     def get(self, request):
         user = request.user
+        cursor = connection.cursor()
 
-        items_on_cart = Inside_Cart.objects.raw('SELECT * '
-                                                'FROM main_inside_cart '
-                                                'WHERE username_id = %s;', [user.id]).all()
+        cursor.execute('SELECT *'
+                       'FROM courses_course '
+                       'WHERE cno = SELECT cno_id '
+                                        'FROM main_inside_cart '
+                                        'WHERE username_id = %s;', [request.user.id])
+
+        items_on_cart = cursor.fetchone()
+
+        if(items_on_cart):
+            items_on_cart = cursor.fetchone()[0]
 
         items = Course.objects.raw('SELECT * '
                                    'FROM courses_course '

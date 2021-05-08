@@ -23,6 +23,7 @@ class MyCoursesView(ListView):
     def get(self, request):
         if request.user.is_authenticated:
             user_id = request.user.id
+
             my_courses_q = Enroll.objects.raw('''SELECT *
                                                 FROM main_enroll
                                                 WHERE user_id = %s''', [user_id])
@@ -109,17 +110,20 @@ class CourseDetailView(View):
 
         course_id = course.cno
 
-        cursor.execute('SELECT AVG(score) FROM main_rate WHERE cno_id = %s', [course_id])
-        rating = cursor.fetchone()[0]
+        #cursor.execute('SELECT AVG(score) FROM main_rate WHERE cno_id = %s', [course_id])
+        #rating = cursor.fetchone()[0]
 
 
-        cursor.execute('SELECT advertisement FROM main_advertisement WHERE cno_id = %s',
-                                                  [course_id])
-        advertisement = cursor.fetchone()[0]
+        #cursor.execute('SELECT advertisement FROM main_advertisement WHERE cno_id = %s',
+                                                  #[course_id])
+        #advertisement = cursor.fetchone()[0]
 
-        cursor.execute('SELECT comment FROM main_finishes WHERE cno_id = %s', [course_id])
+        cursor.execute('SELECT comment FROM main_finishes WHERE cno_id = %s;', [course_id])
 
-        comments = cursor.fetchone()[0]
+        comments = cursor.fetchone()
+
+        if comments:
+            comments = cursor.fetchone()[0]
 
         cursor.execute('select type '
                        'from auth_user '
@@ -139,8 +143,8 @@ class CourseDetailView(View):
             'registered': registered,
             'user_type': user_type,
             'lecture_count': lecture_count,
-            'rating': rating,
-            'advertisement': advertisement,
+            #'rating': rating,
+            #'advertisement': advertisement,
             'comments': comments
         }
 

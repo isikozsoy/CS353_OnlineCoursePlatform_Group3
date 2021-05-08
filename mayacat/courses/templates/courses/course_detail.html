@@ -7,7 +7,7 @@
     <h1>{{ course.cname }}</h1>
     <h2>by {{ course.owner }}</h2>
 
-    <h2>Rating: {{rating}}</h2>
+    <!-- <h2>Rating: {{rating}}</h2> -->
 
     <h3>Description</h3>
     <a>{{ course.description }}</a>
@@ -17,10 +17,11 @@
 
     <img src = {{ course.course_img }} width="290" height="180" ></img>
 
+<!--
     {% if advertisement is not None %}
         <img src = {{ advertisement }} width="290" height="180" ></img>
     {% endif %}
-
+-->
     <!-- aşağıda action=my_courses/add/{ { course.slug }} demek istemiş olabilirsin belki belki -->
     {% if user_type == 2 %}
         <a href="/offer_ad/{{ course.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
@@ -33,14 +34,7 @@
 
     {% else %}
         <h3>Price {{course.price}}</h3>
-        <form action="courses:my_courses" method="post">
-            {% csrf_token %}
-            {{ form.errors }}
-            {{ form.as_table }}
-            <button type="submit"
-                    class="btn btn-primary"
-                    role="button">Buy The Course</button><br>
-        </form>
+        <a href="cart" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Cart</a>
 
         {% if is_wish == 0 %}
             <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
