@@ -23,13 +23,16 @@
         <button type="submit" formmethod="post">Save</button><br>
     </form>
 
-    <h3>Interests</h3>
-    {% for interested_topic in interest %}
-        <a href="/interested_in/add/{{interested_topic}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">REMOVE {{interested_topic}}</a>
-    {% endfor %}
+    {% if user_type != 2 %}
+        <h3>You can add topic below;</h3>
+        {% for topic in not_interests %}
+            <a href="/interested_in/add/{{topic}}" class="btn btn-light" role="button" >ADD: {{topic}}</a>
+        {% endfor %}
 
-    <h3>All Topics</h3>
-    {% for topic in interest %}
-        <a href="/interested_in/remove/{{topic}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">ADD {{topic}}</a>
-    {% endfor %}
+        <h3>Interests</h3>
+        {% for topic in interests %}
+            <a href="/interested_in/remove/{{topic}}" class="btn btn-light" role="button">REMOVE: {{topic}}</a>
+        {% endfor %}
+    {% endif %}
+
 {% endblock %}

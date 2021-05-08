@@ -92,12 +92,6 @@ class MainView(View):
                                      'from courses_course;')
 
         topics = Topic.objects.raw('select * from main_topic order by topicname;')
-        if request.user.is_authenticated:
-            user_id = request.user.id
-            gift_not = cursor.execute('SELECT * FROM main_gift WHERE receiver_id = %s ORDER BY date DESC LIMIT 5',
-                                         [user_id])
-            announcement_not = cursor.execute('SELECT * FROM main_announcement A, main_enroll E WHERE E.user_id = %s'\
-                                                ' AND A.cno_id = E.cno_id ORDER BY A.ann_date DESC LIMIT 5', [user_id])
 
         cursor.execute('select type '
                        'from auth_user '
@@ -192,3 +186,75 @@ class ShoppingCheckoutView(View):
             user_type = row[0]
 
         return render(request, 'main/checkout.html', {'user_type': user_type})
+
+
+class NotificationView(View):
+    def get(self, request):
+        cursor = connection.cursor()
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
+        if user_type == 0: # student
+            cursor = connection.cursor()
+            cursor.execute('SELECT date, cname, username FROM main_gift as G, auth_user as A, courses_course as C'
+                           ' WHERE C.cno = G.course_id AND G.sender_id = A.id AND G.receiver_id = %s ORDER BY date DESC'
+                           , [request.user.id])
+            temp_gift = cursor.fetchall()
+            cursor.close()
+
+            gift_arr = []
+            for gift in temp_gift:
+                gift = list(gift)
+                gift.append("gift")
+                gift_arr.append(gift)
+            print("--------1--------")
+            print(gift_arr)
+            cursor = connection.cursor()
+            cursor.execute('SELECT ann_date, cname, ann_text FROM main_enroll as E, main_announcement A, courses_course C'
+                           ' WHERE E.cno_id = A.cno_id AND E.user_id = %s'
+                           ' AND E.cno_id = C.cno ORDER BY ann_date DESC', [request.user.id])
+            temp_anns = cursor.fetchall()
+            cursor.close()
+
+            anns_arr = []
+            for ann in temp_anns:
+                ann = list(ann)
+                ann.append("ann")
+                anns_arr.append(ann)
+            print("--------2--------")
+            print(anns_arr)
+
+            gift_i = 0
+            ann_i = 0
+            notifications = []
+            while gift_i < len(gift_arr) and ann_i < len(anns_arr):
+                if anns_arr[ann_i][0] > gift_arr[gift_i][0]:
+                    notifications.append(anns_arr[ann_i])
+                    ann_i = ann_i + 1
+                else:
+                    notifications.append(gift_arr[gift_i])
+                    gift_i = gift_i + 1
+
+            if gift_i == len(gift_arr):
+                while ann_i < len(anns_arr):
+                    notifications.append(anns_arr[ann_i])
+                    ann_i = ann_i + 1
+            elif ann_i == len(anns_arr):
+                while gift_i < len(gift_arr):
+                    notifications.append(gift_arr[gift_i])
+                    gift_i = gift_i + 1
+
+        elif user_type == 1:
+            print()
+            # blavla
+        else:
+            print()
+        context={'user_type': user_type, 'notifications': notifications}
+        return render (request, 'main/notifications.html', context)

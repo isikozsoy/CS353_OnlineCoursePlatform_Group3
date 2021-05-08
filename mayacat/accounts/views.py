@@ -224,10 +224,23 @@ class AccountView(View):
                 form = StudentEditForm(instance=user)
 
                 cursor = connection.cursor()
-                interests = cursor.execute('select topicname from main_interested_in '
-                                           'where s_username_id = %s;', [request.user.id])
-                not_in_interests = cursor.execute('select * from main_topic except select topicname '
-                                                  'from main_interested_in where s_username_id = %s', [request.user.id])
+                cursor.execute('select topic_id as topicname from main_interested_in '
+                                           'where s_username_id = %s;', [user_id])
+                interests = cursor.fetchall()
+                cursor.close()
+                interests_arr = []
+                for interest in interests:
+                    interests_arr.append(interest[0])
+                print("-----------1-----------")
+                print(interests_arr)
+
+                cursor = connection.cursor()
+                cursor.execute('select topicname from main_topic where topicname not in (select topic_id from main_interested_in '
+                                           'where s_username_id = %s);', [user_id])
+                not_in_interests = cursor.fetchall()
+                not_interests_arr = []
+                for not_interest in not_in_interests:
+                    not_interests_arr.append(not_interest[0])
 
             elif user_type == 1:  # it is an Instructor account
                 user = Instructor.objects.raw('select * from accounts_instructor where student_ptr_id = %s;',
@@ -242,8 +255,8 @@ class AccountView(View):
                                                         'user_type': user_type,
                                                         'form': form,
                                                         'readonly': False,
-                                                        'interests': interests,
-                                                        'not_interests': not_in_interests})
+                                                        'interests': interests_arr,
+                                                        'not_interests': not_interests_arr})
         return HttpResponseRedirect('/')  # redirects to main page if user did not login yet
 
     def post(self, request):
@@ -314,17 +327,17 @@ class AdminView(View):
         return HttpResponseRedirect('/')
 
 
-def add_interested_topic(request, topicname):
+def add_interested_topic(request, topic):
     cursor = connection.cursor()
-    cursor.execute("INSERT INTO main_interested_in(topicname, s_username_id) values (%s, %s)",
-                    [topicname, request.user.id])
+    cursor.execute("INSERT INTO main_interested_in(topic_id, s_username_id) values (%s, %s)",
+                    [topic, request.user.id])
     cursor.close()
     return HttpResponseRedirect('/account')
 
 
-def remove_interested_topic(request, topicname):
+def remove_interested_topic(request, topic):
     cursor = connection.cursor()
-    cursor.execute("DELETE FROM main_interested_in(topicname, s_username_id) values (%s, %s)",
-                    [topicname, request.user.id])
+    cursor.execute("DELETE FROM main_interested_in WHERE topic_id = %s AND s_username_id = %s",
+                    [topic, request.user.id])
     cursor.close()
     return HttpResponseRedirect('/account')

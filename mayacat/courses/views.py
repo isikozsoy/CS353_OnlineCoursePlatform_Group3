@@ -652,6 +652,24 @@ class OfferAdView(View):
             user_type = row[0]
 
         context = {'user_type': user_type,
-                   'form': form}
+                   'form': form,
+                   'path': request.path}
 
         return render(request, self.template_name, context)
+
+    def post(self, request, course_slug):
+        form = OfferAdForm(request.POST)
+        print("-----------I am not  valid----------")
+        if form.is_valid():
+            print("-----------I am valid----------")
+            ad_img = form.cleaned_data["ad_img"]
+            status = 1
+            price = form.cleaned_data["price"]
+            startdate = form.cleaned_data["start_date"]
+            finishdate = form.cleaned_data["end_date"]
+            cursor = connection.cursor()
+            cursor.execute('INSERT INTO main_advertisement (advertisement, status, payment, startdate, finishdate)'
+                           ' VALUES (%s, %s, %s, %s, %s);',
+                           [ad_img, status, price, startdate, finishdate])
+            cursor.close()
+        return redirect("main:offers")

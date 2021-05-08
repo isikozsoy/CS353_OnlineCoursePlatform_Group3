@@ -1,7 +1,7 @@
 {% extends 'main/base.html' %}
 
 {% block main_content %}
-    <form action="main:offers" method="post">
+     <form action={{ path|lower }} method="POST">
         {% csrf_token %}
         {{ form.errors }}
         {{ form.as_table }}

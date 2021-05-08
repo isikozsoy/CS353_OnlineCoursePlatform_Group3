@@ -11,6 +11,6 @@ urlpatterns = [
     path('logout', LogoutView.as_view(), name='logout'),
     path('account', AccountView.as_view(), name='account'),
     path('account/<username>', UserView.as_view(), name='user_account'),
-    path('interested_in/add/<topicname>', add_interested_topic, name='add_interested_in'),
-    path('interested_in/remove/<topicname>', remove_interested_topic, name='remove_interested_in')
+    path('interested_in/add/<topic>', add_interested_topic, name='add_interested_in'),
+    path('interested_in/remove/<topic>', remove_interested_topic, name='remove_interested_in')
 ]

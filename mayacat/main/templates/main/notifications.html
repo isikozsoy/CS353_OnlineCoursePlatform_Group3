@@ -1,0 +1,13 @@
+{% extends "main/base.html" %}
+
+
+{% block main_content %}
+    <h2>Notifications</h2>
+    {% for ntf in notifications %}
+        {% if ntf.3 == "gift" %}
+            <p>You receive a gift from {{ntf.2}}. Received Course: {{ntf.1}}</p>
+        {% else %}
+            <p>New announcement for {{ntf.1}}: {{ntf.2}}</p>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
