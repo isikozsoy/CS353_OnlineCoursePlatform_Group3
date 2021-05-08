@@ -175,25 +175,22 @@ class ShoppingCartView(View):
         user = request.user
         cursor = connection.cursor()
 
-        cursor.execute('SELECT *'
+        cursor.execute('SELECT * '
                        'FROM courses_course '
-                       'WHERE cno = SELECT cno_id '
-                                        'FROM main_inside_cart '
-                                        'WHERE username_id = %s;', [request.user.id])
+                       'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
+                       'WHERE mic.username_id = %s;', [request.user.id])
 
         items_on_cart = cursor.fetchone()
 
         if(items_on_cart):
             items_on_cart = cursor.fetchone()[0]
 
-        items = Course.objects.raw('SELECT * '
-                                   'FROM courses_course '
-                                   'WHERE cno = %s', [items_on_cart.cno_id])
-
         # count = Inside_Cart.objects.filter(username=user.name).count()
-        count = Inside_Cart.objects.raw('SELECT count(*) '
-                                        'FROM main_inside_cart '
-                                        'WHERE username_id = %s;', [user.id])
+        cursor.execute('SELECT count(*) '
+                        'FROM main_inside_cart '
+                        'WHERE username_id = %s;', [request.user.id])
+
+        count = cursor.fetchone()[0]
 
         total_price = Course.objects.raw('SELECT SUM(price) FROM items')
 
@@ -208,7 +205,7 @@ class ShoppingCartView(View):
         if row:
             user_type = row[0]
 
-        return render(request, 'main/shopping_cart.html', {'user_type': user_type, 'items': items, 'items_on_cart': items_on_cart,
+        return render(request, 'main/shopping_cart.html', {'user_type': user_type, 'items': items_on_cart,
                                                            'count': count, 'total_price': total_price})
 
 

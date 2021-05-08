@@ -90,8 +90,14 @@ class CourseDetailView(View):
         form = GiftInfo()
         cursor = connection.cursor()
 
-        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
+        course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
+
+        if len(course_queue) > 0:
+            course = course_queue[0]
+
         cno = course.cno
+
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE cno = %s', [cno])
 
         cursor.execute('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
 
@@ -106,19 +112,23 @@ class CourseDetailView(View):
         registered = len(list(Enroll.objects.raw('SELECT * FROM main_enroll WHERE cno_id = %s AND user_id = %s;',
                                                   [cno, request.user.id])))
 
-        lecture_count = Lecture.objects.filter(cno_id=course.cno).count()
-
-        course_id = course.cno
+        lectures = Lecture.objects.raw('''SELECT * FROM courses_lecture as CL WHERE CL.cno_id = %s;''', [cno])
+        lecture_count = len(lectures)
 
         #cursor.execute('SELECT AVG(score) FROM main_rate WHERE cno_id = %s', [course_id])
         #rating = cursor.fetchone()[0]
 
+        #now = datetime.date.today()
 
-        #cursor.execute('SELECT advertisement FROM main_advertisement WHERE cno_id = %s',
-                                                  #[course_id])
+        #cursor.execute('SELECT advertisement '
+         #              'FROM main_advertisement '
+          #             'WHERE cno_id = %s AND status = 1 '
+           #            'AND now > startdate '
+            #           'AND now < finishdate',[cno])
+
         #advertisement = cursor.fetchone()[0]
 
-        cursor.execute('SELECT comment FROM main_finishes WHERE cno_id = %s;', [course_id])
+        cursor.execute('SELECT comment FROM main_finishes WHERE cno_id = %s;', [cno])
 
         comments = cursor.fetchone()
 
