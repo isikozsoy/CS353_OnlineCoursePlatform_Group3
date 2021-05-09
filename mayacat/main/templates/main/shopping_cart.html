@@ -28,7 +28,7 @@
                             <p>This course will be sent as a gift. Please enter a username.</p>
                             <label for="receiver_id">Enter Username: </label>
                             <input id="receiver_id" type="text" name="receiver_id" value="{{ receiver_id }}"><br>
-                            <input id="item_id" type="hidden" name="item.item_id" value="{{ item.item_id }}"><br>
+                            <input id="item_id" type="hidden" name="item_id" value="{{item.item_id }}"><br>
                             {% if item.receiver_username.0 != None %}
                                 <p>Receiver Username: {{item.receiver_username.0}}</p>
                             {% else %}

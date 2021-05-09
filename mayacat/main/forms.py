@@ -9,4 +9,4 @@ class Checkout(forms.Form):
 
 class GiftForm(forms.Form):
     receiver_id = forms.CharField(label='Receiver Username:', max_length = 150)
-    item_id = forms.CharField(widget=forms.HiddenInput(), max_length = 50)
+    item_id = forms.CharField(widget=forms.HiddenInput())

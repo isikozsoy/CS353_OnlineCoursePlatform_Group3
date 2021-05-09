@@ -215,8 +215,7 @@ class NotificationView(View):
                 gift = list(gift)
                 gift.append("gift")
                 gift_arr.append(gift)
-            print("--------1--------")
-            print(gift_arr)
+
             cursor = connection.cursor()
             cursor.execute('SELECT ann_date, cname, ann_text FROM main_enroll as E, main_announcement A, courses_course C'
                            ' WHERE E.cno_id = A.cno_id AND E.user_id = %s'
@@ -229,8 +228,6 @@ class NotificationView(View):
                 ann = list(ann)
                 ann.append("ann")
                 anns_arr.append(ann)
-            print("--------2--------")
-            print(anns_arr)
 
             gift_i = 0
             ann_i = 0
@@ -328,11 +325,10 @@ class ShoppingCartView(View):
         cursor = connection.cursor()
 
         pull = GiftForm(request.POST)
-
         if pull.is_valid():
-
             receiver_username = pull.cleaned_data['receiver_id']
             item_id = pull.cleaned_data['item_id']
+            item_id = int(item_id)
 
             cursor.execute('SELECT id FROM auth_user WHERE username = %s', [receiver_username])
             receiver_id = cursor.fetchone()[0]
@@ -340,12 +336,12 @@ class ShoppingCartView(View):
             if receiver_id:
                 cursor.execute('UPDATE main_inside_cart '
                                'SET receiver_username_id = %s '
-                               'WHERE inside_cart_id = %s', [item_id])
-
+                               'WHERE inside_cart_id = %s', [receiver_id, item_id])
         return HttpResponseRedirect(request.path)
 
 
 def remove_from_cart(request, item_id):
+    item_id = int(item_id)
     cursor = connection.cursor()
     cursor.execute('DELETE FROM main_inside_cart '
                    'WHERE inside_cart_id = %s', [item_id])
