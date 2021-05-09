@@ -21,12 +21,7 @@
                         role="button">Add To Cart</button><br>
             </form>
         {% else %}
-            <form action={{ path|lower }} method="POST">
-                {% csrf_token %}
-                <button type="submit"
-                        class="btn btn-primary"
-                        role="button">Add To Cart As Gift</button><br>
-            </form>
+                <a href="/add_gift_to_cart/{{ object.slug }}" method="POST" class="btn btn-primary" role="button">Add To Cart As Gift</a><br>
         {% endif %}
     {% endif %}
 

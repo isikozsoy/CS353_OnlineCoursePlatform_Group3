@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b3ec7be4-c8ca-44a3-9c3a-8f2322070260" name="Default Changelist" comment="Notification is implemented for student. Offer Ad page does not give error but it is not working. Interested in was fixed.">
+    <list default="true" id="b3ec7be4-c8ca-44a3-9c3a-8f2322070260" name="Default Changelist" comment="Offer Ad Page is working.">
+      <change afterPath="$PROJECT_DIR$/mayacat/main/forms.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mayacat/main/templates/main/checkout.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/courses/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/courses/templates/courses/offer_ad.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/templates/courses/offer_ad.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/courses/templates/courses/course_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/templates/courses/course_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/courses/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/courses/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/templates/main/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/templates/main/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/templates/main/shopping_cart.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/templates/main/shopping_cart.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,6 +22,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -53,7 +60,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1620453854899</updated>
-      <workItem from="1620453863590" duration="26303000" />
+      <workItem from="1620453863590" duration="26335000" />
+      <workItem from="1620550039362" duration="13512000" />
     </task>
     <task id="LOCAL-00001" summary="workspace deleted.">
       <created>1620453995894</created>
@@ -69,7 +77,14 @@
       <option name="project" value="LOCAL" />
       <updated>1620498365306</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Offer Ad Page is working.">
+      <created>1620504770636</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1620504770636</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -102,6 +117,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="workspace deleted." />
     <MESSAGE value="Notification is implemented for student. Offer Ad page does not give error but it is not working. Interested in was fixed." />
-    <option name="LAST_COMMIT_MESSAGE" value="Notification is implemented for student. Offer Ad page does not give error but it is not working. Interested in was fixed." />
+    <MESSAGE value="Offer Ad Page is working." />
+    <option name="LAST_COMMIT_MESSAGE" value="Offer Ad Page is working." />
   </component>
 </project>

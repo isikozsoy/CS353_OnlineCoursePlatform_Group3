@@ -6,6 +6,7 @@ import uuid
 from django.views.generic import ListView, DetailView, View
 from .models import *
 from accounts.models import *
+from  .forms import *
 
 cursor = connection.cursor()
 
@@ -258,3 +259,138 @@ class NotificationView(View):
             print()
         context={'user_type': user_type, 'notifications': notifications}
         return render (request, 'main/notifications.html', context)
+
+
+class ShoppingCartView(View):
+
+    def get(self, request):
+
+        cursor = connection.cursor()
+
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
+        # log in before buy anything
+        if user_type == -1:
+            return HttpResponseRedirect('/')
+
+        cursor.execute('SELECT count(*) '
+                       'FROM main_inside_cart '
+                       'WHERE username_id = %s;', [request.user.id])
+        count = cursor.fetchone()[0]
+
+        cursor.execute('SELECT SUM(price) '
+                       'FROM courses_course '
+                       'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
+                       'WHERE mic.username_id = %s;', [request.user.id])
+        total_price = cursor.fetchone()[0]
+
+        cursor.execute(
+            'SELECT inside_cart_id, cname, price, slug, course_img, receiver_username_id '
+            'FROM courses_course AS cc, main_inside_cart AS mic '
+            'WHERE cc.cno = mic.cno_id AND mic.username_id = %s;', [request.user.id])
+        items_on_cart = cursor.fetchall()
+
+        cursor.execute('SELECT username FROM main_inside_cart LEFT JOIN auth_user'
+                       ' on receiver_username_id = id'
+                       ' WHERE username_id = %s', [request.user.id])
+        receivers = cursor.fetchall()
+
+        if len(items_on_cart) > 0:
+            items = [None] * len(items_on_cart)
+            for i in range(0, len(items_on_cart)):
+                items[i] = {
+                    'item_id': items_on_cart[i][0],
+                    'cname': items_on_cart[i][1],
+                    'price': items_on_cart[i][2],
+                    'slug': items_on_cart[i][3],
+                    'course_img': items_on_cart[i][4],
+                    'isGift': items_on_cart[i][5],
+                    'receiver_username': receivers[i]
+                }
+        else:
+            items = None
+            count = 0
+            total_price = 0
+
+        return render(request, 'main/shopping_cart.html', {'user_type': user_type, 'items': items, 'path': request.path,
+                                                           'count': count, 'total_price': total_price, 'user_id': request.user.id})
+
+
+    def post(self, request):
+        cursor = connection.cursor()
+
+        pull = GiftForm(request.POST)
+
+        if pull.is_valid():
+
+            receiver_username = pull.cleaned_data['receiver_id']
+            item_id = pull.cleaned_data['item_id']
+
+            cursor.execute('SELECT id FROM auth_user WHERE username = %s', [receiver_username])
+            receiver_id = cursor.fetchone()[0]
+
+            if receiver_id:
+                cursor.execute('UPDATE main_inside_cart '
+                               'SET receiver_username_id = %s '
+                               'WHERE inside_cart_id = %s', [item_id])
+
+        return HttpResponseRedirect(request.path)
+
+
+def remove_from_cart(request, item_id):
+    cursor = connection.cursor()
+    cursor.execute('DELETE FROM main_inside_cart '
+                   'WHERE inside_cart_id = %s', [item_id])
+    cursor.close()
+    return redirect("main:cart")
+
+
+class ShoppingCheckoutView(View):
+    def get(self, request):
+        cursor = connection.cursor()
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
+        return render(request, 'main/checkout.html', {'user_type': user_type})
+
+    def post(self, request):
+        cursor = connection.cursor()
+
+        cursor.execute('SELECT slug, receiver_username_id '
+                       'FROM courses_course '
+                       'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
+                       'WHERE mic.username_id = %s;', [request.user.id])
+
+        items_on_cart = cursor.fetchall()
+
+        if (len(items_on_cart) > 0):
+            items = [None] * len(items_on_cart)
+            for i in range(0, len(items_on_cart)):
+                items[i] = {
+                    'slug': items_on_cart[i][0],
+                    # 'isGift': items_on_cart[i][1],
+                }
+        else:
+            items = None
+
+        for item in items:
+            add_to_my_courses(request, item)
+
+        cursor.execute('DELETE FROM main_inside_cart WHERE username_id = %s', [request.user.id])
+
+        return HttpResponseRedirect('/cart')

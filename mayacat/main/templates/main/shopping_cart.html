@@ -14,10 +14,29 @@
 
         <ol>
             {% for item in items %}
-                <li>{{ item.course_img }}{{ item.cname }}\n{{ item.price }}
-                    <a href="" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Trash</a>
-                    <a href="" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Gift</a>
-                    <a href="" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Wishlist</a>
+                <li>
+                    <img src = {{ item.course_img }} width="290" height="180" ></img>
+                    <br />Name: {{ item.cname }} <br />Price: {{ item.price }} <br />
+                    <a href="/wishlist/add_to_wishlist/{{item.slug}}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Add To Wishlist</a>
+                    <a href="/cart/remove/{{item.item_id}}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Remove From Cart</a>
+
+                    {% if item.isGift != user_id or item.isGift == None %}
+                        <form action = {{ path|lower }} method="POST">
+                            {% csrf_token %}
+                            {{ form.errors }}
+                            {{ form.as_table }}
+                            <p>This course will be sent as a gift. Please enter a username.</p>
+                            <label for="receiver_id">Enter Username: </label>
+                            <input id="receiver_id" type="text" name="receiver_id" value="{{ receiver_id }}"><br>
+                            <input id="item_id" type="hidden" name="item.item_id" value="{{ item.item_id }}"><br>
+                            {% if item.receiver_username.0 != None %}
+                                <p>Receiver Username: {{item.receiver_username.0}}</p>
+                            {% else %}
+                                <p>Receiver Username: -</p>
+                            {% endif %}
+                            <button type="submit" class="btn btn-primary" role="button">Save Username</button><br>
+                        </form>
+                    {% endif %}
                 </li>
             {% endfor %}
         </ol>

@@ -131,39 +131,7 @@ class CourseDetailView(View):
         return render(request, 'courses/course_detail.html', context)
 
     def post(self, request, course_slug):
-        '''
-                    username = form.cleaned_data['username']
-                    users = Student.objects.raw('SELECT * '
-                                                'FROM accounts_student '
-                                                'INNER JOIN auth_user '
-                                                'ON defaultuser_ptr_id = id '
-                                                'WHERE username = %s;',
-                                                [username])
-                    if len(list(users)) == 0:
-                        pass
-                        # INVALID USER
-                    else:
-                        receiver_id = users[0].user_id
-                        course_queue = Course.objects.raw('SELECT * '
-                                                          'FROM courses_course '
-                                                          'WHERE slug = %s', [course_slug])
-                        if len(list(course_queue)) != 0:
-                            course = Course.objects.raw('SELECT * '
-                                                        'FROM courses_course '
-                                                        'WHERE slug = %s LIMIT 1', [course_slug])[0]
-                            cno = course.cno
-                        else:
-                            return
-                        cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
-                                       [cno, receiver_id])
-                        cursor.close()
-                        return HttpResponseRedirect('my_courses')
-                cursor.close()
-                return HttpResponse("Invalid input. Go back and try again...")
-                '''
-
         form = GiftInfo(request.POST)
-
         course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s;', [course_slug])[0]
         cno = course.cno
 
@@ -172,13 +140,24 @@ class CourseDetailView(View):
             if not form.cleaned_data['is_gift']:
                 cursor.execute('INSERT INTO main_inside_cart (cno_id, receiver_username_id, username_id)'
                                'VALUES (%s, %s, %s);', [cno, request.user.id, request.user.id])  # own id if it is not a gift
+                cursor.close()
+                return redirect("main:cart")
 
-            cursor.close()
-        else:
-            cursor.execute('INSERT INTO main_inside_cart (cno_id, receiver_username_id, username_id)'
-                           'VALUES (%s, %s, %s);', [cno, None, request.user.id])  # None if it is a gift
+        cursor.execute('INSERT INTO main_inside_cart (cno_id, receiver_username_id, username_id)'
+                           'VALUES (%s, %s, %s);', [cno, None, request.user.id])  # -1 if it is a gift
 
-        return HttpResponseRedirect(request.path)
+        return redirect("main:cart")
+
+
+def add_gift_to_cart(request, course_slug):
+    course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s;', [course_slug])[0]
+    cno = course.cno
+
+    cursor = connection.cursor()
+    print("---------------3.gift---------------")
+    cursor.execute('INSERT INTO main_inside_cart (cno_id, receiver_username_id, username_id)'
+                   'VALUES (%s, %s, %s);', [cno, None, request.user.id])  # -1 if it is a gift
+    return redirect("main:cart")
 
 
 class LectureView(View):
@@ -350,25 +329,6 @@ class LectureView(View):
 
         cursor.close()
         return HttpResponseRedirect(request.path)
-
-
-def send_course_as_gift(request, course_slug, receiver):
-    course_queue = Course.objects.raw('SELECT * FROM courses_course as C WHERE C.slug = %s', [course_slug])
-    if len(list(course_queue)) != 0:
-        course = Course.objects.raw('SELECT * FROM courses_course as C WHERE C.slug = %s LIMIT 1', [course_slug])[0]
-        cno = course.cno
-    else:
-        return
-
-        # WILL BE CHANGED TO CURRENT USER
-        s = request.user
-
-        if not Enroll.objects.raw('SELECT * FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s', [cno, request.user.id]):
-            Gift.objects.create(wishes_id=uuid.uuid1(), cno=course, user=s)
-        else:
-            Wishes.objects.filter(cno=course, user=s).delete()
-
-    return redirect("courses:my_courses")
 
 
 class AddComplainView(View):
