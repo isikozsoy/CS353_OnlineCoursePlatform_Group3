@@ -341,6 +341,7 @@ class ShoppingCartView(View):
 
 
 def remove_from_cart(request, item_id):
+    print("-------------inside remove")
     item_id = int(item_id)
     cursor = connection.cursor()
     cursor.execute('DELETE FROM main_inside_cart '
