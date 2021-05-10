@@ -6,7 +6,8 @@ import uuid
 from django.views.generic import ListView, DetailView, View
 from .models import *
 from accounts.models import *
-from  .forms import *
+from .forms import *
+from datetime import datetime
 
 cursor = connection.cursor()
 
@@ -138,57 +139,6 @@ def course_detail(request, course_id):
                                                        'advertisement': advertisement, 'comments': comments})
 
 
-class ShoppingCartView(View):
-
-    def get(self, request):
-        user = request.user
-
-        items_on_cart = Inside_Cart.objects.raw('SELECT * '
-                                                'FROM main_inside_cart '
-                                                'WHERE username_id = %s;', [user.id]).all()
-
-        items = Course.objects.raw('SELECT * '
-                                   'FROM courses_course '
-                                   'WHERE cno = %s', [items_on_cart.cno_id])
-
-        # count = Inside_Cart.objects.filter(username=user.name).count()
-        count = Inside_Cart.objects.raw('SELECT count(*) '
-                                        'FROM main_inside_cart '
-                                        'WHERE username_id = %s;', [user.id])
-
-        total_price = Course.objects.raw('SELECT SUM(price) FROM items')
-
-        cursor = connection.cursor()
-        cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
-                       'where id = %s;', [request.user.id])
-
-        row = cursor.fetchone()
-        user_type = -1
-        if row:
-            user_type = row[0]
-
-        return render(request, 'main/shopping_cart.html', {'user_type': user_type, 'items': items, 'items_on_cart': items_on_cart,
-                                                           'count': count, 'total_price': total_price})
-
-
-class ShoppingCheckoutView(View):
-    def get(self, request):
-        cursor = connection.cursor()
-        cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
-                       'where id = %s;', [request.user.id])
-
-        row = cursor.fetchone()
-        user_type = -1
-        if row:
-            user_type = row[0]
-
-        return render(request, 'main/checkout.html', {'user_type': user_type})
-
-
 class NotificationView(View):
     def get(self, request):
         cursor = connection.cursor()
@@ -277,12 +227,12 @@ class ShoppingCartView(View):
         # log in before buy anything
         if user_type == -1:
             return HttpResponseRedirect('/')
-
+        '''
         cursor.execute('SELECT count(*) '
                        'FROM main_inside_cart '
                        'WHERE username_id = %s;', [request.user.id])
         count = cursor.fetchone()[0]
-
+        '''
         cursor.execute('SELECT SUM(price) '
                        'FROM courses_course '
                        'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
@@ -294,15 +244,16 @@ class ShoppingCartView(View):
             'FROM courses_course AS cc, main_inside_cart AS mic '
             'WHERE cc.cno = mic.cno_id AND mic.username_id = %s;', [request.user.id])
         items_on_cart = cursor.fetchall()
+        count = len(items_on_cart)
 
         cursor.execute('SELECT username FROM main_inside_cart LEFT JOIN auth_user'
                        ' on receiver_username_id = id'
                        ' WHERE username_id = %s', [request.user.id])
         receivers = cursor.fetchall()
 
-        if len(items_on_cart) > 0:
-            items = [None] * len(items_on_cart)
-            for i in range(0, len(items_on_cart)):
+        if count > 0:
+            items = [None] * count
+            for i in range(0, count):
                 items[i] = {
                     'item_id': items_on_cart[i][0],
                     'cname': items_on_cart[i][1],
@@ -318,7 +269,8 @@ class ShoppingCartView(View):
             total_price = 0
 
         return render(request, 'main/shopping_cart.html', {'user_type': user_type, 'items': items, 'path': request.path,
-                                                           'count': count, 'total_price': total_price, 'user_id': request.user.id})
+                                                           'count': count, 'total_price': total_price,
+                                                           'user_id': request.user.id})
 
 
     def post(self, request):
@@ -391,3 +343,87 @@ class ShoppingCheckoutView(View):
         cursor.execute('DELETE FROM main_inside_cart WHERE username_id = %s', [request.user.id])
 
         return HttpResponseRedirect('/cart')
+
+class AdOffersView(View):
+    def get(self, request):
+        cursor = connection.cursor()
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
+        # Only one ad for the same date. Mark as refused.
+        cursor.execute('SELECT a1.advertisementno FROM main_advertisement AS a1, main_advertisement AS a2, '
+                       'courses_course WHERE owner_id = %s AND a1.startdate <= a2.finishdate AND '
+                       'a1.finishdate >= a2.startdate AND a1.status = %s AND a2.status = %s',
+                       [request.user.id, 0, 2])
+        ad_to_refuse = cursor.fetchall()
+        for ad in ad_to_refuse:
+            cursor.execute('UPDATE main_advertisement '
+                           'SET status = 1 '
+                           'WHERE advertisementno = %s', [ad])
+
+        # Date is passed. Mark as refused.
+        today = datetime.today().strftime('%Y-%m-%d')
+        cursor.execute('SELECT advertisementno FROM main_advertisement INNER JOIN courses_course on cno_id = cno '
+                       'WHERE owner_id = %s AND startdate <= %s', [request.user.id, today])
+        ad_passed = cursor.fetchall()
+        for ad_no in ad_passed:
+            cursor.execute('UPDATE main_advertisement '
+                           'SET status = 1 '
+                           'WHERE advertisementno = %s', [ad_no])
+
+        cursor.execute('SELECT advertisementno, advertisement, status, payment, startdate, finishdate, cname'
+                       ' FROM main_advertisement INNER JOIN courses_course on cno_id = cno'
+                       ' WHERE owner_id = %s', [request.user.id])
+        offers = cursor.fetchall()
+
+        cursor.execute('SELECT username FROM main_advertisement INNER JOIN auth_user on id = ad_username_id'
+                       ' WHERE cno_id in (SELECT cno FROM courses_course WHERE owner_id = %s)', [request.user.id])
+        advertiser_usernames = cursor.fetchall()
+
+        if len(offers) > 0:
+            items = [None] * len(offers)
+            for i in range(0, len(offers)):
+                items[i] = {
+                    'ad_no': offers[i][0],
+                    'ad': offers[i][1],
+                    'status': offers[i][2],
+                    'payment': offers[i][3],
+                    'startdate': offers[i][4],
+                    'finishdate': offers[i][5],
+                    'cname': offers[i][6],
+                    'ad_username': advertiser_usernames[i]
+                }
+
+        context = {'items': items, 'user_type': user_type}
+        return render(request, 'main/ad_offers.html', context)
+
+def accept_ad(request, ad_no):
+    cursor = connection.cursor()
+    cursor.execute('UPDATE main_advertisement '
+                   'SET status = 2 '
+                   'WHERE advertisementno = %s', [ad_no])
+
+    cursor.execute('SELECT a1.advertisementno FROM main_advertisement AS a1, main_advertisement AS a2, '
+                   'courses_course WHERE owner_id = %s AND a1.startdate <= a2.finishdate AND '
+                   'a1.finishdate >= a2.startdate AND a1.status = %s AND a2.status = %s',
+                   [request.user.id, 0, 2])
+    ad_to_refuse = cursor.fetchall()
+    for ad in ad_to_refuse:
+        cursor.execute('UPDATE main_advertisement '
+                       'SET status = 1 '
+                       'WHERE advertisementno = %s', [ad])
+    return redirect('main:ad_offers')
+
+def refuse_ad(request, ad_no):
+    cursor = connection.cursor()
+    cursor.execute('UPDATE main_advertisement '
+                   'SET status = 1 '
+                   'WHERE advertisementno = %s', [ad_no])
+    return redirect('main:ad_offers')

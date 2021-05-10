@@ -621,7 +621,7 @@ class OfferAdView(View):
         form = OfferAdForm(request.POST, request.FILES)
         if form.is_valid():
             ad_img = form.cleaned_data["ad_img"]
-            status = 1
+            status = 0  # 0 for waiting, 1 for refused, 2 for accepted
             price = form.cleaned_data["price"]
             startdate = form.cleaned_data["start_date"]
             finishdate = form.cleaned_data["end_date"]
