@@ -2,7 +2,7 @@ from django.db import connection
 from django.shortcuts import render, redirect
 from django.views.generic.base import View, HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 
 from .forms import *
 from .models import DefaultUser, Student, Instructor, SiteAdmin, Advertiser
@@ -25,12 +25,8 @@ class LoginView(View):
         return render(request, self.template_name, {'form': form})
 
     def authenticate(self, request, username, password):
-        query = 'select * ' \
-                'from accounts_defaultuser ' \
-                'inner join auth_user ' \
-                'on auth_user.id = accounts_defaultuser.user_ptr_id ' \
-                'where username = "' + username + '" and password_orig="' + password + '";'
-        user_q = User.objects.raw(query)
+        user_q = User.objects.raw('select * from auth_user where username = %s and password = %s;',
+                                  [username, password])
         return user_q
 
     def post(self, request):
@@ -38,17 +34,28 @@ class LoginView(View):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
+
+            # checking if the user logs in as admin
+            cursor = connection.cursor()
+            cursor.execute('select is_superuser from auth_user where username = %s;', [username])
+            is_super = cursor.fetchone()
+            cursor.close()
+            if is_super and is_super[0] == 1:
+                admin_set = authenticate(request, username=username, password=password)
+                if admin_set:
+                    login(request, admin_set)
+                    return HttpResponseRedirect('/admin/register')
+                return HttpResponseRedirect('/login')
+
+            # continues if there is no admin by this username
             user_qset = self.authenticate(request, username=username, password=password)
 
             if user_qset:
                 user = user_qset[0]
                 login(request, user)
-
-                if request.user.is_superuser:
-                    return HttpResponseRedirect('admin')
                 return HttpResponseRedirect('/')
-            else:
-                return HttpResponseRedirect('login')
+            else:  # no user by this username
+                return HttpResponseRedirect('/register')
 
 
 class RegisterView(View):

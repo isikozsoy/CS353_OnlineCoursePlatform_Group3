@@ -1,0 +1,11 @@
+{% extends "adminpanel/adminbase.html" %}
+
+{% block main_content %}
+    <form action="" method="POST">
+    {% csrf_token %}
+      {{ admin_save_form }}
+    <button type="submit"
+                class="btn btn-primary"
+                role="button">Register your admin info...</button><br>
+  </form>
+{% endblock %}
