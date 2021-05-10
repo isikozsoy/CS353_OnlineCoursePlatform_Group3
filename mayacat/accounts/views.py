@@ -43,6 +43,9 @@ class LoginView(View):
             if user_qset:
                 user = user_qset[0]
                 login(request, user)
+
+                if request.user.is_superuser:
+                    return HttpResponseRedirect('admin')
                 return HttpResponseRedirect('/')
             else:
                 return HttpResponseRedirect('login')
@@ -297,8 +300,3 @@ class AccountView(View):
         print(form.errors)
         cursor.close()
         return HttpResponseRedirect('/account')
-
-
-class AdminView(View):
-    def get(self, request):
-        return HttpResponseRedirect('/')

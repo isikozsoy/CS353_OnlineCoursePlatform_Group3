@@ -11,4 +11,5 @@ urlpatterns = [
     path('logout', LogoutView.as_view(), name='logout'),
     path('account', AccountView.as_view(), name='account'),
     path('account/<username>', UserView.as_view(), name='user_account'),
+    path('adminpanel', AdminView.as_view(), name='admin'),
 ]

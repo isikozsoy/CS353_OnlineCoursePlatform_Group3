@@ -93,9 +93,3 @@ class Register(forms.Form):
 
     password = forms.CharField(label='Password', max_length=50, widget=forms.PasswordInput)
 
-
-"""
-class NewLectureForm(forms.Form):
-    lecture_name = forms.CharField(label='Title', max_length=200)
-    video_file = forms.FileField()
-"""
