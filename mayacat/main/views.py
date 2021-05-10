@@ -227,12 +227,12 @@ class ShoppingCartView(View):
         # log in before buy anything
         if user_type == -1:
             return HttpResponseRedirect('/')
-        '''
+
         cursor.execute('SELECT count(*) '
                        'FROM main_inside_cart '
                        'WHERE username_id = %s;', [request.user.id])
         count = cursor.fetchone()[0]
-        '''
+
         cursor.execute('SELECT SUM(price) '
                        'FROM courses_course '
                        'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
@@ -244,7 +244,6 @@ class ShoppingCartView(View):
             'FROM courses_course AS cc, main_inside_cart AS mic '
             'WHERE cc.cno = mic.cno_id AND mic.username_id = %s;', [request.user.id])
         items_on_cart = cursor.fetchall()
-        count = len(items_on_cart)
 
         cursor.execute('SELECT username FROM main_inside_cart LEFT JOIN auth_user'
                        ' on receiver_username_id = id'
