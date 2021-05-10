@@ -223,33 +223,33 @@ class AccountView(View):
                                            [user_id])[0]
                 form = StudentEditForm(instance=user)
 
-                cursor = connection.cursor()
-                cursor.execute('select topic_id as topicname from main_interested_in '
-                                           'where s_username_id = %s;', [user_id])
-                interests = cursor.fetchall()
-                cursor.close()
-                interests_arr = []
-                for interest in interests:
-                    interests_arr.append(interest[0])
-                print("-----------1-----------")
-                print(interests_arr)
-
-                cursor = connection.cursor()
-                cursor.execute('select topicname from main_topic where topicname not in (select topic_id from main_interested_in '
-                                           'where s_username_id = %s);', [user_id])
-                not_in_interests = cursor.fetchall()
-                not_interests_arr = []
-                for not_interest in not_in_interests:
-                    not_interests_arr.append(not_interest[0])
-
             elif user_type == 1:  # it is an Instructor account
                 user = Instructor.objects.raw('select * from accounts_instructor where student_ptr_id = %s;',
                                               [user_id])[0]
                 form = InstructorEditForm(instance=user)
+
             elif user_type == 2:  # advertiser account
                 user = Advertiser.objects.raw('select * from accounts_advertiser where defaultuser_ptr_id = %s;',
                                               [user_id])[0]
                 form = AdvertiserEditForm(instance=user)
+
+            cursor = connection.cursor()
+            cursor.execute('select topic_id as topicname from main_interested_in '
+                           'where s_username_id = %s;', [user_id])
+            interests = cursor.fetchall()
+            cursor.close()
+            interests_arr = []
+            for interest in interests:
+                interests_arr.append(interest[0])
+
+            cursor = connection.cursor()
+            cursor.execute(
+                'select topicname from main_topic where topicname not in (select topic_id from main_interested_in '
+                'where s_username_id = %s);', [user_id])
+            not_in_interests = cursor.fetchall()
+            not_interests_arr = []
+            for not_interest in not_in_interests:
+                not_interests_arr.append(not_interest[0])
 
             return render(request, self.template_name, {'user': user,
                                                         'user_type': user_type,
