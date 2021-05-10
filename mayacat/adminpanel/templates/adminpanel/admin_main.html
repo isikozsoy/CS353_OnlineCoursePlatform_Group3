@@ -1,4 +1,4 @@
-{% extends "adminpanel/adminbase.html" %}
+{% extends "main/base.html" %}
 {% block main_content %}
     <h3>Accounts</h3>
     <div id="accordion">
@@ -74,6 +74,45 @@
                 {{ form_user.as_table }}
                 {{ form_advertiser.as_table }}
                 <input type="submit" name="advertiser_create" value="Create an advertiser!" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h3>Courses</h3>
+    <div id="accordion">
+      <div class="card">
+        <div class="card-header" id="headingCourse">
+          <h5 class="mb-0">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#course" aria-expanded="true" aria-controls="collapseOne">
+                Create New Course
+            </button>
+          </h5>
+        </div>
+        <div id="course" class="collapse" aria-labelledby="headingCourse" data-parent="#accordion">
+          <div class="card-body">
+            <form action="{% url 'adminpanel:admin_save_course' %}" method="post" enctype="multipart/form-data" >
+                {% csrf_token %}
+                {{ form_course.as_table }}
+                <input type="submit" name="course_create" value="Create a course!"/>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingLecture">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#lecture" aria-expanded="false" aria-controls="collapseTwo">
+              Create New Lecture
+            </button>
+          </h5>
+        </div>
+        <div id="lecture" class="collapse" aria-labelledby="headingLecture" data-parent="#accordion">
+          <div class="card-body">
+            <form action="{% url 'adminpanel:admin_create_lecture' %}" method="post">
+                {% csrf_token %}
+                {{ form_lecture.as_table }}
+                <input type="submit" name="lecture_create" value="Create a lecture!" />
             </form>
           </div>
         </div>

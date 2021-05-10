@@ -291,6 +291,7 @@ class AccountView(View):
                                'where defaultuser_ptr_id = %s;',
                                [phone, user_id])
             elif user_type == 1:
+                print("Here here")
                 description = form.cleaned_data['description']
                 cursor.execute('update accounts_instructor '
                                'set description = %s '

@@ -11,93 +11,121 @@
     <style>
         {% block style_block %}
         {% endblock %}
-        .navigation-bar {
+        .navbar {
+            color: black;
             background-color: black;
-            overflow: hidden;
-            padding-bottom: 20px;
         }
-        .navigation-bar a {
+        .navbar a {
             color: white;
             background-color: black;
             border: none;
         }
-        .navigation-bar a:hover {
+        .navbar a:hover {
             background-color: red;
             border: none;
         }
-        .get-started-bar-bottom {
+        .footer-footer {
             background-color: black;
-            overflow: hidden;
-            position: absolute;
-            width: 100%;
-            bottom: 0;
-            align-content: center;
-            align-items: center;
         }
-        .get-started-bar-bottom a {
+        .footer-footer a {
             color: white;
             background-color: black;
             border: none;
         }
-        .get-started-bar-bottom a:hover {
+        .footer-footer a:hover {
             background-color: red;
             border: none;
         }
     </style>
     <title>MAYACAT</title>
 </head>
-<body>
+<body style="background-color: gray;">
 
-<div class="navigation-bar">
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <a class="navbar-brand" href="/">MayaCat</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-    {% if not request.user.is_authenticated %}
-        <a href="/login" class="btn btn-primary">Log in!</a>
-        <a href="/register/advertiser" class="btn btn-primary">Publish your ads on MayaCat today!</a>
-    {% else %}
-        <a href="/logout" class="btn btn-primary">Log out</a>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+        {% if not request.user.is_authenticated %}
+            <li class="nav-item active">
+                <a class="nav-link" href="/login">Log in!</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/register/advertiser">Publish your ads on MayaCat today!</a>
+            </li>
+        {% else %}
+            <li class="nav-item active">
+                <a class="nav-link" href="/logout">Log out</a>
+            </li>
         {% if user_type == 2 %} <!-- the user is an advertiser -->
-            <a href="/wishlist" class="btn btn-primary">Favorites</a>
-            <a href="/offers" class="btn btn-primary">Offers</a>
+            <li class="nav-item active">
+                <a class="nav-link" href="/wishlist">Favorites</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/offers">Offers</a>
+            </li>
         {% elif user_type == 1 %} <!-- the user is an instructor -->
-            <a href="/wishlist" class="btn btn-primary">Wishlist</a>
-            <a href="/my_courses" class="btn btn-primary">Enrolled Courses</a>
-            <a href="#tought_courses" class="btn btn-primary">My Courses</a>
-        {% else %} <!-- the user is an student -->
-            <a href="/wishlist" class="btn btn-primary">Wishlist</a>
-            <a href="/my_courses" class="btn btn-primary">My Courses</a>
+            <li class="nav-item active">
+                <a class="nav-link" href="/wishlist">Wishlist</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/my_courses" >Enrolled Courses</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="#tought_courses">My Courses</a>
+            </li>
+        {% elif user_type == 0 %} <!-- the user is an student -->
+            <li class="nav-item active">
+                <a class="nav-link" href="/wishlist">Wishlist</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/my_courses">My Courses</a>
+            </li>
         {% endif %}
-        <a href="/account" class="btn btn-primary">My Account</a>
+            <li class="nav-item active">
+                <a class="nav-link" href="/account">My Account</a>
+            </li>
     {% endif %}
-
-    <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle"
-        type="button"
-        id="dropdownMenuLink"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false">Categories</button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Categories
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             {% for topic in topic_list %}
-                <a class="dropdown-item">{{ topic.topicname }}</a>
+                <a class="dropdown-item" href="#">{{ topic.topicname }}</a>
             {% endfor %}
+          <!-- <div class="dropdown-divider"></div> -->
         </div>
-    </div>
+      </li>
+    </ul>
+      <form action="search" method="get"  class="form-inline my-2 my-lg-0">
+        <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search for a course..." aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      </form>
+  </div>
+</nav>
 
-    <form action="search" method="get" class="search-button">
-        <input name="q" type="text" placeholder="Search for a course...">
-    </form>
-
-</div>
 {% block main_content %}
 
 {% endblock %}
 
-<div class="get-started-bar-bottom">
-    {% if not request.user.is_authenticated %}
-        <a href="/register" class="btn btn-primary">Become a student!</a>
-        <a href="/register/instructor" class="btn btn-primary">Teach at MayaCat!</a>
-    {% endif %}
-</div>
+<footer class="footer-footer">
+      <div class="container">
+        <p class="float-right">
+          <a href="#">Back to top</a>
+        </p>
+            {% if not request.user.is_authenticated %}
+                <a href="/register" class="btn btn-primary">Become a student!</a>
+                <a href="/register/instructor" class="btn btn-primary">Teach at MayaCat!</a>
+            {% endif %}
+      </div>
+    <div class="footer-copyright text-center py-3">© 2020 Copyright:
+        <a href="#"> MAYACAT </a>
+    </div>
+</footer>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 

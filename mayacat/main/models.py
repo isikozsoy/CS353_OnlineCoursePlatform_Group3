@@ -103,6 +103,9 @@ class Teaches(models.Model):
 class Topic(models.Model):
     topicname = models.CharField(primary_key=True, max_length=100)
 
+    def __str__(self):
+        return self.topicname
+
 
 class Course_Topic(models.Model):
     # new primary key because Django does not support composite primary keys

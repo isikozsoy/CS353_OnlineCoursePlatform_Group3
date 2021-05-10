@@ -15,6 +15,9 @@ class DefaultUser(User):
     password_orig = models.CharField(max_length=50)
     type = models.IntegerField()
 
+    def __str__(self):
+        return self.username
+
 
 class Student(DefaultUser):
     phone = models.CharField(max_length=50, blank=True)
@@ -22,9 +25,6 @@ class Student(DefaultUser):
 
 class Instructor(Student):
     description = models.TextField()
-
-    def __str__(self):
-        return self.username
 
 
 class Advertiser(DefaultUser):

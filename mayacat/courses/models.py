@@ -43,6 +43,7 @@ class Course(models.Model):
         print(self.lecture_set)
         return self.lecture_set.all().order_by('lecture_name')
 
+
 class Lecture(models.Model):
     lecture_no = models.AutoField(primary_key=True)
 
@@ -64,6 +65,7 @@ class Lecture(models.Model):
 
     def __str__(self):
         return self.lecture_name
+
 
 class LectureMaterial(models.Model):
     materialno = models.AutoField(primary_key=True)

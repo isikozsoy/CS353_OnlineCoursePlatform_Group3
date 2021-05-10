@@ -83,6 +83,9 @@ def add_to_wishlist(request, course_slug):
 
 class MainView(View):
     def get(self, request):
+        if request.user.is_authenticated and request.user.is_superuser:
+            return redirect('adminpanel:admin_main')
+
         # TODO: THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
         #  also the courses that are not private will be listed here
         cursor = connection.cursor()
