@@ -18,22 +18,13 @@
                     <img src = {{ course.course_img }} width="290" height="180" ></img>
                     <br />Name: {{ item.cname }} <br />Price: {{ item.price }} <br />
                     <a href="wishlist/add_to_wishlist/{{course_slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Wishlist</a>
-                    <form action = "add_to_cart" method = "trash">
+
+                    <form action = "/{{ item.slug }}/cart/trash/{{item.inside_cart_id}}" method = "post">
                         {% csrf_token %}
-                        <!--<a class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Trash</a>-->
-                        <button type="submit" class="btn btn-primary" role="button">Trash</button><br>
+                        <!--<button type="submit" class="btn btn-primary" role="button">Trash</button><br>-->
+                        <input type="submit" value="Trash">
                     </form>
 
-                    {% if item.isGift == 1%}
-                        <form action = "add_to_cart" method = "post">
-                            {% csrf_token %}
-
-                            <label for="receiver_id">Receiver ID: </label>
-                            <input id="receiver_id" type="text" name="receiver_id" value="{{ receiver_id }}"><br>
-
-                            <button type="submit" class="btn btn-primary" role="button">OK</button><br>
-                        </form>
-                    {% endif %}
                 </li>
             {% endfor %}
         </ol>

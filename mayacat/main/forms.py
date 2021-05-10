@@ -9,3 +9,6 @@ class Checkout(forms.Form):
 
 class Gift(forms.Form):
     receiver_id = forms.CharField(label='Receiver ID', max_length = 11)
+
+class Trash(forms.Form):
+    course_slug = forms.CharField(label='Course Slug', max_length = 50)

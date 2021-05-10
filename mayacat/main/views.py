@@ -233,7 +233,7 @@ class ShoppingCartView(View):
         total_price = cursor.fetchone()[0]
 
 
-        cursor.execute('SELECT cno, cname, price, slug, situation, is_private, course_img, description, owner_id, receiver_username_id '
+        cursor.execute('SELECT cno, cname, price, slug, situation, is_private, course_img, description, owner_id, receiver_username_id, inside_cart_id '
                        'FROM courses_course AS cc, main_inside_cart AS mic '
                        'WHERE cc.cno = mic.cno_id AND mic.username_id = %s;', [request.user.id])
         items_on_cart = cursor.fetchall()
@@ -248,6 +248,7 @@ class ShoppingCartView(View):
                     'slug': items_on_cart[i][3],
                     'course_img': items_on_cart[i][6],
                     'owner_id': items_on_cart[i][8],
+                    'inside_cart_id': items_on_cart[i][10],
                     #'isGift': items_on_cart[i][9],
                 }
         else:
@@ -258,17 +259,6 @@ class ShoppingCartView(View):
 
         return render(request, 'main/shopping_cart.html', {'user_type': user_type, 'items': items,
                                                            'count': count, 'total_price': total_price})
-    def trash(self, request, course_slug):
-        cursor = connection.cursor()
-
-        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
-        cno = course.cno
-
-        cursor.execute('DELETE '
-                       'FROM main_inside_cart '
-                       'WHERE cno_id = %s AND username_id = %s', [cno, request.user.id])
-
-        return HttpResponseRedirect('/cart')
 
     def post(self, request, course_slug):
         cursor = connection.cursor()
@@ -360,3 +350,23 @@ def add_to_my_courses(request, item):
                        [cno, user_id])
 
     cursor.close()
+
+class TrashView(View):
+
+    def post(self, request, course_slug, inside_cart_id):
+
+        cursor = connection.cursor()
+
+        course = Inside_Cart.objects.raw('SELECT * FROM main_inside_cart WHERE inside_cart_id = "' + inside_cart_id + '" LIMIT 1')[0]
+        ici = course.inside_cart_id
+
+        #course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
+        #cno = course.cno
+
+        cursor.execute('DELETE '
+                       'FROM main_inside_cart '
+                       'WHERE inside_cart_id = %s AND username_id = %s', [ici, request.user.id])
+        cursor.close()
+
+        return HttpResponseRedirect('/cart')
+
