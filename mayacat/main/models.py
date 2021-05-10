@@ -53,17 +53,8 @@ class Finishes(models.Model):
     user = models.ForeignKey(Student, on_delete=models.CASCADE)
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
 
-    comment = models.TextField(blank=True)
-
-
-class Rate(models.Model):
-    # new primary key because Django does not support composite primary keys
-    finishes_id = models.AutoField(primary_key=True)
-
-    user = models.ForeignKey(Student, on_delete=models.CASCADE)
-    cno = models.ForeignKey(Course, on_delete=models.CASCADE)
-
-    score = models.PositiveSmallIntegerField()  # we can add a limit to this
+    comment = models.TextField(blank=True, null=True)
+    score = models.PositiveSmallIntegerField(default=0)
 
 
 class Enroll(models.Model):
@@ -110,8 +101,7 @@ class Teaches(models.Model):
 
 
 class Topic(models.Model):
-    topic_id = models.AutoField(primary_key=True)
-    topicname = models.CharField(max_length=100)
+    topicname = models.CharField(primary_key=True, max_length=100)
 
 
 class Course_Topic(models.Model):
