@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.db import connection
+from django.db import connection, DatabaseError
 from django.http import HttpResponse, HttpResponseRedirect
 import uuid
 
@@ -84,7 +84,7 @@ def add_to_wishlist(request, course_slug):
 class MainView(View):
     def get(self, request):
         if request.user.is_authenticated and request.user.is_superuser:
-            return redirect('adminpanel:admin_create')
+            return redirect('adminpanel:admin_main')
 
         # TODO: THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
         #  also the courses that are not private will be listed here
@@ -101,11 +101,15 @@ class MainView(View):
                                          [user_id])
             announcement_not = cursor.execute('SELECT * FROM main_announcement A, main_enroll E WHERE E.user_id = %s'\
                                                 ' AND A.cno_id = E.cno_id ORDER BY A.ann_date DESC LIMIT 5', [user_id])
-
-        cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
-                       'where id = %s;', [request.user.id])
+        try:
+            cursor.execute('select type '
+                           'from auth_user '
+                           'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                           'where id = %s;', [request.user.id])
+        except DatabaseError:
+            return HttpResponse('An error occurred. <a href="/">Return to the main page...</a>')
+        finally:
+            cursor.close()
 
         row = cursor.fetchone()
         user_type = -1
@@ -119,7 +123,7 @@ class MainView(View):
 
 def course_detail(request, course_id):
     course = Course.objects.raw('SELECT * FROM courses_course WHERE course_id = %s', [course_id])
-    # WILL BE CHANGED TO CURRENT USER ?
+
     user_id = request.user.id
     registered = Enroll.objects.raw('SELECT enroll_id FROM X WHERE user = %s AND cno = %s', [user_id], [course_id])
 

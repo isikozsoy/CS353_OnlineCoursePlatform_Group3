@@ -6,27 +6,33 @@
         <tr>
             <th scope="col">#</th>
             <th scope="col">Reason</th>
-            <th scope="col">Status</th>
             <th scope="col">Course no</th>
             <th scope="col">User id</th>
-            <th scope="col">Creation date </th>
+            <th scope="col">Request date</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
         </tr>
         </thead>
         <tbody class="tbody-light">
         {% for refund in refunds %}
-            {% if date_diff.forloop.counter > 5 %}
+            {% if refund.6 > 5 %}
                 <tr class="table-danger">
-            {% elif date_diff.forloop.counter > 3 %}
+            {% elif refund.6 > 3 %}
                 <tr class="table-warning">
             {% else %}
                 <tr>
             {% endif %}
                 <th scope="row">{{ forloop.counter }}</th>
-                <td>{{ refund.reason }}</td>
-                <td>{{ refund.status }}</td>
-                <td>{{ refund.cno_id }}</td>
-                <td>{{ refund.s_username_id }}</td>
-                <td>{{ refund.date }}</td>
+                <td>{{ refund.1 }}</td>
+                <td>{{ refund.3 }}</td>
+                <td>{{ refund.4 }}</td>
+                <td>{{ refund.5 }}</td>
+                <td><form>{% csrf_token %}<input value="Accept" type="submit" formmethod="post"
+                                                 formaction="{% url 'adminpanel:admin_refund_action' refund.0 True %}"/>
+                </form></td>
+                <td><form>{% csrf_token %}<input value="Reject" type="submit" formmethod="post"
+                                                 formaction="{% url 'adminpanel:admin_refund_action' refund.0 False %}"/>
+                </form></td>
             </tr>
         {% endfor %}
         </tbody>

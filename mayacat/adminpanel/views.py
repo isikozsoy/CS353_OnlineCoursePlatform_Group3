@@ -9,28 +9,49 @@ from django.views.generic import View
 
 from .forms import *
 from courses.views import make_slug_for_url
-from main.models import RefundRequest
 
 
 class AdminMainView(View):
     template_name = "adminpanel/admin_main.html"
+
     # Main view page of admin will list refunds waiting for a decision, add those refunds to evaluated,
     # and also create new instances of discounts if the admin wants so
     # The decision on these discounts will then be handed over to instructors for their respective courses.
     def get(self, request):
         if request.method == 'GET' and request.user.is_authenticated and request.user.is_superuser:
+            cursor = connection.cursor()
             try:  # status = 0 are refunds that are pending for a decision
-                refund_qset = RefundRequest.objects.raw('select * from main_refundrequest where status = 0;')
-                date_diff = []
-                for refund in refund_qset:
-                    date_diff.append(dateDiff(refund.date))
+                cursor.execute('select refund_id, reason, status, cno_id, s_username_id, date '
+                               'from main_refundrequest '
+                               'where status = 0;')
+                refund_set = cursor.fetchall()
 
-                if refund_qset:
-                    return render(request, self.template_name, {'refunds': refund_qset, 'date_diff': date_diff,
+                if refund_set:
+                    refund_set = [refund + (dateDiff(refund[5]),) for refund in refund_set]
+                    return render(request, self.template_name, {'refunds': refund_set,
                                                                 'user_type': 3, })
-            except DatabaseError as e:
+            except DatabaseError:
                 return HttpResponse('There was an error. <a href="/">Return to main page...</a>')
-        return HttpResponseRedirect('/')  # return to main page
+            finally:
+                cursor.close()
+        return HttpResponseRedirect('/login')  # return to login page
+
+
+def accept_refund(request, refund_id, accepted):
+    if request.method == 'POST' and request.user.is_authenticated and request.user.is_superuser:
+        status = -1
+        if accepted:
+            status = 1
+
+        cursor = connection.cursor()
+        try:
+            cursor.execute('update main_refundrequest set status = %s where refund_id = %s;', [status, refund_id])
+        except DatabaseError:
+            return HttpResponse('There was an error. <a href="/">Return to main page...</a>')
+        finally:
+            cursor.close()
+        return redirect('adminpanel:admin_main')
+    return HttpResponseRedirect('/')
 
 
 def dateDiff(date1):
@@ -167,7 +188,7 @@ class AdminCreateView(View):  # this page is '/admin'
                 cursor.execute('insert into accounts_siteadmin (defaultuser_ptr_id, ssn, address) VALUES (%s, %s, %s);',
                                [new_user_id, ssn, address])
             else:
-                return HttpResponseRedirect('/admin')
+                return redirect('adminpanel:admin_main')
 
         cursor.close()
 
@@ -183,7 +204,7 @@ class AdminCreateView(View):  # this page is '/admin'
 
 
 def create_lecture(request):
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_authenticated and request.user.is_superuser:
         form_lecture = LectureCreate(request.POST)
         if form_lecture.is_valid():
             video_url = form_lecture.cleaned_data['video_url']
@@ -206,11 +227,11 @@ def create_lecture(request):
             finally:
                 cursor.close()
         print(form_lecture.errors)
-    return redirect('adminpanel:admin_create')
+    return HttpResponseRedirect('/')
 
 
 def save_courses(request):
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_authenticated and request.user.is_superuser:
         form_course = CourseCreate(request.POST, request.FILES)
         cursor = connection.cursor()
         if form_course.is_valid() and "course_create" in request.POST:
