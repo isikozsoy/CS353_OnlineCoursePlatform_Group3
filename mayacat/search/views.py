@@ -1,3 +1,4 @@
+from django.db import connection
 from django.db.models.expressions import RawSQL
 from django.shortcuts import render
 from django.views.generic import View, ListView
@@ -46,5 +47,13 @@ class SearchView(View):
             "from courses_course " +
             "where cname like %s;", [q]
         )
+        if request.user.is_authenticated:
+            cursor = connection.cursor()
+            try:
+                cursor.execute('select type from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
+                user_type = cursor.fetchone()[0]
+            finally:
+                cursor.close()
 
-        return render(request=request, template_name=self.template_name, context={'object_list': object_list})
+        return render(request=request, template_name=self.template_name, context={'object_list': object_list,
+                                                                                  'user_type': user_type})

@@ -1,13 +1,41 @@
 from django.contrib.auth.models import User
-from django.db import connection
-from django.http import HttpResponseRedirect
+from django.db import DatabaseError
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
+from datetime import date
 
 # Create your views here.
 from django.views.generic import View
 
 from .forms import *
 from courses.views import make_slug_for_url
+from main.models import RefundRequest
+
+
+class AdminMainView(View):
+    template_name = "adminpanel/admin_main.html"
+    # Main view page of admin will list refunds waiting for a decision, add those refunds to evaluated,
+    # and also create new instances of discounts if the admin wants so
+    # The decision on these discounts will then be handed over to instructors for their respective courses.
+    def get(self, request):
+        if request.method == 'GET' and request.user.is_authenticated and request.user.is_superuser:
+            try:  # status = 0 are refunds that are pending for a decision
+                refund_qset = RefundRequest.objects.raw('select * from main_refundrequest where status = 0;')
+                date_diff = []
+                for refund in refund_qset:
+                    date_diff.append(dateDiff(refund.date))
+
+                if refund_qset:
+                    return render(request, self.template_name, {'refunds': refund_qset, 'date_diff': date_diff,
+                                                                'user_type': 3, })
+            except DatabaseError as e:
+                return HttpResponse('There was an error. <a href="/">Return to main page...</a>')
+        return HttpResponseRedirect('/')  # return to main page
+
+
+def dateDiff(date1):
+    today = date.today()
+    return abs((date1 - today).days)
 
 
 class AdminFirstRegisterView(View):
@@ -17,10 +45,18 @@ class AdminFirstRegisterView(View):
         if not request.user.is_authenticated or not request.user.is_superuser:
             return HttpResponseRedirect('/')
         # also check if the user needs to refresh their ssn and address
-
+        cursor = connection.cursor()
+        try:
+            cursor.execute('select * from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
+            result_user = cursor.fetchall()
+            if result_user:  # meaning the user has previously been saved as an admin
+                return redirect('adminpanel:admin_main')
+        finally:
+            cursor.close()
         # ask for ssn and address
         admin_save_form = SiteAdminSaveForm()
-        return render(request, self.template_name, {'admin_save_form': admin_save_form})
+        return render(request, self.template_name, {'admin_save_form': admin_save_form,
+                                                    'user_type': 3, })
 
     def post(self, request):
         admin_save_form = SiteAdminSaveForm(request.POST)
@@ -40,8 +76,8 @@ class AdminFirstRegisterView(View):
         return HttpResponseRedirect('/admin')
 
 
-class AdminView(View):  # this page is '/admin'
-    template_name = "adminpanel/admin_main.html"
+class AdminCreateView(View):  # this page is '/admin'
+    template_name = "adminpanel/admin_create.html"
 
     def get(self, request):
         # first all the evaluations to be done are listed
@@ -62,7 +98,8 @@ class AdminView(View):  # this page is '/admin'
                                                     'form_advertiser': form_advertiser,
                                                     'form_siteadmin': form_siteadmin,
                                                     'form_course': form_course,
-                                                    'form_lecture': form_lecture, })
+                                                    'form_lecture': form_lecture,
+                                                    'user_type': 3, })
 
     def post(self, request):
         form_user = UserCreate(request.POST)
@@ -134,7 +171,7 @@ class AdminView(View):  # this page is '/admin'
 
         cursor.close()
 
-        return redirect('adminpanel:admin_main')
+        return redirect('adminpanel:admin_create')
 
     def save_as_siteadmin(self, user_id):
         cursor = connection.cursor()
@@ -169,7 +206,7 @@ def create_lecture(request):
             finally:
                 cursor.close()
         print(form_lecture.errors)
-    return redirect('adminpanel:admin_main')
+    return redirect('adminpanel:admin_create')
 
 
 def save_courses(request):
@@ -210,4 +247,4 @@ def save_courses(request):
                 cursor.close()
         print(form_course.errors)
         cursor.close()
-    return redirect('adminpanel:admin_main')
+    return redirect('adminpanel:admin_create')

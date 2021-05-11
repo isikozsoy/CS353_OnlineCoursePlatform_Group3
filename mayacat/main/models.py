@@ -174,6 +174,8 @@ class RefundRequest(models.Model):
 
     status = models.SmallIntegerField(default=0)
 
+    date = models.DateField(auto_now_add=True)
+
 
 class Evaluates(models.Model):
     refund_id = models.ForeignKey(RefundRequest, primary_key=True, on_delete=models.CASCADE)

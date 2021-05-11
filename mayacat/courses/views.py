@@ -629,7 +629,15 @@ class ChangeCourseSettingsView(View):
                 return HttpResponseRedirect('/')
 
             course_form = EditCourseForm(instance=course)
-            return render(request, self.template_name, {'course_form': course_form, 'course': course})
+
+            cursor = connection.cursor()
+            try:
+                cursor.execute('select type from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
+                user_type = cursor.fetchone()[0]
+            finally:
+                cursor.close()
+            return render(request, self.template_name, {'course_form': course_form, 'course': course,
+                                                        'user_type': user_type})
         return HttpResponseRedirect('/')
 
     def post(self, request, course_slug):

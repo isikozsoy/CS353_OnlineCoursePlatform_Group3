@@ -39,7 +39,7 @@
     </style>
     <title>MAYACAT</title>
 </head>
-<body style="background-color: gray;">
+<body style="background-color: lightgray;">
 
 <nav class="navbar navbar-expand-lg navbar-dark">
   <a class="navbar-brand" href="/">MayaCat</a>
@@ -83,6 +83,13 @@
             </li>
             <li class="nav-item active">
                 <a class="nav-link" href="/my_courses">My Courses</a>
+            </li>
+        {% elif user_type == 3 %} <!-- the user is an admin -->
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'adminpanel:admin_list' %}">List</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'adminpanel:admin_create' %}">Create</a>
             </li>
         {% endif %}
             <li class="nav-item active">
