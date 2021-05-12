@@ -1,0 +1,28 @@
+{% extends 'main/base.html' %}
+
+{% block main_content %}
+
+<h1>Advertisement Offers</h1>
+<h5>Please note that a course may have only one advertisement for the same day. If you have advertisement, you cannot accept other offers for the same date.</h5>
+  <ol>
+    {% for item in items %}
+    <li>
+      <img src = {{ item.ad }} width="290" height="180" ></img>
+      <br />Course Name: {{ item.cname }} Payment: {{ item.payment }} TL Advertiser: {{item.ad_username.0}}<br>
+      Start Date: {{item.startdate}} End Date: {{item.finishdate}}
+      {% if item.status == 0 %}
+      <br>
+      <a href="/ad_offers/accept_ad/{{item.ad_no}}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">ACCEPT</a>
+      <a href="/ad_offers/refuse_ad/{{item.ad_no}}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">REFUSE</a>
+      {% else %}
+        {% if item.status == 1 %}
+          Status: Refused <br>
+        {% elif item.status == 2 %}
+          Status: Accepted <br>
+        {% endif %}
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+
+{% endblock %}

@@ -11,7 +11,7 @@ from django.db import connection, connections, DatabaseError, Error
 from main.models import *
 from accounts.models import Student
 from .models import *
-from main.models import Enroll, Announcement, Takes_note, Course_Topic
+from main.models import *
 from slugify import slugify
 
 
@@ -90,12 +90,21 @@ class CourseDetailView(View):
     def get(self, request, course_slug):
         form = GiftInfo()
 
-        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')
+
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s;', [course_slug])[0]
         if len(list(course)) != 0:
             course = course[0]
         else:
             return HttpResponseRedirect('/')
         cno = course.cno
+
+        is_only_gift = False
+        is_enrolled = Enroll.objects.raw('SELECT * FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
+                                         [cno, request.user.id])
+        is_in_cart = Inside_Cart.objects.raw('SELECT * FROM main_inside_cart WHERE cno_id = %s AND username_id= %s AND '
+                                             'receiver_username_id = %s', [cno, request.user.id, request.user.id])
+        if is_enrolled or is_in_cart:
+            is_only_gift = True
 
         lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
 
@@ -124,47 +133,40 @@ class CourseDetailView(View):
             'is_wish': is_wish,
             'is_enrolled': is_enrolled,
             'user_type': user_type,
+            'path': request.path,
+            'is_gift': is_only_gift,
             'topic_list': topic_list,
         }
         return render(request, 'courses/course_detail.html', context)
 
     def post(self, request, course_slug):
-        cursor = connection.cursor()
         form = GiftInfo(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            users = Student.objects.raw('SELECT * '
-                                        'FROM accounts_student '
-                                        'INNER JOIN auth_user '
-                                        'ON defaultuser_ptr_id = id '
-                                        'WHERE username = %s;',
-                                        [username])
-            if len(list(users)) == 0:
-                pass
-                # INVALID USER
-            else:
-                receiver_id = users[0].user_id
-                course_queue = Course.objects.raw('SELECT * '
-                                                  'FROM courses_course '
-                                                  'WHERE slug = %s', [course_slug])
-                if len(list(course_queue)) != 0:
-                    course = Course.objects.raw('SELECT * '
-                                                'FROM courses_course '
-                                                'WHERE slug = %s LIMIT 1', [course_slug])[0]
-                    cno = course.cno
-                else:
-                    return
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s;', [course_slug])[0]
+        cno = course.cno
 
-                cursor.execute('INSERT INTO main_gift (sender_id, receiver_id, course_id, date) VALUES (%s, %s);',
-                               [request.user.id, receiver_id, cno, get_today()])
+        cursor = connection.cursor()
+        if form.is_valid():
+            if not form.cleaned_data['is_gift']:
+                cursor.execute('INSERT INTO main_inside_cart (cno_id, receiver_username_id, username_id)'
+                               'VALUES (%s, %s, %s);', [cno, request.user.id, request.user.id])  # own id if it is not a gift
                 cursor.close()
-                cursor = connection.cursor()
-                cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
-                               [cno, receiver_id])
-                cursor.close()
-                return HttpResponseRedirect('my_courses')
-        cursor.close()
-        return HttpResponse("Invalid input. Go back and try again...")
+                return redirect("main:cart")
+
+        cursor.execute('INSERT INTO main_inside_cart (cno_id, receiver_username_id, username_id)'
+                           'VALUES (%s, %s, %s);', [cno, None, request.user.id])  # -1 if it is a gift
+
+        return redirect("main:cart")
+
+
+def add_gift_to_cart(request, course_slug):
+    course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s;', [course_slug])[0]
+    cno = course.cno
+
+    cursor = connection.cursor()
+    print("---------------3.gift---------------")
+    cursor.execute('INSERT INTO main_inside_cart (cno_id, receiver_username_id, username_id)'
+                   'VALUES (%s, %s, %s);', [cno, None, request.user.id])  # -1 if it is a gift
+    return redirect("main:cart")
 
 
 class LectureView(View):
@@ -340,25 +342,6 @@ class LectureView(View):
         return HttpResponseRedirect(request.path)
 
 
-def send_course_as_gift(request, course_slug, receiver):
-    course_queue = Course.objects.raw('SELECT * FROM courses_course as C WHERE C.slug = %s', [course_slug])
-    if len(list(course_queue)) != 0:
-        course = Course.objects.raw('SELECT * FROM courses_course as C WHERE C.slug = %s LIMIT 1', [course_slug])[0]
-        cno = course.cno
-    else:
-        return
-
-        # WILL BE CHANGED TO CURRENT USER
-        s = request.user
-
-        if not Enroll.objects.raw('SELECT * FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s', [cno]):
-            Gift.objects.create(wishes_id=uuid.uuid1(), cno=course, user=s)
-        else:
-            Wishes.objects.filter(cno=course, user=s).delete()
-
-    return redirect("courses:my_courses")
-
-
 class AddComplainView(View):
     template_name = "main/complain.html"
     course_slug = ""
@@ -436,14 +419,7 @@ class RefundRequestView(View):
             if row:
                 user_type = row[0]
 
-            cursor = connection.cursor()
-            try:
-                cursor.execute('select topicname from main_topic;')
-                topic_list = cursor.fetchall()
-            except DatabaseError:
-                return HttpResponse('There was an error.')
-            finally:
-                cursor.close()
+            topic_list = Topic.objects.raw('select * from main_topic;')
 
             return render(request, self.template_name, {'form': form,
                                                         'user_type': user_type,
@@ -720,6 +696,8 @@ class OfferAdView(View):
     template_name = "courses/offer_ad.html"
 
     def get(self, request, course_slug):
+        form = OfferAdForm()
+
         cursor = connection.cursor()
         cursor.execute('select type '
                        'from auth_user '
@@ -732,6 +710,35 @@ class OfferAdView(View):
             user_type = row[0]
 
         topic_list = Topic.objects.raw('select topicname from main_topic;')
-        context = {'user_type': user_type, 'topic_list': topic_list, }
-        print("-------------icerdeyizzzz")
+
+        context = {'user_type': user_type,
+                   'form': form,
+                   'path': request.path,
+                   'topic_list': topic_list,
+                   }
+
         return render(request, self.template_name, context)
+
+    def post(self, request, course_slug):
+        form = OfferAdForm(request.POST, request.FILES)
+        if form.is_valid():
+            ad_img = form.cleaned_data["ad_img"]
+            status = 0  # 0 for waiting, 1 for refused, 2 for accepted
+            price = form.cleaned_data["price"]
+            startdate = form.cleaned_data["start_date"]
+            finishdate = form.cleaned_data["end_date"]
+
+            cursor = connection.cursor()
+            cursor.execute('select cno from courses_course where slug = %s;', [course_slug])
+            cno_row = cursor.fetchone()
+            cursor.close()
+            if not cno_row:  # no course with this course slug (i.e. URL)
+                return HttpResponseRedirect('/')  # return to main page
+            cno = cno_row[0]
+
+            cursor = connection.cursor()
+            cursor.execute('INSERT INTO main_advertisement (advertisement, status, payment, startdate, finishdate,'
+                           ' ad_username_id, cno_id) VALUES (%s, %s, %s, %s, %s, %s, %s);',
+                           [ad_img, status, price, startdate, finishdate, request.user.id, cno])
+            cursor.close()
+        return redirect("main:offers")

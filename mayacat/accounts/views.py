@@ -4,8 +4,8 @@ from django.views.generic.base import View, HttpResponseRedirect, HttpResponse
 from django.contrib.auth import login, logout, authenticate
 
 from .forms import *
-from .models import Student, Instructor, Advertiser
-from main.models import Topic
+from .models import DefaultUser, Student, Instructor, SiteAdmin, Advertiser
+from main.models import *
 
 
 class LogoutView(View):
@@ -223,8 +223,8 @@ class AccountView(View):
     template_name = "account.html"
 
     def get(self, request):
-        cursor = connection.cursor()
         if request.user.is_authenticated:
+            cursor = connection.cursor()
             user_id = request.user.id
             # find the type of the user
             cursor.execute('select type '
@@ -240,10 +240,12 @@ class AccountView(View):
                 user = Student.objects.raw('select * from accounts_student where defaultuser_ptr_id = %s;',
                                            [user_id])[0]
                 form = StudentEditForm(instance=user)
+
             elif user_type == 1:  # it is an Instructor account
                 user = Instructor.objects.raw('select * from accounts_instructor where student_ptr_id = %s;',
                                               [user_id])[0]
                 form = InstructorEditForm(instance=user)
+
             elif user_type == 2:  # advertiser account
                 user = Advertiser.objects.raw('select * from accounts_advertiser where defaultuser_ptr_id = %s;',
                                               [user_id])[0]
@@ -251,11 +253,31 @@ class AccountView(View):
 
             topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
 
+            cursor = connection.cursor()
+            cursor.execute('select topic_id as topicname from main_interested_in '
+                           'where s_username_id = %s;', [user_id])
+            interests = cursor.fetchall()
+            cursor.close()
+            interests_arr = []
+            for interest in interests:
+                interests_arr.append(interest[0])
+
+            cursor = connection.cursor()
+            cursor.execute(
+                'select topicname from main_topic where topicname not in (select topic_id from main_interested_in '
+                'where s_username_id = %s);', [user_id])
+            not_in_interests = cursor.fetchall()
+            not_interests_arr = []
+            for not_interest in not_in_interests:
+                not_interests_arr.append(not_interest[0])
+
             return render(request, self.template_name, {'user': user,
                                                         'user_type': user_type,
                                                         'form': form,
                                                         'readonly': False,
-                                                        'topic_list': topic_list, })
+                                                        'topic_list': topic_list,
+                                                        'interests': interests_arr,
+                                                        'not_interests': not_interests_arr, })
         return HttpResponseRedirect('/')  # redirects to main page if user did not login yet
 
     def post(self, request):
@@ -320,3 +342,19 @@ class AccountView(View):
         print(form.errors)
         cursor.close()
         return HttpResponseRedirect('/account')
+
+
+def add_interested_topic(request, topic):
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO main_interested_in(topic_id, s_username_id) values (%s, %s)",
+                    [topic, request.user.id])
+    cursor.close()
+    return HttpResponseRedirect('/account')
+
+
+def remove_interested_topic(request, topic):
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM main_interested_in WHERE topic_id = %s AND s_username_id = %s",
+                    [topic, request.user.id])
+    cursor.close()
+    return HttpResponseRedirect('/account')

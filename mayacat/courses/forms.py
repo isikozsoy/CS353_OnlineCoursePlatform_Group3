@@ -1,6 +1,7 @@
 from django import forms
 from .models import Course
 from main.models import Course_Topic
+from datetime import datetime, date, timedelta
 
 
 class ComplainForm(forms.Form):
@@ -8,7 +9,7 @@ class ComplainForm(forms.Form):
 
 
 class GiftInfo(forms.Form):
-    username = forms.CharField(label='Username', max_length=50)
+    is_gift = forms.BooleanField(label='Add to cart as a gift.', required=False)
 
 
 TOPIC_CHOICES = (
@@ -63,6 +64,15 @@ class EditTopicForm(forms.ModelForm):
     class Meta:
         model = Course_Topic
         fields = ('topicname',)
+
+
+class OfferAdForm(forms.Form):
+    ad_img = forms.ImageField(label='Advertisement Image', widget=forms.FileInput(
+                               attrs={'class': 'form-control-file', 'enctype': 'multipart/form-data'}))
+    price = forms.DecimalField(label='Offered Price (TL)', max_digits=6, decimal_places=2,
+                               widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    start_date = forms.DateField(label='Start Date', initial=date.today)
+    end_date = forms.CharField(label='End Date', initial=date.today)
 
 
 class CreateLectureForm(forms.Form):
