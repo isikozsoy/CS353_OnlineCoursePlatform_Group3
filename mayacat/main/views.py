@@ -7,8 +7,41 @@ import uuid
 from django.views.generic import ListView, View
 from .models import *
 from accounts.models import *
+from courses.models import Course
 
 cursor = connection.cursor()
+
+
+def topic_course_listing_page(request, topicname):
+    template_name = "main/topic_list_page.html"
+
+    if request.method == 'GET':
+        course_list = Course.objects.raw('select cno '
+                                         'from courses_course '
+                                         'inner join main_course_topic mct on courses_course.cno = mct.cno_id '
+                                         'where topicname_id = %s;', [topicname])
+
+        # obligatory user type check for base.html
+        user_type = -1
+        if request.user.is_authenticated:
+            # check for user type
+            cursor_ = connection.cursor()
+            try:
+                cursor_.execute('select type from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
+                type_row = cursor_.fetchone()
+                if type_row:
+                    user_type = type_row[0]
+            except DatabaseError:
+                return HttpResponse('There was an error.')
+            finally:
+                cursor_.close()
+
+        topic_list = Topic.objects.raw('select * from main_topic;')
+
+        return render(request, template_name, {'course_list': course_list, 'topic_list': topic_list,
+                                               'user_type': user_type, 'topicname': topicname, })
+
+    return HttpResponseRedirect('/')
 
 
 class WishlistView(ListView):

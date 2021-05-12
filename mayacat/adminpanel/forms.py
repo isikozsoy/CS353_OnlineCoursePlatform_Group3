@@ -38,11 +38,13 @@ class CourseCreate(forms.Form):
 
     try:
         cursor.execute('select student_ptr_id from accounts_instructor')
-        owner = forms.ModelChoiceField(Instructor.objects.filter(student_ptr_id__in=(x[0] for x in cursor)), label='Owner',
+        owner = forms.ModelChoiceField(Instructor.objects.filter(student_ptr_id__in=(x[0] for x in cursor)),
+                                       label='Owner',
                                        widget=forms.Select(attrs={'class': "form-control"}))
         cursor.execute('select topicname from main_topic')
-        topic = forms.ModelChoiceField(Topic.objects.filter(topicname__in=(x[0] for x in cursor)), label='Topic',
-                                       widget=forms.Select(attrs={'class': "form-control"}))
+        topic = forms.ModelMultipleChoiceField(Topic.objects.filter(topicname__in=(x[0] for x in cursor)),
+                                               label='Topic',
+                                               widget=forms.CheckboxSelectMultiple(attrs={'class': "form-control"}))
     finally:
         cursor.close()
 
@@ -63,11 +65,12 @@ class LectureCreate(forms.Form):
     try:
         cursor.execute('select cno from courses_course')
         course = forms.ModelChoiceField(Lecture.objects.filter(cno_id__in=(x[0] for x in cursor)), label='Topic',
-                                       widget=forms.Select(attrs={'class': "form-control"}))
+                                        widget=forms.Select(attrs={'class': "form-control"}))
     finally:
         cursor.close()
 
     lecture_name = forms.CharField(label='Course name', max_length=50,
-                            widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A Course Name'}))
+                                   widget=forms.TextInput(
+                                       attrs={'class': 'form-control', 'placeholder': 'A Course Name'}))
     video_url = forms.CharField(label='Video URL', max_length=200, widget=forms.TextInput(attrs={
         'class': 'form-control', 'placeholder': 'yt.be/embed/some_embedded_code'}))

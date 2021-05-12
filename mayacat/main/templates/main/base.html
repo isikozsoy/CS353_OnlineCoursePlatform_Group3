@@ -103,7 +103,7 @@
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             {% for topic in topic_list %}
-                <a class="dropdown-item" href="#">{{ topic.topicname }}</a>
+                <a class="dropdown-item" href="/topic/{{ topic.topicname }}">{{ topic.topicname }}</a>
             {% endfor %}
           <!-- <div class="dropdown-divider"></div> -->
         </div>

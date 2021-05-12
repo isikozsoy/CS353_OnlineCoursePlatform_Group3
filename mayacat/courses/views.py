@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView
 from django.views.generic.base import View
-from django.db import connection, connections, DatabaseError
+from django.db import connection, connections, DatabaseError, Error
 from main.models import *
 from accounts.models import Student
 from .models import *
@@ -544,24 +544,33 @@ class AddCourseView(View):
         if form.is_valid():
             cname = form.cleaned_data['cname']
             price = form.cleaned_data['price']
-            topic = form.cleaned_data['topic']
+            topics = form.cleaned_data.get('topic')
             thumbnail = form.cleaned_data['course_img']
 
             description = form.cleaned_data['description']
             private = form.cleaned_data['private']
 
             orig_slug = make_slug_for_url(cname)
+
             cursor = connection.cursor()
-            cursor.execute('INSERT INTO courses_course '
-                           '(cname, price, slug, situation, is_private, course_img, description, owner_id) '
-                           'VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-                           [cname, price, orig_slug, 'Pending', private, thumbnail, description, request.user.id])
-            cno = Course.objects.raw('select * from courses_course where slug = %s;', [orig_slug])[0].cno
-            cursor.close()
+            try:
+                cursor.execute('insert into courses_course (cname, price, slug, situation, is_private, course_img, '
+                               'description, owner_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);',
+                               [cname, price, orig_slug, 0, private, thumbnail, description, request.user.id])
+            finally:
+                cursor.close()
+
             cursor = connection.cursor()
-            cursor.execute('INSERT INTO main_course_topic (cno_id, topicname_id) '
-                           'VALUES (%s, %s);', [cno, topic])
-            cursor.close()
+            try:
+                cursor.execute('select cno from courses_course where cname = %s;', [cname])
+                cno = cursor.fetchone()[0]
+                for topic in topics:
+                    cursor.execute('insert into main_course_topic (cno_id, topicname_id) VALUES (%s, %s);',
+                                   [cno, topic])
+            except Error:
+                return HttpResponse('There was an error.')
+            finally:
+                cursor.close()
 
             messages.success(request, 'Course submission successful')
         return HttpResponseRedirect(request.path)

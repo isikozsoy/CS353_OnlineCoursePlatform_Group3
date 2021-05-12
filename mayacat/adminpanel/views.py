@@ -265,14 +265,16 @@ def save_courses(request):
             course_img = form_course.cleaned_data['course_img']
             cname = form_course.cleaned_data['cname']
             price = form_course.cleaned_data['price']
-            topic = form_course.cleaned_data['topic']
+            topics = form_course.cleaned_data.get('topic')
             description = form_course.cleaned_data['description']
             private = form_course.cleaned_data['private']
 
             # get owner id
-            cursor.execute('select id from auth_user where username = %s;', [owner_username])
-            owner_id = cursor.fetchone()[0]
-            cursor.close()
+            try:
+                cursor.execute('select id from auth_user where username = %s;', [owner_username])
+                owner_id = cursor.fetchone()[0]
+            finally:
+                cursor.close()
 
             slug = make_slug_for_url(cname)
 
@@ -288,8 +290,11 @@ def save_courses(request):
             try:
                 cursor.execute('select cno from courses_course where cname = %s;', [cname])
                 cno = cursor.fetchone()[0]
-                cursor.execute('insert into main_course_topic (cno_id, topicname_id) VALUES (%s, %s);',
-                               [cno, topic])
+                for topic in topics:
+                    cursor.execute('insert into main_course_topic (cno_id, topicname_id) VALUES (%s, %s);',
+                                    [cno, topic])
+            except Error:
+                return HttpResponse('There was an error.')
             finally:
                 cursor.close()
         print(form_course.errors)

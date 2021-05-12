@@ -1,0 +1,22 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block main_content %}
+    <h3>Courses on {{ topicname }}</h3>
+
+    <div class="list-group">
+    {% for course in course_list %}
+      <a href="/{{ course.slug }}" class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">{{ course.cname }}</h5>
+          <small>Rating: </small>
+            <div class="image-parent">
+                <img src="media_root/{{ course.course_img }}" class="img-fluid" alt="">
+            </div>
+        </div>
+        <p class="mb-1">{{ course.description }}</p>
+        <small>Price: {{ course.price }}</small>
+      </a>
+    {% endfor %}
+    </div>
+
+{% endblock %}
