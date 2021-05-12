@@ -33,12 +33,12 @@
 
     <h4>Contributors</h4>
     {% for contributor in contributors %}
-      <a href = /{{contributor}}>{{contributor}} {{ contributor.username }} <br></a>
+      <a href = /account/{{contributor}}>{{contributor}} {{ contributor.username }} <br></a>
     {% endfor %}
 
     <h4>Teaches</h4>
     {% for teacher in teaches %}
-        <a href = /{{teacher}}>{{teacher}} {{ teacher.username }} <br></a>
+        <a href = /account/{{teacher}}>{{teacher}} {{ teacher.username }} <br></a>
     {% endfor %}
 
   <h3>Including</h3>
