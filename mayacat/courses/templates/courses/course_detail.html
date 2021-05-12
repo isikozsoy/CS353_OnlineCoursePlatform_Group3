@@ -49,17 +49,15 @@
         {% else %}
             <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Favorites</a>
         {% endif %}
-
-    {% else %}
-        <h3>Price {{course.price}}</h3>
-        <h3>Discounted Price {{discounted_price}}</h3>
-        <a href="{{course.slug}}/cart" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Cart</a>
-
+    {% elif is_owner == 0 %}
         {% if is_wish == 0 %}
             <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
         {% else %}
             <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Wishlist</a>
         {% endif %}
+        <h3>Price {{course.price}}</h3>
+        <h3>Discounted Price {{discounted_price}}</h3>
+        <a href="{{course.slug}}/cart" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Cart</a>
 
     {% endif %}
 
@@ -67,10 +65,12 @@
     <ol>
       {% for lecture in lecture_list %}
         {% if registered == 0 %}
-            <li><p>{{ lecture.lecture_name }}</p></li>
+        {% if is_enrolled != 0 or is_owner %}
+            <li><a href="/{{object.slug}}/{{lecture.lecture_slug}}">{{ lecture.lecture_name }}</a></li>
         {% else %}
-            <li><a href="/{{course_slug}}/{{lecture.lecture_slug}}">{{ lecture.lecture_name }}</a></li>
+            <li><p>{{ lecture.lecture_name }}</p></li>
         {% endif %}
+          {% endif %}
       {% endfor %}
     </ol>
 

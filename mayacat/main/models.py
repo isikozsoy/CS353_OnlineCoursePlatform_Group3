@@ -143,6 +143,7 @@ class Post(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE)
 
     post = models.TextField()
+    date = models.DateField(auto_now_add=True)
 
     date = models.DateField(auto_now_add=True)
 

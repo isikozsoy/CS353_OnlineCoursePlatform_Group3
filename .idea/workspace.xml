@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b3ec7be4-c8ca-44a3-9c3a-8f2322070260" name="Default Changelist" comment="Removing from shopping cart is not working.">
-      <change afterPath="$PROJECT_DIR$/mayacat/main/templates/main/ad_offers.html" afterDir="false" />
+    <list default="true" id="b3ec7be4-c8ca-44a3-9c3a-8f2322070260" name="Default Changelist" comment="Problem in course detail view is fixed.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/courses/templates/courses/course_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/templates/courses/course_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/courses/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,8 +14,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -61,6 +61,7 @@
       <workItem from="1620453863590" duration="26335000" />
       <workItem from="1620550039362" duration="15556000" />
       <workItem from="1620679430940" duration="2644000" />
+      <workItem from="1620814908050" duration="15799000" />
     </task>
     <task id="LOCAL-00001" summary="workspace deleted.">
       <created>1620453995894</created>
@@ -90,7 +91,35 @@
       <option name="project" value="LOCAL" />
       <updated>1620575353013</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Account for instructor is fixed.">
+      <created>1620683237535</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1620683237535</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Notification is removed for Advertiser.">
+      <created>1620683340011</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1620683340011</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Notification is done for instructor (announcement, gift and question on forum)">
+      <created>1620827104216</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1620827104216</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Problem in course detail view is fixed.">
+      <created>1620837956846</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1620837956846</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -125,6 +154,11 @@
     <MESSAGE value="Notification is implemented for student. Offer Ad page does not give error but it is not working. Interested in was fixed." />
     <MESSAGE value="Offer Ad Page is working." />
     <MESSAGE value="Shopping cart was merged. #TODO: Corner cases must be implemented. Error messages should be printed." />
-    <option name="LAST_COMMIT_MESSAGE" value="Shopping cart was merged. #TODO: Corner cases must be implemented. Error messages should be printed." />
+    <MESSAGE value="ad_offers.html was added." />
+    <MESSAGE value="Account for instructor is fixed." />
+    <MESSAGE value="Notification is removed for Advertiser." />
+    <MESSAGE value="Notification is done for instructor (announcement, gift and question on forum)" />
+    <MESSAGE value="Problem in course detail view is fixed." />
+    <option name="LAST_COMMIT_MESSAGE" value="Problem in course detail view is fixed." />
   </component>
 </project>

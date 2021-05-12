@@ -3,11 +3,25 @@
 
 {% block main_content %}
     <h2>Notifications</h2>
-    {% for ntf in notifications %}
-        {% if ntf.3 == "gift" %}
-            <p>You receive a gift from {{ntf.2}}. Received Course: {{ntf.1}}</p>
-        {% else %}
-            <p>New announcement for {{ntf.1}}: {{ntf.2}}</p>
-        {% endif %}
-    {% endfor %}
+        <ol>
+            {% if user_type == 0 %}
+                {% for ntf in notifications %}
+                    {% if ntf.3 == "gift" %}
+                        <p>[You receive a gift from {{ntf.2}}] Received Course: {{ntf.1}}</p>
+                    {% else %}
+                        <p>[New announcement] {{ntf.1}}: {{ntf.2}}</p>
+                    {% endif %}
+                {% endfor %}
+            {% elif user_type == 1 %}
+                {% for ntf in notifications %}
+                    {% if ntf.3 == "gift" %}
+                        <li><p>[You receive a gift from {{ntf.2}}] Received Course: {{ntf.1}}</p></li>
+                    {% elif ntf.3 == "ann" %}
+                        <li><p>[New announcement] {{ntf.1}}: {{ntf.2}}</p></li>
+                    {% elif ntf.4 == "post" %}
+                        <li><p>[New post from {{ntf.3}}] Course / Lecture: {{ntf.1}} / {{ntf.2}}</p></li>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </ol>
 {% endblock %}

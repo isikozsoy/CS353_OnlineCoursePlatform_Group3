@@ -91,13 +91,23 @@ class CourseDetailView(View):
             return HttpResponseRedirect('/')
         cno = course.cno
 
+        lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
+
+        is_owner = False
         is_only_gift = False
-        is_enrolled = Enroll.objects.raw('SELECT * FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
-                                         [cno, request.user.id])
-        is_in_cart = Inside_Cart.objects.raw('SELECT * FROM main_inside_cart WHERE cno_id = %s AND username_id= %s AND '
-                                             'receiver_username_id = %s', [cno, request.user.id, request.user.id])
-        if is_enrolled or is_in_cart:
+        is_enrolled = 0
+        if course.owner_id == request.user.id:
+            is_owner = True
             is_only_gift = True
+
+        else:
+            cursor.execute('SELECT count(*) FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
+                                             [cno, request.user.id])
+            is_enrolled = cursor.fetchone()[0]
+            is_in_cart = Inside_Cart.objects.raw('SELECT * FROM main_inside_cart WHERE cno_id = %s AND username_id= %s AND '
+                                                 'receiver_username_id = %s', [cno, request.user.id, request.user.id])
+            if is_enrolled or is_in_cart:
+                is_only_gift = True
 
         lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
         cursor.execute('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
@@ -151,6 +161,10 @@ class CourseDetailView(View):
         user_type = -1
         if row:
             user_type = row[0]
+        cursor.execute('SELECT count(*) '
+                       'FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
+                                              [cno, request.user.id])
+        is_wish = cursor.fetchone()[0]
 
         topic_list = Topic.objects.raw('select topicname from main_topic;')
         discounted_price = course.price
@@ -174,7 +188,6 @@ class CourseDetailView(View):
             'form': form,
             'course': course,
             'is_wish': is_wish,
-            'is_enrolled': is_enrolled,
             'user_type': user_type,
             'path': request.path,
             'is_gift': is_only_gift,
@@ -186,6 +199,9 @@ class CourseDetailView(View):
             'advertisement': advertisement,
             'comments': comments,
             'discounted_price' : discounted_price
+            'is_gift': is_only_gift,
+            'is_owner': is_owner,
+            'is_enrolled': is_enrolled
         }
 
         cursor.close()
