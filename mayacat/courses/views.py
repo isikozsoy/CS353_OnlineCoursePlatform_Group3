@@ -878,7 +878,10 @@ class ChangeCourseSettingsView(View):
         cno = cno_row[0]
 
         cursor.execute('select course_topic_id, topicname_id from main_course_topic where cno_id = %s;', [cno])
-        course_topic_id = cursor.fetchone()[0]
+        course_topic_id = cursor.fetchone()
+
+        if course_topic_id:
+            course_topic_id = course_topic_id[0]
 
         cursor.close()
 

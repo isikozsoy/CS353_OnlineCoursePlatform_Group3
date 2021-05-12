@@ -441,7 +441,7 @@ class ShoppingCartView(View):
             item_id = int(item_id)
 
             cursor.execute('SELECT id FROM auth_user WHERE username = %s', [receiver_username])
-            receiver_id = cursor.fetchone()[0]
+            receiver_id = cursor.fetchone()
 
             if receiver_id:
                 cursor.execute('UPDATE main_inside_cart '
