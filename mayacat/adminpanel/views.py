@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.db import DatabaseError
+from django.db import Error, DatabaseError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from datetime import date
@@ -13,6 +13,15 @@ from courses.views import make_slug_for_url
 
 class AdminMainView(View):
     template_name = "adminpanel/admin_main.html"
+
+    def get(self, request):
+        if request.method == 'GET' and request.user.is_authenticated and request.user.is_superuser:
+            return render(request, self.template_name)
+        return HttpResponseRedirect('/')
+
+
+class AdminRefundView(View):
+    template_name = "adminpanel/admin_refund.html"
 
     # Main view page of admin will list refunds waiting for a decision, add those refunds to evaluated,
     # and also create new instances of discounts if the admin wants so
@@ -28,25 +37,38 @@ class AdminMainView(View):
 
                 if refund_set:
                     refund_set = [refund + (dateDiff(refund[5]),) for refund in refund_set]
-                    return render(request, self.template_name, {'refunds': refund_set,
-                                                                'user_type': 3, })
-            except DatabaseError:
+
+                cursor = connection.cursor()
+                try:
+                    cursor.execute('select topicname from main_topic;')
+                    topic_list = cursor.fetchall()
+                except DatabaseError:
+                    return HttpResponse('There was an error.')
+                finally:
+                    cursor.close()
+
+                return render(request, self.template_name, {'refunds': refund_set,
+                                                            'user_type': 3,
+                                                            'topic_list': topic_list}, )
+            except Error:
                 return HttpResponse('There was an error. <a href="/">Return to main page...</a>')
             finally:
                 cursor.close()
-        return HttpResponseRedirect('/login')  # return to login page
+        return HttpResponseRedirect('/logout')
 
 
 def accept_refund(request, refund_id, accepted):
     if request.method == 'POST' and request.user.is_authenticated and request.user.is_superuser:
         status = -1
-        if accepted:
+        if accepted == 'True':
             status = 1
 
         cursor = connection.cursor()
         try:
             cursor.execute('update main_refundrequest set status = %s where refund_id = %s;', [status, refund_id])
-        except DatabaseError:
+            cursor.execute('insert into main_evaluates (refund_id_id, reply_date, admin_username_id) '
+                           'values (%s, %s, %s);', [refund_id, date.today(), request.user.id])
+        except Error:
             return HttpResponse('There was an error. <a href="/">Return to main page...</a>')
         finally:
             cursor.close()
@@ -76,8 +98,12 @@ class AdminFirstRegisterView(View):
             cursor.close()
         # ask for ssn and address
         admin_save_form = SiteAdminSaveForm()
+
+        topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
+
         return render(request, self.template_name, {'admin_save_form': admin_save_form,
-                                                    'user_type': 3, })
+                                                    'user_type': 3,
+                                                    'topic_list': topic_list})
 
     def post(self, request):
         admin_save_form = SiteAdminSaveForm(request.POST)

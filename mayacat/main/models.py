@@ -144,6 +144,8 @@ class Post(models.Model):
 
     post = models.TextField()
 
+    date = models.DateField(auto_now_add=True)
+
 
 class Quest_answ(models.Model):
     answer_no = models.ForeignKey(Post, primary_key=True, related_name='answer',

@@ -19,6 +19,8 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from courses.views import LectureView
+
 admin.site.site_header = "MayaCat Admin Panel"
 admin.site.site_title = "MayaCat Admin Portal"
 admin.site.index_title = "MayaCat"
@@ -36,3 +38,6 @@ if settings.DEBUG:
                           document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL,
                           document_root=settings.MEDIA_ROOT)
+
+urlpatterns += [
+    path('<course_slug>/<lecture_slug>', LectureView.as_view(), name='lecture_detail'), ]

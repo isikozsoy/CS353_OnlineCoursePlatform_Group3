@@ -1,11 +1,11 @@
-from django.db import connection
-from django.shortcuts import render, redirect
+from django.db import connection, DatabaseError
+from django.shortcuts import render
 from django.views.generic.base import View, HttpResponseRedirect, HttpResponse
-from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 
 from .forms import *
-from .models import DefaultUser, Student, Instructor, SiteAdmin, Advertiser
+from .models import Student, Instructor, Advertiser
+from main.models import Topic
 
 
 class LogoutView(View):
@@ -22,7 +22,10 @@ class LoginView(View):
             return HttpResponseRedirect('/')
 
         form = Login()
-        return render(request, self.template_name, {'form': form})
+        topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
+        return render(request, self.template_name, {'form': form,
+                                                    'user_type': -1,
+                                                    'topic_list': topic_list})
 
     def authenticate(self, request, username, password):
         user_q = User.objects.raw('select * from auth_user where username = %s and password = %s;',
@@ -79,9 +82,12 @@ class RegisterView(View):
         if row:
             user_type = row[0]
 
+        topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
+
         return render(request, self.template_name, {'form': form,
                                                     'path': request.path,
-                                                    'user_type': user_type})
+                                                    'user_type': user_type,
+                                                    'topic_list': topic_list})
 
     def exists(self, username):
         query = 'select * from auth_user where username = "' + username + '";'
@@ -204,10 +210,13 @@ class UserView(View):
                                           [user_id])[0]
             form = AdvertiserEditForm(instance=user, readonly=True)
 
+        topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
+
         return render(request, self.template_name, {'user': user,
                                                     'user_type': user_type,
                                                     'form': form,
-                                                    'readonly': True})
+                                                    'readonly': True,
+                                                    'topic_list': topic_list, })
 
 
 class AccountView(View):
@@ -240,10 +249,13 @@ class AccountView(View):
                                               [user_id])[0]
                 form = AdvertiserEditForm(instance=user)
 
+            topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
+
             return render(request, self.template_name, {'user': user,
                                                         'user_type': user_type,
                                                         'form': form,
-                                                        'readonly': False})
+                                                        'readonly': False,
+                                                        'topic_list': topic_list, })
         return HttpResponseRedirect('/')  # redirects to main page if user did not login yet
 
     def post(self, request):

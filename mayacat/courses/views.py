@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView
 from django.views.generic.base import View
-from django.db import connection, connections
+from django.db import connection, connections, DatabaseError
 from main.models import *
 from accounts.models import Student
 from .models import *
@@ -38,9 +38,11 @@ class MyCoursesView(ListView):
             if row:
                 user_type = row[0]
 
+            topic_list = Topic.objects.raw('select topicname from main_topic;')
             context = {
                 'my_courses_q': my_courses_q,
-                'user_type': user_type
+                'user_type': user_type,
+                'topic_list': topic_list,
             }
 
             return render(request, 'main/my_courses.html', context)
@@ -114,13 +116,15 @@ class CourseDetailView(View):
         if row:
             user_type = row[0]
 
+        topic_list = Topic.objects.raw('select topicname from main_topic;')
         context = {
             'lecture_list': lecture_list,
             'form': form,
             'object': course,
             'is_wish': is_wish,
             'is_enrolled': is_enrolled,
-            'user_type': user_type
+            'user_type': user_type,
+            'topic_list': topic_list,
         }
         return render(request, 'courses/course_detail.html', context)
 
@@ -284,6 +288,7 @@ class LectureView(View):
         if row:
             user_type = row[0]
 
+        topic_list = Topic.objects.raw('select topicname from main_topic;')
         context = {
             'curlecture': lecture,
             'course': course,
@@ -298,6 +303,7 @@ class LectureView(View):
             'lecandprog': lecandprog,
             'form_lecmat_assignment': form_lecmat_assignment,
             'user_type': user_type,
+            'topic_list': topic_list,
             # 'contributors' : contributors
         }
         cursor.close()
@@ -372,8 +378,18 @@ class AddComplainView(View):
             if row:
                 user_type = row[0]
 
+            cursor = connection.cursor()
+            try:
+                cursor.execute('select topicname from main_topic;')
+                topic_list = cursor.fetchall()
+            except DatabaseError:
+                return HttpResponse('There was an error.')
+            finally:
+                cursor.close()
+
             return render(request, self.template_name, {'form': form,
-                                                        'user_type': user_type})
+                                                        'user_type': user_type,
+                                                        'topic_list': topic_list, })
         return HttpResponseRedirect('/')
 
     def post(self, request, course_slug):
@@ -420,8 +436,18 @@ class RefundRequestView(View):
             if row:
                 user_type = row[0]
 
+            cursor = connection.cursor()
+            try:
+                cursor.execute('select topicname from main_topic;')
+                topic_list = cursor.fetchall()
+            except DatabaseError:
+                return HttpResponse('There was an error.')
+            finally:
+                cursor.close()
+
             return render(request, self.template_name, {'form': form,
-                                                        'user_type': user_type})
+                                                        'user_type': user_type,
+                                                        'topic_list': topic_list, })
         return HttpResponseRedirect('/')
 
     def post(self, request, course_slug):
@@ -504,10 +530,13 @@ class AddCourseView(View):
         if row:
             user_type = row[0]
 
+        topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
+
         return render(request, self.template_name, {'user_type': user_type,
                                                     'form': form,
                                                     'add_message': 'Add a course as an instructor:',
-                                                    'create_button': 'Create a course!'})
+                                                    'create_button': 'Create a course!',
+                                                    'topic_list': topic_list})
 
     def post(self, request):
         form = CreateCourseForm(request.POST, request.FILES)
@@ -570,8 +599,11 @@ class AddLectureToCourseView(View):
         if row:
             user_type = row[0]
 
+        topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
+
         return render(request, self.template_name, {'user_type': user_type, 'form': form, 'add_message': message,
-                                                    'create_button': 'Create a lecture!'})
+                                                    'create_button': 'Create a lecture!',
+                                                    'topic_list': topic_list, })
 
     def post(self, request, course_slug):
         cursor = connection.cursor()
@@ -636,8 +668,18 @@ class ChangeCourseSettingsView(View):
                 user_type = cursor.fetchone()[0]
             finally:
                 cursor.close()
+
+            cursor = connection.cursor()
+            try:
+                cursor.execute('select topicname from main_topic;')
+                topic_list = cursor.fetchall()
+            except DatabaseError:
+                return HttpResponse('There was an error.')
+            finally:
+                cursor.close()
+
             return render(request, self.template_name, {'course_form': course_form, 'course': course,
-                                                        'user_type': user_type})
+                                                        'user_type': user_type, 'topic_list': topic_list, })
         return HttpResponseRedirect('/')
 
     def post(self, request, course_slug):
@@ -680,6 +722,7 @@ class OfferAdView(View):
         if row:
             user_type = row[0]
 
-        context = {'user_type': user_type}
+        topic_list = Topic.objects.raw('select topicname from main_topic;')
+        context = {'user_type': user_type, 'topic_list': topic_list, }
         print("-------------icerdeyizzzz")
         return render(request, self.template_name, context)

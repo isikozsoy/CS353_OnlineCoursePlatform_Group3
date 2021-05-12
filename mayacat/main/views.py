@@ -1,9 +1,10 @@
+import django.views.generic
 from django.shortcuts import render, redirect
-from django.db import connection, DatabaseError
+from django.db import connection, DatabaseError, Error
 from django.http import HttpResponse, HttpResponseRedirect
 import uuid
 
-from django.views.generic import ListView, DetailView, View
+from django.views.generic import ListView, View
 from .models import *
 from accounts.models import *
 
@@ -29,11 +30,14 @@ class WishlistView(ListView):
         if row:
             user_type = row[0]
 
+        topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
         context = {
             'wishlist_q': wishlist_q,
-            'user_type': user_type
+            'user_type': user_type,
+            'topic_list': topic_list,
         }
         return render(request, 'main/wishlist.html', context)
+
 
 class OffersView(ListView):
     def get(self, request):
@@ -54,9 +58,11 @@ class OffersView(ListView):
         if row:
             user_type = row[0]
 
+        topic_list = Topic.objects.raw('select topicname from main_topic;')
         context = {
             'offers_q': offers_q,
-            'user_type': user_type
+            'user_type': user_type,
+            'topic_list': topic_list,
         }
         return render(request, 'main/offers.html', context)
 
@@ -98,9 +104,9 @@ class MainView(View):
         if request.user.is_authenticated:
             user_id = request.user.id
             gift_not = cursor.execute('SELECT * FROM main_gift WHERE receiver_id = %s ORDER BY date DESC LIMIT 5',
-                                         [user_id])
-            announcement_not = cursor.execute('SELECT * FROM main_announcement A, main_enroll E WHERE E.user_id = %s'\
-                                                ' AND A.cno_id = E.cno_id ORDER BY A.ann_date DESC LIMIT 5', [user_id])
+                                      [user_id])
+            announcement_not = cursor.execute('SELECT * FROM main_announcement A, main_enroll E WHERE E.user_id = %s' \
+                                              ' AND A.cno_id = E.cno_id ORDER BY A.ann_date DESC LIMIT 5', [user_id])
         try:
             cursor.execute('select type '
                            'from auth_user '
@@ -145,9 +151,20 @@ def course_detail(request, course_id):
     if row:
         user_type = row[0]
 
-    return render(request, 'courses/course_detail.html', {'user_type': user_type, 'course': course, 'registered': registered,
-                                                       'lecture_count': lecture_count, 'rating': rating,
-                                                       'advertisement': advertisement, 'comments': comments})
+    cursor = connection.cursor()
+    try:
+        cursor.execute('select topicname from main_topic;')
+        topic_list = cursor.fetchall()
+    except DatabaseError:
+        return HttpResponse('There was an error.')
+    finally:
+        cursor.close()
+
+    return render(request, 'courses/course_detail.html',
+                  {'user_type': user_type, 'course': course, 'registered': registered,
+                   'lecture_count': lecture_count, 'rating': rating,
+                   'advertisement': advertisement, 'comments': comments,
+                   'topic_list': topic_list, })
 
 
 class ShoppingCartView(View):
@@ -181,8 +198,11 @@ class ShoppingCartView(View):
         if row:
             user_type = row[0]
 
-        return render(request, 'main/shopping_cart.html', {'user_type': user_type, 'items': items, 'items_on_cart': items_on_cart,
-                                                           'count': count, 'total_price': total_price})
+        topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
+
+        return render(request, 'main/shopping_cart.html',
+                      {'user_type': user_type, 'items': items, 'items_on_cart': items_on_cart,
+                       'count': count, 'total_price': total_price, 'topic_list': topic_list, })
 
 
 class ShoppingCheckoutView(View):
@@ -198,4 +218,6 @@ class ShoppingCheckoutView(View):
         if row:
             user_type = row[0]
 
-        return render(request, 'main/checkout.html', {'user_type': user_type})
+        topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
+
+        return render(request, 'main/checkout.html', {'user_type': user_type, 'topic_list': topic_list, })

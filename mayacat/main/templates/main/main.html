@@ -9,7 +9,8 @@
     <h1>Courses List</h1>
 
     {% for object in object_list %}
-        <iframe src="{{ object.course_img }}" name="imgbox"></iframe>
+        {% load static %}
+        <image src="{{ object.course_img.url }}" name="imgbox"></image>
         <br><a href="{{ object.get_url }}">{{ object }}</a><br><br>
     {% endfor %}
 

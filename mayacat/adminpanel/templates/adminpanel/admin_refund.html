@@ -1,0 +1,45 @@
+{% extends "main/base.html" %}
+{% block main_content %}
+  <h3>Refunds Waiting</h3>
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Reason</th>
+            <th scope="col">Course no</th>
+            <th scope="col">User id</th>
+            <th scope="col">Request date</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody class="tbody-light">
+        {% if refunds %}
+            {% for refund in refunds %}
+                {% if refund.6 > 5 %}
+                    <tr class="table-danger">
+                {% elif refund.6 > 3 %}
+                    <tr class="table-warning">
+                {% else %}
+                    <tr>
+                {% endif %}
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ refund.1 }}</td>
+                    <td>{{ refund.3 }}</td>
+                    <td>{{ refund.4 }}</td>
+                    <td>{{ refund.5 }}</td>
+                    <td><form>{% csrf_token %}<input value="Accept" type="submit" formmethod="post"
+                                                     formaction="{% url 'adminpanel:admin_refund_action' refund.0 True %}"/>
+                    </form></td>
+                    <td><form>{% csrf_token %}<input value="Reject" type="submit" formmethod="post"
+                                                     formaction="{% url 'adminpanel:admin_refund_action' refund.0 False %}"/>
+                    </form></td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <a>No records to show.</a>
+        {% endif %}
+        </tbody>
+    </table>
+
+{% endblock %}
