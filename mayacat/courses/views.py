@@ -86,29 +86,6 @@ class CourseListView(ListView):
 
 class CourseDetailView(View):
     def get(self, request, course_slug):
-        form = GiftInfo()
-        cursor = connection.cursor()
-        cursor.execute('SELECT cno, slug FROM courses_course WHERE slug = %s;', [course_slug])
-        course = cursor.fetchone()
-        cno = course[0]
-        course_slug = course[1]
-
-        is_only_gift = False
-        is_enrolled = Enroll.objects.raw('SELECT * FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
-                                         [cno, request.user.id])
-        is_in_cart = Inside_Cart.objects.raw('SELECT * FROM main_inside_cart WHERE cno_id = %s AND username_id= %s AND '
-                                             'receiver_username_id = %s', [cno, request.user.id, request.user.id])
-        if is_enrolled or is_in_cart:
-            is_only_gift = True
-
-        lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
-
-        is_wish = len(list(Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
-                                              [cno, request.user.id])))
-
-        is_enrolled = len(list(Enroll.objects.raw('SELECT * FROM main_enroll WHERE cno_id = %s AND user_id = %s;',
-                                                  [cno, request.user.id])))
-
         cursor = connection.cursor()
         cursor.execute('select type '
                        'from auth_user '
@@ -119,6 +96,33 @@ class CourseDetailView(View):
         user_type = -1
         if row:
             user_type = row[0]
+
+        form = GiftInfo()
+        cursor = connection.cursor()
+        cursor.execute('SELECT cno, slug, owner_id FROM courses_course WHERE slug = %s;', [course_slug])
+        course = cursor.fetchone()
+        cno = course[0]
+        course_slug = course[1]
+        owner_id = course[2]
+
+        is_only_gift = False
+        if owner_id == request.user.id:
+            is_only_gift = True
+        else:
+            is_enrolled = Enroll.objects.raw('SELECT * FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
+                                             [cno, request.user.id])
+            is_in_cart = Inside_Cart.objects.raw('SELECT * FROM main_inside_cart WHERE cno_id = %s AND username_id= %s AND '
+                                                 'receiver_username_id = %s', [cno, request.user.id, request.user.id])
+            if is_enrolled or is_in_cart:
+                is_only_gift = True
+
+        lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
+
+        is_wish = len(list(Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
+                                              [cno, request.user.id])))
+
+        is_enrolled = len(list(Enroll.objects.raw('SELECT * FROM main_enroll WHERE cno_id = %s AND user_id = %s;',
+                                                  [cno, request.user.id])))
 
         context = {
             'lecture_list': lecture_list,
