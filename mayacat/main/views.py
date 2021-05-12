@@ -64,6 +64,9 @@ class WishlistView(ListView):
         if row:
             user_type = row[0]
 
+        if user_type == -1:
+            return HttpResponseRedirect('/login')
+
         topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
         context = {
             'wishlist_q': wishlist_q,
@@ -167,18 +170,32 @@ class MainView(View):
                                                   'user_type': user_type})
 
 
-def course_detail(request, course_id):
+def course_detail(request, course_slug):
+    course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
+
+    # check whether the student is enrolled into this course
+    # is course slug primary key
+
+    if len(course_queue) > 0:
+        course = course_queue[0]
+        print("=2", course, course.cno)
+    else:
+        # 404 error
+        print("error no course as the stated");
+
+    cno = course.cno
+
     course = Course.objects.raw('SELECT * FROM courses_course WHERE course_id = %s', [course_id])
 
     user_id = request.user.id
-    registered = Enroll.objects.raw('SELECT enroll_id FROM X WHERE user = %s AND cno = %s', [user_id], [course_id])
+    registered = Enroll.objects.raw('SELECT enroll_id FROM main_enroll WHERE user_id = %s AND cno_id = %s', [user_id, course_id])
 
     lecture_count = Lecture.objects.filter(cno_id=course.cno).count()
+    ### TODO: RATE ARTIK YOK
+    rating = Rate.objects.raw('SELECT AVG(score) FROM main_rate WHERE cno_id = %s', [course_id])
+    advertisement = Advertisement.objects.raw('SELECT advertisement FROM main_advertisement WHERE cno_id = %s', [course_id])
 
-    rating = Rate.objects.raw('SELECT AVG(score) FROM X WHERE cno = %s', [course_id])
-    advertisement = Advertisement.objects.raw('SELECT advertisement FROM X WHERE cno = %s', [course_id])
-
-    comments = Finishes.objects.raw('SELECT comment FROM X WHERE cno = %s', [course_id])
+    comments = Finishes.objects.raw('SELECT comment FROM main_finishes WHERE cno_id = %s', [course_id])
 
     cursor = connection.cursor()
     cursor.execute('select type '
@@ -228,9 +245,10 @@ class NotificationView(View):
                 gift_arr.append(gift)
 
             cursor = connection.cursor()
-            cursor.execute('SELECT ann_date, cname, ann_text FROM main_enroll as E, main_announcement A, courses_course C'
-                           ' WHERE E.cno_id = A.cno_id AND E.user_id = %s'
-                           ' AND E.cno_id = C.cno ORDER BY ann_date DESC', [request.user.id])
+            cursor.execute(
+                'SELECT ann_date, cname, ann_text FROM main_enroll as E, main_announcement A, courses_course C'
+                ' WHERE E.cno_id = A.cno_id AND E.user_id = %s'
+                ' AND E.cno_id = C.cno ORDER BY ann_date DESC', [request.user.id])
             temp_anns = cursor.fetchall()
             cursor.close()
 
@@ -365,7 +383,7 @@ class ShoppingCartView(View):
 
         # log in before buy anything
         if user_type == -1:
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect('/login')
 
         cursor.execute('SELECT count(*) '
                        'FROM main_inside_cart '
@@ -413,7 +431,6 @@ class ShoppingCartView(View):
                                                            'user_id': request.user.id,
                                                            'topic_list': topic_list, })
 
-
     def post(self, request):
         cursor = connection.cursor()
 
@@ -433,19 +450,10 @@ class ShoppingCartView(View):
         return HttpResponseRedirect(request.path)
 
 
-def remove_from_cart(request, item_id):
-    print("-------------inside remove")
-    item_id = int(item_id)
-    cursor = connection.cursor()
-    cursor.execute('DELETE FROM main_inside_cart '
-                   'WHERE inside_cart_id = %s', [item_id])
-    cursor.close()
-    return redirect("main:cart")
-
-
 class ShoppingCheckoutView(View):
     def get(self, request):
         cursor = connection.cursor()
+
         cursor.execute('select type '
                        'from auth_user '
                        'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
@@ -486,6 +494,7 @@ class ShoppingCheckoutView(View):
         cursor.execute('DELETE FROM main_inside_cart WHERE username_id = %s', [request.user.id])
 
         return HttpResponseRedirect('/cart')
+
 
 class AdOffersView(View):
     def get(self, request):
@@ -547,6 +556,7 @@ class AdOffersView(View):
         context = {'items': items, 'user_type': user_type}
         return render(request, 'main/ad_offers.html', context)
 
+
 def accept_ad(request, ad_no):
     cursor = connection.cursor()
     cursor.execute('UPDATE main_advertisement '
@@ -564,12 +574,14 @@ def accept_ad(request, ad_no):
                        'WHERE advertisementno = %s', [ad])
     return redirect('main:ad_offers')
 
+
 def refuse_ad(request, ad_no):
     cursor = connection.cursor()
     cursor.execute('UPDATE main_advertisement '
                    'SET status = 1 '
                    'WHERE advertisementno = %s', [ad_no])
     return redirect('main:ad_offers')
+
 
 class TaughtCoursesView(View):
     def get(self, request):
@@ -588,10 +600,86 @@ class TaughtCoursesView(View):
                        [request.user.id])
         owned_courses = cursor.fetchall()
 
-        cursor.execute('SELECT cname, slug FROM courses_course C, main_teaches T, courses_lecture L WHERE T.user_id = %s'
-                       ' AND T.lecture_no_id = L.lecture_no AND L.cno_id = C.cno AND cno NOT IN'
-                       ' (SELECT cno FROM courses_course WHERE owner_id = %s)', [request.user.id, request.user.id])
+        cursor.execute(
+            'SELECT cname, slug FROM courses_course C, main_teaches T, courses_lecture L WHERE T.user_id = %s'
+            ' AND T.lecture_no_id = L.lecture_no AND L.cno_id = C.cno AND cno NOT IN'
+            ' (SELECT cno FROM courses_course WHERE owner_id = %s)', [request.user.id, request.user.id])
         taught_courses = cursor.fetchall()
 
         context = {'user_type': user_type, 'owned_courses': owned_courses, 'taught_courses': taught_courses}
         return render(request, 'main/taught_courses.html', context)
+
+    def post(self, request):
+        cursor = connection.cursor()
+
+        cursor.execute('SELECT slug, receiver_username_id '
+                       'FROM courses_course '
+                       'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
+                       'WHERE mic.username_id = %s;', [request.user.id])
+
+        items_on_cart = cursor.fetchall()
+
+        if (len(items_on_cart) > 0):
+            items = [None] * len(items_on_cart)
+            for i in range(0, len(items_on_cart)):
+                items[i] = {
+                    'slug': items_on_cart[i][0],
+                    # 'isGift': items_on_cart[i][1],
+                }
+        else:
+            items = None
+
+        for item in items:
+            add_to_my_courses(request, item)
+
+        cursor.execute('DELETE FROM main_inside_cart WHERE username_id = %s', [request.user.id])
+
+        return HttpResponseRedirect('/cart')
+
+
+def add_to_my_courses(request, item):
+    cursor = connection.cursor()
+    course_slug = item.get('slug')
+    # isGift = item.get('isGift')
+
+    course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
+    cno = course.cno
+
+    user_id = request.user.id
+
+    my_courses = Enroll.objects.raw('SELECT * '
+                                    'FROM main_enroll '
+                                    'WHERE user_id = %s AND cno_id = %s;',
+                                    [user_id, cno])
+    '''
+    
+    if isGift != 0:
+        cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
+                       [isGift, user_id])
+    '''
+
+    if len(list(my_courses)) == 0:
+        cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
+                       [cno, user_id])
+
+    cursor.close()
+
+
+class TrashView(View):
+
+    def post(self, request, course_slug, inside_cart_id):
+        cursor = connection.cursor()
+
+        course = Inside_Cart.objects.raw(
+            'SELECT * FROM main_inside_cart WHERE inside_cart_id = "' + inside_cart_id + '" LIMIT 1')[0]
+        ici = course.inside_cart_id
+
+        # course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
+        # cno = course.cno
+
+        cursor.execute('DELETE '
+                       'FROM main_inside_cart '
+                       'WHERE inside_cart_id = %s AND username_id = %s', [ici, request.user.id])
+        cursor.close()
+
+        return HttpResponseRedirect('/cart')

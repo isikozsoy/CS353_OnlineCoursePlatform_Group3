@@ -15,11 +15,14 @@
         <ol>
             {% for item in items %}
                 <li>
-                    <img src = {{ item.course_img }} width="290" height="180" ></img>
+                    <img src = {{ course.course_img }} width="290" height="180" >
                     <br />Name: {{ item.cname }} <br />Price: {{ item.price }} <br />
+                    <form action = "/{{ item.slug }}/cart/trash/{{item.inside_cart_id}}" method = "post">
+                        {% csrf_token %}
+                        <!--<button type="submit" class="btn btn-primary" role="button">Trash</button><br>-->
+                        <input type="submit" value="Trash">
+                    </form>
                     <a href="/wishlist/add_to_wishlist/{{item.slug}}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Add To Wishlist</a>
-                    <a href="/cart/remove/{{item.item_id}}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Remove From Cart</a>
-
                     {% if item.isGift != user_id or item.isGift == None %}
                         <form action = {{ path|lower }} method="POST">
                             {% csrf_token %}
@@ -42,7 +45,7 @@
         </ol>
 
         <h2>Total: {{total_price}}</h2>
-        <a href="/checkout" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Checkout</a>
+        <a href="/checkout" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Checkout</a>
 
     {% else %}
         <h2>Your shopping cart is empty!</h2>

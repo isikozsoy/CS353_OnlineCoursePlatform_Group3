@@ -8,6 +8,7 @@ from courses.models import *
 from accounts.models import *
 from datetime import date
 from slugify import slugify
+from datetime import date
 
 from .forms import *
 
@@ -15,6 +16,7 @@ class MyCoursesView(ListView):
     def get(self, request):
         if request.user.is_authenticated:
             user_id = request.user.id
+
             my_courses_q = Enroll.objects.raw('''SELECT *
                                                 FROM main_enroll
                                                 WHERE user_id = %s''', [user_id])
@@ -91,8 +93,19 @@ class CourseDetailView(View):
             return HttpResponseRedirect('/')
         cno = course.cno
 
-        lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
+        cursor.execute('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
 
+        lecture_list = cursor.fetchall()
+
+        if (len(lecture_list) > 0):
+            lectures = [None] * len(lecture_list)
+            for i in range(0, len(lecture_list)):
+                lectures[i] = {
+                    'lecture_slug': lecture_list[i][2],
+                    'lecture_name': lecture_list[i][1],
+                }
+        else:
+            lectures = None
         is_owner = False
         is_only_gift = False
         is_enrolled = 0
@@ -102,20 +115,13 @@ class CourseDetailView(View):
 
         else:
             cursor.execute('SELECT count(*) FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
-                                             [cno, request.user.id])
+                           [cno, request.user.id])
             is_enrolled = cursor.fetchone()[0]
-            is_in_cart = Inside_Cart.objects.raw('SELECT * FROM main_inside_cart WHERE cno_id = %s AND username_id= %s AND '
-                                                 'receiver_username_id = %s', [cno, request.user.id, request.user.id])
+            is_in_cart = Inside_Cart.objects.raw(
+                'SELECT * FROM main_inside_cart WHERE cno_id = %s AND username_id= %s AND '
+                'receiver_username_id = %s', [cno, request.user.id, request.user.id])
             if is_enrolled or is_in_cart:
                 is_only_gift = True
-
-        lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
-        cursor.execute('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
-
-        lecture_list = cursor.fetchone()
-
-        if lecture_list:
-            lecture_list = cursor.fetchone()[0]
 
         is_wish = len(list(Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
                                               [cno, request.user.id])))
@@ -138,11 +144,14 @@ class CourseDetailView(View):
         advertisement_list = cursor.fetchone()
         print("advertisement",advertisement_list)
 
-        advertisement = {
-            'advertisement' : advertisement_list[1],
-            'ad_username_id': advertisement_list[6],
-            'startdate' : advertisement_list[4]
-        }
+        advertisement = None
+
+        if (advertisement_list is not None ):
+            advertisement = {
+                'advertisement' : advertisement_list[1],
+                'ad_username_id': advertisement_list[6],
+                'startdate' : advertisement_list[4]
+            }
 
 
         cursor.execute('SELECT comment FROM main_finishes WHERE cno_id = %s;', [cno])
@@ -183,8 +192,24 @@ class CourseDetailView(View):
             print("NEW PRICE",discounts[0][2])
             discounted_price = discounts[0][2]
 
+        discounted_price = course.price
+
+
+        today = date.today()
+        print("Today:",today)
+
+        cursor.execute('''SELECT * FROM main_discount AS MD 
+                            WHERE MD.cno_id = %s AND (CURRENT_TIMESTAMP BETWEEN MD.startdate AND MD.finishdate) 
+                                AND MD.situation = 1 ;''',
+                                   [course.cno])
+        discounts = cursor.fetchall()
+        print("Discount: ",discounts)
+        if(len(discounts)>0):
+            print("NEW PRICE",discounts[0][2])
+            discounted_price = discounts[0][2]
+
         context = {
-            'lecture_list': lecture_list,
+            'lecture_list': lectures,
             'form': form,
             'course': course,
             'is_wish': is_wish,
@@ -193,7 +218,6 @@ class CourseDetailView(View):
             'is_gift': is_only_gift,
             'topic_list': topic_list,
             'registered': registered,
-            'user_type': user_type,
             'lecture_count': lecture_count,
             'rating': rating,
             'advertisement': advertisement,

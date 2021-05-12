@@ -7,6 +7,11 @@ class Checkout(forms.Form):
     expiry_date = forms.CharField(label='Expiry Date', max_length = 5) # will be worked on
     security_code = forms.CharField(label='Security Code', max_length = 3)
 
+
+class Trash(forms.Form):
+    course_slug = forms.CharField(label='Course Slug', max_length = 50)
+
+
 class GiftForm(forms.Form):
     receiver_id = forms.CharField(label='Receiver Username:', max_length = 150)
     item_id = forms.CharField(widget=forms.HiddenInput())
