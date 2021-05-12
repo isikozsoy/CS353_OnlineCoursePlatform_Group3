@@ -2,8 +2,12 @@ from django import forms
 from .models import Course
 from main.models import Post
 
+class AddTeacherForm(forms.Form):
+    addteacher = forms.CharField(label='addteacher', max_length=500)
+
 class NewNoteForm(forms.Form):
     note = forms.CharField(label='note', max_length=500)
+
 class AskQuestion(forms.Form):
     question = forms.CharField(label='question', max_length=500)
 
@@ -14,6 +18,7 @@ class AnswerQuestion(forms.Form):
 
 class FinishCourseCommentForm(forms.Form):
     comment = forms.CharField(label='comment', max_length = 1000)
+
 class FinishCourseRateForm(forms.Form):
     rate = forms.CharField(label='rate', max_length = 1000)
 
