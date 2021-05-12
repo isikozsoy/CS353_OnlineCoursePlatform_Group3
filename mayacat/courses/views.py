@@ -87,9 +87,11 @@ class CourseListView(ListView):
 class CourseDetailView(View):
     def get(self, request, course_slug):
         form = GiftInfo()
-
-        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s;', [course_slug])[0]
-        cno = course.cno
+        cursor = connection.cursor()
+        cursor.execute('SELECT cno, slug FROM courses_course WHERE slug = %s;', [course_slug])
+        course = cursor.fetchone()
+        cno = course[0]
+        course_slug = course[1]
 
         is_only_gift = False
         is_enrolled = Enroll.objects.raw('SELECT * FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
@@ -126,7 +128,8 @@ class CourseDetailView(View):
             'is_enrolled': is_enrolled,
             'user_type': user_type,
             'path': request.path,
-            'is_gift': is_only_gift
+            'is_gift': is_only_gift,
+            'course_slug': course_slug
         }
         return render(request, 'courses/course_detail.html', context)
 
@@ -581,6 +584,7 @@ def change_course_settings(request, course_slug):
     cursor.execute('select owner_id from courses_course where slug = %s;', [course_slug])
     owner_id_row = cursor.fetchone()
     if not owner_id_row:  # meaning this course does not exist
+        print("----------------------------------------------")
         return HttpResponseRedirect('/')  # return to main page
 
     owner_id = owner_id_row[0]

@@ -504,3 +504,28 @@ def refuse_ad(request, ad_no):
                    'SET status = 1 '
                    'WHERE advertisementno = %s', [ad_no])
     return redirect('main:ad_offers')
+
+class TaughtCoursesView(View):
+    def get(self, request):
+        cursor = connection.cursor()
+        cursor.execute('select type '
+                       'from auth_user '
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
+        cursor.execute('SELECT cname, slug FROM courses_course WHERE owner_id = %s',
+                       [request.user.id])
+        owned_courses = cursor.fetchall()
+
+        cursor.execute('SELECT cname, slug FROM courses_course C, main_teaches T, courses_lecture L WHERE T.user_id = %s'
+                       ' AND T.lecture_no_id = L.lecture_no AND L.cno_id = C.cno AND cno NOT IN'
+                       ' (SELECT cno FROM courses_course WHERE owner_id = %s)', [request.user.id, request.user.id])
+        taught_courses = cursor.fetchall()
+
+        context = {'user_type': user_type, 'owned_courses': owned_courses, 'taught_courses': taught_courses}
+        return render(request, 'main/taught_courses.html', context)
