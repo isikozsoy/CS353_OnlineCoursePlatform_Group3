@@ -43,7 +43,7 @@
         {% if is_enrolled == 0 %}
             <li><p>{{ lecture.lecture_name }}</p></li>
         {% else %}
-            <li><a href="/{{course_slug}}/{{lecture.lecture_slug}}">{{ lecture.lecture_name }}</a></li>
+            <li><a href="/{{object.slug}}/{{lecture.lecture_slug}}">{{ lecture.lecture_name }}</a></li>
         {% endif %}
       {% endfor %}
     </ol>

@@ -98,15 +98,12 @@ class CourseDetailView(View):
             user_type = row[0]
 
         form = GiftInfo()
-        cursor = connection.cursor()
-        cursor.execute('SELECT cno, slug, owner_id FROM courses_course WHERE slug = %s;', [course_slug])
-        course = cursor.fetchone()
-        cno = course[0]
-        course_slug = course[1]
-        owner_id = course[2]
+
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s;', [course_slug])[0]
+        cno = course.cno
 
         is_only_gift = False
-        if owner_id == request.user.id:
+        if course.owner_id == request.user.id:
             is_only_gift = True
         else:
             is_enrolled = Enroll.objects.raw('SELECT * FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
@@ -132,8 +129,7 @@ class CourseDetailView(View):
             'is_enrolled': is_enrolled,
             'user_type': user_type,
             'path': request.path,
-            'is_gift': is_only_gift,
-            'course_slug': course_slug
+            'is_gift': is_only_gift
         }
         return render(request, 'courses/course_detail.html', context)
 
