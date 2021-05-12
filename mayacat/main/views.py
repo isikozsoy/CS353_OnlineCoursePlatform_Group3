@@ -41,6 +41,10 @@ class WishlistView(ListView):
         if row:
             user_type = row[0]
 
+        # log in before like anything
+        if user_type == -1:
+            return HttpResponseRedirect('/login')
+
         context = {
             'wishlist_q': wishlist_q,
             'user_type': user_type
@@ -187,7 +191,7 @@ class ShoppingCartView(View):
 
         # log in before buy anything
         if user_type == -1:
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect('/login')
 
         # The function is called from (add to cart) button
         if(course_slug is not None):
