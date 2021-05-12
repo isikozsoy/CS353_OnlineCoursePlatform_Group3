@@ -10,7 +10,7 @@
 
   <iframe width="320" height="240" src={{curlecture.video_url}} allowfullscreen></iframe>
 
-      {% if course.owner_id == request.user.id %}
+      {% if course.owner_id == request.user.id %} <!-- TODO: CONTRIBUTORLAR -->
           {% include "courses/lecture_assignment_material_addition.html" %}
       {% endif %}
 

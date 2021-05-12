@@ -198,7 +198,7 @@ class CourseDetailView(View):
             'rating': rating,
             'advertisement': advertisement,
             'comments': comments,
-            'discounted_price' : discounted_price
+            'discounted_price' : discounted_price,
             'is_gift': is_only_gift,
             'is_owner': is_owner,
             'is_enrolled': is_enrolled
