@@ -1,0 +1,25 @@
+{% extends 'main/base.html' %}
+
+{% block main_content %}
+
+<h1>TAUGHT COURSES</h1>
+<h3>Courses That You Owned</h3>
+<ol>
+    {% for item in owned_courses %}
+    <li>
+      <br>
+      <a href="/{{item.1}}/edit" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Course Name: {{item.0}}</a>
+    </li>
+    {% endfor %}
+  </ol>
+
+<h3>Courses That You Contributed</h3>
+  <ol>
+    {% for item in taught_courses %}
+    <li>
+      <br>Course Name: {{ item.0 }}
+    </li>
+    {% endfor %}
+  </ol>
+
+{% endblock %}
