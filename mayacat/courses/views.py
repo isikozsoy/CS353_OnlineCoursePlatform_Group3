@@ -102,34 +102,39 @@ class CourseDetailView(View):
         course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s;', [course_slug])[0]
         cno = course.cno
 
+        lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
+
+        is_owner = False
         is_only_gift = False
+        is_enrolled = 0
         if course.owner_id == request.user.id:
+            is_owner = True
             is_only_gift = True
+
         else:
-            is_enrolled = Enroll.objects.raw('SELECT * FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
+            cursor.execute('SELECT count(*) FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
                                              [cno, request.user.id])
+            is_enrolled = cursor.fetchone()[0]
             is_in_cart = Inside_Cart.objects.raw('SELECT * FROM main_inside_cart WHERE cno_id = %s AND username_id= %s AND '
                                                  'receiver_username_id = %s', [cno, request.user.id, request.user.id])
             if is_enrolled or is_in_cart:
                 is_only_gift = True
 
-        lecture_list = Lecture.objects.raw('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
-
-        is_wish = len(list(Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
-                                              [cno, request.user.id])))
-
-        is_enrolled = len(list(Enroll.objects.raw('SELECT * FROM main_enroll WHERE cno_id = %s AND user_id = %s;',
-                                                  [cno, request.user.id])))
+        cursor.execute('SELECT count(*) '
+                       'FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
+                                              [cno, request.user.id])
+        is_wish = cursor.fetchone()[0]
 
         context = {
             'lecture_list': lecture_list,
             'form': form,
             'object': course,
             'is_wish': is_wish,
-            'is_enrolled': is_enrolled,
             'user_type': user_type,
             'path': request.path,
-            'is_gift': is_only_gift
+            'is_gift': is_only_gift,
+            'is_owner': is_owner,
+            'is_enrolled': is_enrolled
         }
         return render(request, 'courses/course_detail.html', context)
 
