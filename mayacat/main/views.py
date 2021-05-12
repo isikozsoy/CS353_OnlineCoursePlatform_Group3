@@ -152,7 +152,7 @@ class NotificationView(View):
         if row:
             user_type = row[0]
 
-        if user_type == 0: # student
+        if user_type == 0:  # student
             cursor = connection.cursor()
             cursor.execute('SELECT date, cname, username FROM main_gift as G, auth_user as A, courses_course as C'
                            ' WHERE C.cno = G.course_id AND G.sender_id = A.id AND G.receiver_id = %s ORDER BY date DESC'
@@ -199,13 +199,91 @@ class NotificationView(View):
                     notifications.append(gift_arr[gift_i])
                     gift_i = gift_i + 1
 
-        elif user_type == 1:
-            print()
-            # blavla
-        else:
-            print()
-        context={'user_type': user_type, 'notifications': notifications}
-        return render (request, 'main/notifications.html', context)
+        elif user_type == 1:  # instructor
+            cursor = connection.cursor()
+            cursor.execute('SELECT date, cname, username FROM main_gift as G, auth_user as A, courses_course as C'
+                           ' WHERE C.cno = G.course_id AND G.sender_id = A.id AND G.receiver_id = %s ORDER BY date DESC'
+                           , [request.user.id])
+            temp_gift = cursor.fetchall()
+            cursor.close()
+
+            gift_arr = []
+            for gift in temp_gift:
+                gift = list(gift)
+                gift.append("gift")
+                gift_arr.append(gift)
+
+            cursor = connection.cursor()
+            cursor.execute(
+                'SELECT ann_date, cname, ann_text FROM main_enroll as E, main_announcement A, courses_course C'
+                ' WHERE E.cno_id = A.cno_id AND E.user_id = %s'
+                ' AND E.cno_id = C.cno ORDER BY ann_date DESC', [request.user.id])
+            temp_anns = cursor.fetchall()
+            cursor.close()
+
+            anns_arr = []
+            for ann in temp_anns:
+                ann = list(ann)
+                ann.append("ann")
+                anns_arr.append(ann)
+
+            gift_i = 0
+            ann_i = 0
+            notifications1 = []
+            while gift_i < len(gift_arr) and ann_i < len(anns_arr):
+                if anns_arr[ann_i][0] > gift_arr[gift_i][0]:
+                    notifications1.append(anns_arr[ann_i])
+                    ann_i = ann_i + 1
+                else:
+                    notifications1.append(gift_arr[gift_i])
+                    gift_i = gift_i + 1
+
+            if gift_i == len(gift_arr):
+                while ann_i < len(anns_arr):
+                    notifications1.append(anns_arr[ann_i])
+                    ann_i = ann_i + 1
+            elif ann_i == len(anns_arr):
+                while gift_i < len(gift_arr):
+                    notifications1.append(gift_arr[gift_i])
+                    gift_i = gift_i + 1
+
+            cursor = connection.cursor()
+            cursor.execute(
+                'SELECT date, cname, lecture_name, username FROM main_post P, courses_lecture L, courses_course C, auth_user U'
+                ' WHERE P.lecture_no_id = L.lecture_no AND L.cno_id = C.cno AND owner_id = %s'
+                ' AND P.username_id = U.id'
+                , [request.user.id])
+            temp_posts = cursor.fetchall()
+            cursor.close()
+
+            posts_arr = []
+            for post in temp_posts:
+                post = list(post)
+                post.append("post")
+                posts_arr.append(post)
+
+            not1_i = 0
+            post_i = 0
+            notifications = []
+            while not1_i < len(notifications1) and post_i < len(posts_arr):
+                if posts_arr[post_i][0] > notifications1[not1_i][0]:
+                    notifications.append(posts_arr[post_i])
+                    post_i = post_i + 1
+                else:
+                    notifications.append(notifications1[not1_i])
+                    not1_i = not1_i + 1
+
+            if not1_i == len(notifications1):
+                while post_i < len(posts_arr):
+                    notifications.append(posts_arr[post_i])
+                    post_i = post_i + 1
+            elif post_i == len(posts_arr):
+                while not1_i < len(notifications1):
+                    notifications.append(notifications1[not1_i])
+                    not1_i = not1_i + 1
+
+        context = {'user_type': user_type, 'notifications': notifications}
+        return render(request, 'main/notifications.html', context)
 
 
 class ShoppingCartView(View):
