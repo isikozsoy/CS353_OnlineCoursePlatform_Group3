@@ -2,11 +2,26 @@ from django import forms
 from .models import Course
 from main.models import Course_Topic
 from datetime import datetime, date, timedelta
+from main.models import Post
+
+class NewNoteForm(forms.Form):
+    note = forms.CharField(label='note', max_length=500)
+class AskQuestion(forms.Form):
+    question = forms.CharField(label='question', max_length=500)
+
+class AnswerQuestion(forms.Form):
+    question_no=-1
+    print("In form question_no: ",question_no)
+    answer = forms.CharField(label='answer' + str(question_no), max_length=500)
+
+class FinishCourseCommentForm(forms.Form):
+    comment = forms.CharField(label='comment', max_length = 1000)
+class FinishCourseRateForm(forms.Form):
+    rate = forms.CharField(label='rate', max_length = 1000)
 
 
 class ComplainForm(forms.Form):
     description = forms.CharField(label='Description', max_length=1000)
-
 
 class GiftInfo(forms.Form):
     is_gift = forms.BooleanField(label='Add to cart as a gift.', required=False)

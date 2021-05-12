@@ -19,5 +19,8 @@ urlpatterns = [
     path('<course_slug>', CourseDetailView.as_view(), name='desc'),
     path('add_gift_to_cart/<course_slug>', add_gift_to_cart, name='add_gift_to_cart'),
     path('offer_ad/<course_slug>', OfferAdView.as_view(), name='offer_ad'),
-    path('<course_slug>/<lecture_slug>', LectureView.as_view(), name='lecture_detail')
+    path('<course_slug>/finish', CourseFinishView.as_view(), name='coursefinish'),
+    path('<course_slug>/<lecture_slug>', LectureView.as_view(), name='lecture_detail'),
+    path('<course_slug>/<lecture_slug>/answer/<question_no>', AddAnswerView.as_view(),name = 'add_answer'),
+
 ]
