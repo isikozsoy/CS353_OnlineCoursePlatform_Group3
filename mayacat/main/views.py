@@ -126,31 +126,6 @@ def add_to_wishlist(request, course_slug):
 
 class MainView(View):
     def get(self, request):
-        # TODO: THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
-        #  also the courses that are not private will be listed here
-        cursor = connection.cursor()
-
-        # THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
-        courses = Course.objects.raw('select * '
-                                     'from courses_course;')
-
-        topics = Topic.objects.raw('select * from main_topic order by topicname;')
-        if request.user.is_authenticated:
-            user_id = request.user.id
-            gift_not = cursor.execute('SELECT * FROM main_gift WHERE receiver_id = %s ORDER BY date DESC LIMIT 5',
-                                      [user_id])
-            announcement_not = cursor.execute('SELECT * FROM main_announcement A, main_enroll E WHERE E.user_id = %s' \
-                                              ' AND A.cno_id = E.cno_id ORDER BY A.ann_date DESC LIMIT 5', [user_id])
-        try:
-            cursor.execute('select type '
-                           'from auth_user '
-                           'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
-                           'where id = %s;', [request.user.id])
-        except DatabaseError:
-            return HttpResponse('An error occurred. <a href="/">Return to the main page...</a>')
-        finally:
-            cursor.close()
-
         cursor = connection.cursor()
         cursor.execute('select type '
                        'from auth_user '
@@ -162,9 +137,66 @@ class MainView(View):
         if row:
             user_type = row[0]
 
+        cursor.execute('SELECT topic_id FROM main_interested_in WHERE s_username_id = %s LIMIT 5', [request.user.id])
+        interested_topics = cursor.fetchall()
+
+        cursor.execute('SELECT count(*) FROM main_interested_in WHERE s_username_id = %s LIMIT 5', [request.user.id])
+        interested_topics_count = cursor.fetchone()[0]
+
+        topic_based_courses = [None] * interested_topics_count
+        for i, topic in enumerate(interested_topics):
+            cursor.execute('SELECT count(*) FROM main_course_topic CT, courses_course C '
+                           'WHERE CT.topicname_id = %s AND C.cno = CT.cno_id LIMIT 5', [topic[0]])
+            cnt = cursor.fetchone()[0]
+            print("-----cnt: ", cnt)
+            print("-----------topic: ", topic[0])
+
+            cursor.execute('SELECT slug, course_img, cname FROM main_course_topic CT, courses_course C '
+                           'WHERE CT.topicname_id = %s AND C.cno = CT.cno_id LIMIT 5', [topic[0]])
+            interested_courses = cursor.fetchall()
+            print("------in c: ", interested_courses)
+
+            topic_based_courses[i] = [None] * (cnt+1)
+
+            topic_based_courses[i][0] = {
+                "type": 0,
+                "topic": topic[0],
+                "cnt": cnt
+            }
+            for k in range(1, cnt+1):
+                topic_based_courses[i][k] = {
+                    "type": 1,
+                    "slug": interested_courses[k-1][0],
+                    "course_img": interested_courses[k-1][1],
+                    "cname": interested_courses[k-1][2]
+                }
+        print("---------", topic_based_courses)
+        # TODO: THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
+        #  also the courses that are not private will be listed here
+        cursor = connection.cursor()
+
+        # THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
+        courses = Course.objects.raw('select * '
+                                     'from courses_course;')
+        for course in courses:
+            print("---c---c--, ", course.course_img.url)
+
+        topics = Topic.objects.raw('select * from main_topic order by topicname;')
+
+        try:
+            cursor.execute('select type '
+                           'from auth_user '
+                           'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                           'where id = %s;', [request.user.id])
+        except DatabaseError:
+            return HttpResponse('An error occurred. <a href="/">Return to the main page...</a>')
+        finally:
+            cursor.close()
+
         return render(request, 'main/main.html', {'object_list': courses,
                                                   'topic_list': topics,
-                                                  'user_type': user_type})
+                                                  'user_type': user_type,
+                                                  "topic_based": topic_based_courses})
 
 
 def course_detail(request, course_slug):

@@ -33,13 +33,7 @@ urlpatterns = [
     path('', include('main.urls', namespace='main')),
     path('', include(('search.urls', 'search'), namespace='search')),
     path('', include('courses.urls', namespace='courses')),
-]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL,
-                          document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL,
-                          document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += [
     path('<course_slug>/<lecture_slug>', LectureView.as_view(), name='lecture_detail'), ]

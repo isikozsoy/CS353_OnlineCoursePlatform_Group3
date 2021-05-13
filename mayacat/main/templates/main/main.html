@@ -8,9 +8,22 @@
 
     <h1>Courses List</h1>
 
+    {% for topic in topic_based %}
+        {% for course in topic %}
+            {% if course.type == 0 %}
+                {% if course.cnt != 0 %}
+                    <h3>{{course.topic}}</h3>
+                {% endif %}
+            {% elif course.type == 1 %}
+                <img src="{{ course.course_img.url }}" class="img-thumbnail">
+                <br><a href="/{{ course.slug }}">{{ course.cname }}</a><br><br>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+
     {% for object in object_list %}
         {% load static %}
-        <image src="{{ object.course_img.url }}" name="imgbox"></image>
+        <img src="{{ object.course_img.url }}" class="img-thumbnail">
         <br><a href="{{ object.get_url }}">{{ object }}</a><br><br>
     {% endfor %}
 

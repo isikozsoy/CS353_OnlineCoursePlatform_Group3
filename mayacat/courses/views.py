@@ -307,7 +307,7 @@ class LectureView(View):
 
         cursor = connections['default'].cursor()
 
-        course_queue = Course.objects.raw( '''SELECT * FROM courses_course WHERE slug = %s;''',[course_slug])
+        course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''',[course_slug])
 
         #check whether the student is enrolled into this course
         #is course slug primary key
@@ -318,7 +318,6 @@ class LectureView(View):
         print("=1",course_queue)
         if len(course_queue) > 0:
             course = course_queue[0]
-            print("=2",course, course.cno)
         else:
             #404 error
             print("error no course as the stated");
@@ -326,13 +325,10 @@ class LectureView(View):
         lecture_q = Lecture.objects.raw( '''SELECT * FROM courses_lecture as CL WHERE CL.lecture_slug = %s;''',[lecture_slug])
         if len(lecture_q) > 0:
             lecture = lecture_q[0]
-            print("=3","lecture exists\n")
         else:
             #error no such lecture
             print("error no lecture as the stated");
 
-        print("=4",lecture_q)
-        print("=5",lecture)
         isWatched = Progress.objects.raw('''SELECT * FROM main_progress as MP 
                                             WHERE MP.lecture_no_id = %s AND MP.s_username_id = %s;'''
                                             , [lecture.lecture_no, curuser_id])
