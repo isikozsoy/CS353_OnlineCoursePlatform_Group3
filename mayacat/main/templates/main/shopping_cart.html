@@ -17,7 +17,7 @@
                 <li>
                     <img src = {{ course.course_img }} width="290" height="180" >
                     <br />Name: {{ item.cname }} <br />Price: {{ item.price }} <br />
-                    <form action = "/{{ item.slug }}/cart/trash/{{item.inside_cart_id}}" method = "post">
+                    <form action = "/cart/trash/{{item.inside_cart_id}}" method = "post">
                         {% csrf_token %}
                         <!--<button type="submit" class="btn btn-primary" role="button">Trash</button><br>-->
                         <input type="submit" value="Trash">
