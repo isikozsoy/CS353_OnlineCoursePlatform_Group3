@@ -3,7 +3,12 @@
 {% block main_content %}
     <h1>My Courses</h1>
     <h2>Items Added To My Courses</h2>
+    <ol>
     {% for course in my_courses_q %}
-        <p>{{ course.cno }}</p>
+        <li>
+            <br>
+            <a href="/{{ course.1 }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Course Name: {{ course.0 }}</a>
+        </li>
     {% endfor %}
+    </ol>
 {% endblock %}
