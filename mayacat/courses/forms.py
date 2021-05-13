@@ -24,7 +24,10 @@ class ComplainForm(forms.Form):
     description = forms.CharField(label='Description', max_length=1000)
 
 class GiftInfo(forms.Form):
-    is_gift = forms.BooleanField(label='Add to cart as a gift.', required=False)
+    is_gift = forms.BooleanField(label='Add to cart as a gift: ', required=False)
+
+class AddAsGift(forms.Form):
+    course_slug = forms.CharField(label='Course Slug', max_length = 50)
 
 
 TOPIC_CHOICES = (

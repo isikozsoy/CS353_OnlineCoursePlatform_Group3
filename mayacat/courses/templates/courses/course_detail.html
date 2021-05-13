@@ -46,7 +46,10 @@
                         role="button">Add To Cart</button><br>
             </form>
         {% else %}
-                <br><a href="/add_gift_to_cart/{{ object.slug }}" method="POST" class="btn btn-primary" role="button">Add To Cart As Gift</a><br>
+                <form action = "/cart/gift/{{ course.slug }}" method = "post">
+                        {% csrf_token %}
+                       <input type="submit" value="Add To Cart As Gift">
+                </form>
         {% endif %}
     {% endif %}
 

@@ -259,6 +259,19 @@ class CourseDetailView(View):
 
         return redirect("main:cart")
 
+class AddAsGift(View):
+    def post(self, request, course_slug):
+        #form = AddAsGift(request.POST)
+        course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s;', [course_slug])[0]
+        cno = course.cno
+
+        cursor = connection.cursor()
+
+        cursor.execute('INSERT INTO main_inside_cart (cno_id, receiver_username_id, username_id)'
+                           'VALUES (%s, %s, %s);', [cno, None, request.user.id])  # -1 if it is a gift
+
+        return redirect("main:cart")
+
 
 def add_gift_to_cart(request, course_slug):
     course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s;', [course_slug])[0]

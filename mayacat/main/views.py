@@ -502,20 +502,7 @@ class ShoppingCheckoutView(View):
         for item in items:
             receiver = item.get('isGift')
             if receiver !=  None:
-
-                my_courses = Enroll.objects.raw('SELECT * '
-                                                'FROM main_enroll '
-                                                'WHERE user_id = %s AND cno_id = %s;',
-                                                [receiver, item.get('cno')])
-
-
                 add_to_my_courses(request, item)
-
-
-                if len(my_courses) == 0:
-
-                    cursor.execute('''DELETE FROM main_inside_cart 
-                                    WHERE username_id = %s ''', [request.user.id])
 
         return HttpResponseRedirect('/cart')
 
@@ -633,33 +620,6 @@ class TaughtCoursesView(View):
         context = {'user_type': user_type, 'owned_courses': owned_courses, 'taught_courses': taught_courses}
         return render(request, 'main/taught_courses.html', context)
 
-    def post(self, request):
-        cursor = connection.cursor()
-
-        cursor.execute('SELECT slug, receiver_username_id '
-                       'FROM courses_course '
-                       'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
-                       'WHERE mic.username_id = %s;', [request.user.id])
-
-        items_on_cart = cursor.fetchall()
-
-        if (len(items_on_cart) > 0):
-            items = [None] * len(items_on_cart)
-            for i in range(0, len(items_on_cart)):
-                items[i] = {
-                    'slug': items_on_cart[i][0],
-                    'isGift': items_on_cart[i][1],
-                }
-        else:
-            items = None
-
-        for item in items:
-            add_to_my_courses(request, item)
-
-        cursor.execute('DELETE FROM main_inside_cart WHERE username_id = %s', [request.user.id])
-
-        return HttpResponseRedirect('/cart')
-
 
 def add_to_my_courses(request, item):
     cursor = connection.cursor()
@@ -697,6 +657,9 @@ def add_to_my_courses(request, item):
 
             cursor.execute('INSERT INTO main_gift (date, course_id, receiver_id, sender_id) '
                            'VALUES (%s, %s, %s, %s);',[today, cno, receiver_id, user_id])
+
+        cursor.execute('''DELETE FROM main_inside_cart 
+                            WHERE username_id = %s ''', [request.user.id])
 
     cursor.close()
 
