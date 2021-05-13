@@ -17,12 +17,14 @@
                 <li>
                     <img src = {{ course.course_img }} width="290" height="180" >
                     <br />Name: {{ item.cname }} <br />Price: {{ item.price }} <br />
+
                     <form action = "/cart/trash/{{item.inside_cart_id}}" method = "post">
                         {% csrf_token %}
-                        <!--<button type="submit" class="btn btn-primary" role="button">Trash</button><br>-->
-                        <input type="submit" value="Trash">
+                       <input type="submit" value="Trash">
                     </form>
+
                     <a href="/wishlist/add_to_wishlist/{{item.slug}}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Add To Wishlist</a>
+
                     {% if item.isGift != user_id or item.isGift == None %}
                         <form action = {{ path|lower }} method="POST">
                             {% csrf_token %}
@@ -34,8 +36,6 @@
                             <input id="item_id" type="hidden" name="item_id" value="{{item.item_id }}"><br>
                             {% if item.receiver_username.0 != None %}
                                 <p>Receiver Username: {{item.receiver_username.0}}</p>
-                            {% else %}
-                                <p>Receiver Username: -</p>
                             {% endif %}
                             <button type="submit" class="btn btn-primary" role="button">Save Username</button><br>
                         </form>

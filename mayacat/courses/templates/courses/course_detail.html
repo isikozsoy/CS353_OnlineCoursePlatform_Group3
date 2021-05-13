@@ -6,26 +6,11 @@
 
     <h1>Course Details</h1>
     <h1>{{ course.cname }}</h1>
-    <h2>by {{ course.owner }}</h2>
 
-     <h2>Rating: {{rating}}</h2>
+    <a href="/account/{{ course.owner }}" >by {{ course.owner }}</a>
 
-    {% if user_type == 2 %}
-        <a href="/offer_ad/{{ object.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
-    {% else %}
-        {% if not is_gift %}
-            <form action={{ path|lower }} method="POST">
-                {% csrf_token %}
-                {{ form.errors }}
-                {{ form.as_table }}
-                <button type="submit"
-                        class="btn btn-primary"
-                        role="button">Add To Cart</button><br>
-            </form>
-        {% else %}
-                <a href="/add_gift_to_cart/{{ object.slug }}" method="POST" class="btn btn-primary" role="button">Add To Cart As Gift</a><br>
-        {% endif %}
-    {% endif %}
+    <h2>Rating: {{rating}}</h2>
+
     <h3>Description</h3>
     <a>{{ course.description }}</a>
 
@@ -43,26 +28,41 @@
 
 
     {% if user_type == 2 %} <!-- advertiser -->
-        <a href="/offer_ad/{{ course.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
+        <br><a href="/offer_ad/{{ course.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
 
         {% if is_wish == 0 %}
-            <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Favorites</a>
+            <br><a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Favorites</a>
         {% else %}
-            <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Favorites</a>
+            <br><a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Favorites</a>
         {% endif %}
-    {% elif is_owner == 0 %}
+    {% else %}
+        {% if not is_gift %}
+            <br><form action={{ path|lower }} method="POST">
+                {% csrf_token %}
+                {{ form.errors }}
+                {{ form.as_table }}
+                <button type="submit"
+                        class="btn btn-primary"
+                        role="button">Add To Cart</button><br>
+            </form>
+        {% else %}
+                <br><a href="/add_gift_to_cart/{{ object.slug }}" method="POST" class="btn btn-primary" role="button">Add To Cart As Gift</a><br>
+        {% endif %}
+    {% endif %}
+
+    {% if is_owner == 0 and user_type != 2%}
         {% if is_wish == 0 %}
             <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
         {% else %}
             <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Wishlist</a>
         {% endif %}
-        <a href="{{course.slug}}/cart" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Cart</a>
 
     {% endif %}
-        <h3>Price {{course.price}}</h3>
-        {% if course.price != discounted_price %}
-            <h3>Discounted Price {{discounted_price}}</h3>
-        {% endif %}
+
+    <h3>Price {{course.price}}</h3>
+    {% if course.price != discounted_price %}
+        <h3>Discounted Price {{discounted_price}}</h3>
+    {% endif %}
 
     {% if lecture_list is not None %}
         <ol>
