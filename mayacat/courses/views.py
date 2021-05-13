@@ -180,14 +180,18 @@ class CourseDetailView(View):
         topic_list = Topic.objects.raw('select topicname from main_topic;')
         discounted_price = course.price
 
-
         today = date.today()
         print("Today:",today)
 
-        cursor.execute('''SELECT * FROM main_discount AS MD 
-                            WHERE MD.cno_id = %s AND (CURRENT_TIMESTAMP BETWEEN MD.startdate AND MD.finishdate) 
-                                AND MD.situation = 1 ;''',
-                                   [course.cno])
+
+
+
+        #cursor.execute('''SELECT * FROM main_discount AS MD
+         #                   WHERE MD.cno_id = %s AND (CURRENT_TIMESTAMP BETWEEN MD.startdate AND MD.finishdate)
+          #                      AND MD.situation = 1 ;''',
+           #                        [course.cno])
+
+        '''
         discounts = cursor.fetchall()
         print("Discount: ",discounts)
         if(len(discounts)>0):
@@ -199,16 +203,20 @@ class CourseDetailView(View):
 
         today = date.today()
         print("Today:",today)
+        '''
 
-        cursor.execute('''SELECT * FROM main_discount AS MD 
-                            WHERE MD.cno_id = %s AND (CURRENT_TIMESTAMP BETWEEN MD.startdate AND MD.finishdate) 
-                                AND MD.situation = 1 ;''',
-                                   [course.cno])
+        #cursor.execute('''SELECT * FROM main_discount AS MD
+         #                   WHERE MD.cno_id = %s AND (CURRENT_TIMESTAMP BETWEEN MD.startdate AND MD.finishdate)
+          #                      AND MD.situation = 1 ;''',
+           #                        [course.cno])
+
+        '''
         discounts = cursor.fetchall()
         print("Discount: ",discounts)
         if(len(discounts)>0):
             print("NEW PRICE",discounts[0][2])
             discounted_price = discounts[0][2]
+        '''
 
         context = {
             'lecture_list': lectures,

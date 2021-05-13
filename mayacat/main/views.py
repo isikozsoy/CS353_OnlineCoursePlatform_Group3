@@ -440,13 +440,23 @@ class ShoppingCartView(View):
             item_id = pull.cleaned_data['item_id']
             item_id = int(item_id)
 
-            cursor.execute('SELECT id FROM auth_user WHERE username = %s', [receiver_username])
-            receiver_id = cursor.fetchone()
+            cursor.execute('SELECT id, username, is_superuser'
+                           ' FROM auth_user WHERE username = %s', [receiver_username])
+            receiver_id = cursor.fetchall()
 
-            if receiver_id:
+            if len(receiver_id) == 0:
+                return HttpResponseRedirect(request.path)
+
+            if receiver_id[0][0] == request.user.id:
+                return HttpResponseRedirect(request.path)
+
+            if receiver_id[0][2] == 1:
+                return HttpResponseRedirect(request.path)
+
+            if receiver_id[0][0]:
                 cursor.execute('UPDATE main_inside_cart '
                                'SET receiver_username_id = %s '
-                               'WHERE inside_cart_id = %s', [receiver_id, item_id])
+                               'WHERE inside_cart_id = %s', [receiver_id[0][0], item_id])
         return HttpResponseRedirect(request.path)
 
 
@@ -471,7 +481,7 @@ class ShoppingCheckoutView(View):
     def post(self, request):
         cursor = connection.cursor()
 
-        cursor.execute('SELECT slug, receiver_username_id '
+        cursor.execute('SELECT slug, receiver_username_id, cno '
                        'FROM courses_course '
                        'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
                        'WHERE mic.username_id = %s;', [request.user.id])
@@ -483,15 +493,29 @@ class ShoppingCheckoutView(View):
             for i in range(0, len(items_on_cart)):
                 items[i] = {
                     'slug': items_on_cart[i][0],
-                    # 'isGift': items_on_cart[i][1],
+                    'isGift': items_on_cart[i][1],
+                    'cno': items_on_cart[i][2],
                 }
         else:
             items = None
 
         for item in items:
-            add_to_my_courses(request, item)
+            receiver = item.get('isGift')
+            if receiver !=  None:
 
-        cursor.execute('DELETE FROM main_inside_cart WHERE username_id = %s', [request.user.id])
+                my_courses = Enroll.objects.raw('SELECT * '
+                                                'FROM main_enroll '
+                                                'WHERE user_id = %s AND cno_id = %s;',
+                                                [receiver, item.get('cno')])
+
+
+                add_to_my_courses(request, item)
+
+
+                if len(my_courses) == 0:
+
+                    cursor.execute('''DELETE FROM main_inside_cart 
+                                    WHERE username_id = %s ''', [request.user.id])
 
         return HttpResponseRedirect('/cart')
 
@@ -624,7 +648,7 @@ class TaughtCoursesView(View):
             for i in range(0, len(items_on_cart)):
                 items[i] = {
                     'slug': items_on_cart[i][0],
-                    # 'isGift': items_on_cart[i][1],
+                    'isGift': items_on_cart[i][1],
                 }
         else:
             items = None
@@ -640,27 +664,39 @@ class TaughtCoursesView(View):
 def add_to_my_courses(request, item):
     cursor = connection.cursor()
     course_slug = item.get('slug')
-    # isGift = item.get('isGift')
+    receiver_id = item.get('isGift')
 
     course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
     cno = course.cno
 
     user_id = request.user.id
 
-    my_courses = Enroll.objects.raw('SELECT * '
-                                    'FROM main_enroll '
-                                    'WHERE user_id = %s AND cno_id = %s;',
-                                    [user_id, cno])
-    '''
-    
-    if isGift != 0:
-        cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
-                       [isGift, user_id])
-    '''
+    if receiver_id == user_id:
+
+        my_courses = Enroll.objects.raw('SELECT * '
+                                        'FROM main_enroll '
+                                        'WHERE user_id = %s AND cno_id = %s;',
+                                        [user_id, cno])
+    else:
+
+        my_courses = Enroll.objects.raw('SELECT * '
+                                        'FROM main_enroll '
+                                        'WHERE user_id = %s AND cno_id = %s;',
+                                        [receiver_id, cno])
+
 
     if len(list(my_courses)) == 0:
-        cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
+        if receiver_id == user_id:
+            cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
                        [cno, user_id])
+        else:
+            cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
+                           [cno, receiver_id])
+
+            today = datetime.today().strftime('%Y-%m-%d')
+
+            cursor.execute('INSERT INTO main_gift (date, course_id, receiver_id, sender_id) '
+                           'VALUES (%s, %s, %s, %s);',[today, cno, receiver_id, user_id])
 
     cursor.close()
 
