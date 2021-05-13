@@ -16,6 +16,8 @@ class AdminMainView(View):
 
     def get(self, request):
         if request.method == 'GET' and request.user.is_authenticated and request.user.is_superuser:
+            cursor = connection.cursor()
+            cursor.execute()
             return render(request, self.template_name)
         return HttpResponseRedirect('/')
 

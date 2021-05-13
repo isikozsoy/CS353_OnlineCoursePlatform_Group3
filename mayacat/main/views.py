@@ -126,9 +126,6 @@ def add_to_wishlist(request, course_slug):
 
 class MainView(View):
     def get(self, request):
-        if request.user.is_authenticated and request.user.is_superuser:
-            return redirect('adminpanel:admin_main')
-
         # TODO: THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
         #  also the courses that are not private will be listed here
         cursor = connection.cursor()
@@ -188,12 +185,14 @@ def course_detail(request, course_slug):
     course = Course.objects.raw('SELECT * FROM courses_course WHERE course_id = %s', [course_id])
 
     user_id = request.user.id
-    registered = Enroll.objects.raw('SELECT enroll_id FROM main_enroll WHERE user_id = %s AND cno_id = %s', [user_id, course_id])
+    registered = Enroll.objects.raw('SELECT enroll_id FROM main_enroll WHERE user_id = %s AND cno_id = %s',
+                                    [user_id, course_id])
 
     lecture_count = Lecture.objects.filter(cno_id=course.cno).count()
     ### TODO: RATE ARTIK YOK
     rating = Rate.objects.raw('SELECT AVG(score) FROM main_rate WHERE cno_id = %s', [course_id])
-    advertisement = Advertisement.objects.raw('SELECT advertisement FROM main_advertisement WHERE cno_id = %s', [course_id])
+    advertisement = Advertisement.objects.raw('SELECT advertisement FROM main_advertisement WHERE cno_id = %s',
+                                              [course_id])
 
     comments = Finishes.objects.raw('SELECT comment FROM main_finishes WHERE cno_id = %s', [course_id])
 

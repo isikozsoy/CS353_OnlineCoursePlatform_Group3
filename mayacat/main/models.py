@@ -202,3 +202,7 @@ class Inside_Cart(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='buyer')
     receiver_username = models.ForeignKey(Student, on_delete=models.CASCADE, blank=True, null=True,
                                           related_name='insidecart_receiver')
+
+class Avg_Rate(models.Model):
+    cno = models.ForeignKey(Course, on_delete=models.CASCADE, primary_key=True)
+    avg = models.FloatField()

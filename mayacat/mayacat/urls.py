@@ -21,6 +21,8 @@ from django.conf.urls.static import static
 
 from courses.views import LectureView
 
+from mayacat.trigger import create_trigger
+
 admin.site.site_header = "MayaCat Admin Panel"
 admin.site.site_title = "MayaCat Admin Portal"
 admin.site.index_title = "MayaCat"
@@ -41,3 +43,5 @@ if settings.DEBUG:
 
 urlpatterns += [
     path('<course_slug>/<lecture_slug>', LectureView.as_view(), name='lecture_detail'), ]
+
+create_trigger()
