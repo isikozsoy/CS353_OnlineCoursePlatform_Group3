@@ -40,8 +40,8 @@ TOPIC_CHOICES = (
 
 
 class CreateCourseForm(forms.Form):
-    course_img = forms.ImageField(label='Thumbnail', widget=forms.FileInput(attrs={'class': 'form-control-file',
-                                                                                   'enctype': 'multipart/form-data'}))
+    course_img = forms.CharField(label='Embedded URL for Course', max_length=100,
+                                  widget=forms.TextInput(attrs={'class': 'form-control'}))
     cname = forms.CharField(label='Course name:', max_length=50,
                             widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A Course Name'}))
     price = forms.DecimalField(label='Price (up to $9999.99)', max_digits=6, decimal_places=2,
@@ -55,10 +55,9 @@ class CreateCourseForm(forms.Form):
 
 
 class EditCourseForm(forms.ModelForm):
-    course_img = forms.ImageField(label='Thumbnail', widget=forms.FileInput(attrs={'class': 'form-control-file',
-                                                                                   'enctype': 'multipart/form-data',
-                                                                                   'onchange': 'showPreview(event)',
-                                                                                   'id':'img-add'}))
+    course_img = forms.CharField(label='Embedded URL for Course', max_length=100,
+                                  widget=forms.TextInput(attrs={'class': 'form-control'}))
+
     cname = forms.CharField(label='Course name:', max_length=50,
                             widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A Course Name'}))
     price = forms.DecimalField(label='Price (up to $9999.99)', max_digits=6, decimal_places=2,

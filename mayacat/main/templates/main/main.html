@@ -16,15 +16,15 @@
                     <h3>{{course.topic}}</h3>
                 {% endif %}
             {% elif course.type == 1 %}
-                <img src="{{ course.course_img.url }}" class="img-thumbnail">
+                <iframe src={{ course.course_img }} width="120" height="100" target="_self"></iframe>
                 <br><a href="/{{ course.slug }}">{{ course.cname }}</a><br><br>
             {% endif %}
         {% endfor %}
+        <br>
     {% endfor %}
-
+    <br>
     {% for object in object_list %}
-        {% load static %}
-        <img src="{{ object.course_img.url }}" class="img-thumbnail">
+        <iframe src={{ object.course_img }} width="120" height="100" target="_self"></iframe>
         <br><a href="{{ object.get_url }}">{{ object }}</a><br><br>
     {% endfor %}
 

@@ -683,633 +683,628 @@ betul_ciftci|schema||betul.ciftci||UPDATE|G</Grants>
     <table id="209" parent="2" name="accounts_instructor"/>
     <table id="210" parent="2" name="accounts_siteadmin"/>
     <table id="211" parent="2" name="accounts_student"/>
-    <table id="212" parent="2" name="auth_group"/>
-    <table id="213" parent="2" name="auth_group_permissions"/>
-    <table id="214" parent="2" name="auth_permission"/>
-    <table id="215" parent="2" name="auth_user"/>
-    <table id="216" parent="2" name="auth_user_groups"/>
-    <table id="217" parent="2" name="auth_user_user_permissions"/>
-    <table id="218" parent="2" name="courses_course"/>
-    <table id="219" parent="2" name="courses_lecture"/>
-    <table id="220" parent="2" name="courses_lecturematerial"/>
-    <table id="221" parent="2" name="django_admin_log"/>
-    <table id="222" parent="2" name="django_content_type"/>
-    <table id="223" parent="2" name="django_migrations"/>
-    <table id="224" parent="2" name="django_session"/>
-    <table id="225" parent="2" name="main_advertisement"/>
-    <table id="226" parent="2" name="main_announcement"/>
-    <table id="227" parent="2" name="main_assignment"/>
-    <table id="228" parent="2" name="main_complaint"/>
-    <table id="229" parent="2" name="main_contributor"/>
-    <table id="230" parent="2" name="main_course_topic"/>
-    <table id="231" parent="2" name="main_discount"/>
-    <table id="232" parent="2" name="main_enroll"/>
-    <table id="233" parent="2" name="main_evaluates"/>
-    <table id="234" parent="2" name="main_finishes"/>
-    <table id="235" parent="2" name="main_gift"/>
-    <table id="236" parent="2" name="main_inside_cart"/>
-    <table id="237" parent="2" name="main_interested_in"/>
-    <table id="238" parent="2" name="main_post"/>
-    <table id="239" parent="2" name="main_progress"/>
-    <table id="240" parent="2" name="main_quest_answ"/>
-    <table id="241" parent="2" name="main_refundrequest"/>
-    <table id="242" parent="2" name="main_takes_note"/>
-    <table id="243" parent="2" name="main_teaches"/>
-    <table id="244" parent="2" name="main_topic"/>
-    <table id="245" parent="2" name="main_wishes"/>
-    <column id="246" parent="207" name="defaultuser_ptr_id">
+    <table id="212" parent="2" name="adminpanel_offered_discount"/>
+    <table id="213" parent="2" name="auth_group"/>
+    <table id="214" parent="2" name="auth_group_permissions"/>
+    <table id="215" parent="2" name="auth_permission"/>
+    <table id="216" parent="2" name="auth_user"/>
+    <table id="217" parent="2" name="auth_user_groups"/>
+    <table id="218" parent="2" name="auth_user_user_permissions"/>
+    <table id="219" parent="2" name="courses_course"/>
+    <table id="220" parent="2" name="courses_lecture"/>
+    <table id="221" parent="2" name="courses_lecturematerial"/>
+    <table id="222" parent="2" name="django_admin_log"/>
+    <table id="223" parent="2" name="django_content_type"/>
+    <table id="224" parent="2" name="django_migrations"/>
+    <table id="225" parent="2" name="django_session"/>
+    <table id="226" parent="2" name="main_advertisement"/>
+    <table id="227" parent="2" name="main_announcement"/>
+    <table id="228" parent="2" name="main_assignment"/>
+    <table id="229" parent="2" name="main_avg_rate"/>
+    <table id="230" parent="2" name="main_complaint"/>
+    <table id="231" parent="2" name="main_contributor"/>
+    <table id="232" parent="2" name="main_course_topic"/>
+    <table id="233" parent="2" name="main_discount"/>
+    <table id="234" parent="2" name="main_enroll"/>
+    <table id="235" parent="2" name="main_evaluates"/>
+    <table id="236" parent="2" name="main_finishes"/>
+    <table id="237" parent="2" name="main_gift"/>
+    <table id="238" parent="2" name="main_inside_cart"/>
+    <table id="239" parent="2" name="main_interested_in"/>
+    <table id="240" parent="2" name="main_post"/>
+    <table id="241" parent="2" name="main_progress"/>
+    <table id="242" parent="2" name="main_quest_answ"/>
+    <table id="243" parent="2" name="main_refundrequest"/>
+    <table id="244" parent="2" name="main_takes_note"/>
+    <table id="245" parent="2" name="main_teaches"/>
+    <table id="246" parent="2" name="main_topic"/>
+    <table id="247" parent="2" name="main_wishes"/>
+    <column id="248" parent="207" name="defaultuser_ptr_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="247" parent="207" name="name">
+    <column id="249" parent="207" name="name">
       <Position>2</Position>
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="248" parent="207" name="company_name">
+    <column id="250" parent="207" name="company_name">
       <Position>3</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="249" parent="207" name="phone">
+    <column id="251" parent="207" name="phone">
       <Position>4</Position>
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="250" parent="207" name="PRIMARY">
+    <key id="252" parent="207" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>defaultuser_ptr_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="251" parent="207" name="accounts_advertiser_defaultuser_ptr_id_4918b8ba_fk_accounts_">
+    <foreign-key id="253" parent="207" name="accounts_advertiser_defaultuser_ptr_id_4918b8ba_fk_accounts_">
       <ColNames>defaultuser_ptr_id</ColNames>
       <RefTableName>accounts_defaultuser</RefTableName>
       <RefColNames>user_ptr_id</RefColNames>
     </foreign-key>
-    <column id="252" parent="208" name="user_ptr_id">
+    <column id="254" parent="208" name="user_ptr_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="253" parent="208" name="password_orig">
+    <column id="255" parent="208" name="password_orig">
       <Position>2</Position>
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="254" parent="208" name="type">
+    <column id="256" parent="208" name="type">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="255" parent="208" name="PRIMARY">
+    <key id="257" parent="208" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>user_ptr_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="256" parent="208" name="accounts_defaultuser_user_ptr_id_b7a9d8f0_fk_auth_user_id">
+    <foreign-key id="258" parent="208" name="accounts_defaultuser_user_ptr_id_b7a9d8f0_fk_auth_user_id">
       <ColNames>user_ptr_id</ColNames>
       <RefTableName>auth_user</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="257" parent="209" name="student_ptr_id">
+    <column id="259" parent="209" name="student_ptr_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="258" parent="209" name="description">
+    <column id="260" parent="209" name="description">
       <Position>2</Position>
       <DataType>varchar(1000)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="259" parent="209" name="PRIMARY">
+    <key id="261" parent="209" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>student_ptr_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="260" parent="209" name="accounts_instructor_student_ptr_id_3e137190_fk_accounts_">
+    <foreign-key id="262" parent="209" name="accounts_instructor_student_ptr_id_3e137190_fk_accounts_">
       <ColNames>student_ptr_id</ColNames>
       <RefTableName>accounts_student</RefTableName>
       <RefColNames>defaultuser_ptr_id</RefColNames>
     </foreign-key>
-    <column id="261" parent="210" name="defaultuser_ptr_id">
+    <column id="263" parent="210" name="defaultuser_ptr_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="262" parent="210" name="ssn">
+    <column id="264" parent="210" name="ssn">
       <Position>2</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="263" parent="210" name="address">
+    <column id="265" parent="210" name="address">
       <Position>3</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="264" parent="210" name="PRIMARY">
+    <key id="266" parent="210" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>defaultuser_ptr_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="265" parent="210" name="accounts_siteadmin_defaultuser_ptr_id_35817209_fk_accounts_">
+    <foreign-key id="267" parent="210" name="accounts_siteadmin_defaultuser_ptr_id_35817209_fk_accounts_">
       <ColNames>defaultuser_ptr_id</ColNames>
       <RefTableName>accounts_defaultuser</RefTableName>
       <RefColNames>user_ptr_id</RefColNames>
     </foreign-key>
-    <column id="266" parent="211" name="defaultuser_ptr_id">
+    <column id="268" parent="211" name="defaultuser_ptr_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="267" parent="211" name="phone">
+    <column id="269" parent="211" name="phone">
       <Position>2</Position>
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="268" parent="211" name="PRIMARY">
+    <key id="270" parent="211" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>defaultuser_ptr_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="269" parent="211" name="accounts_student_defaultuser_ptr_id_ae5e347e_fk_accounts_">
+    <foreign-key id="271" parent="211" name="accounts_student_defaultuser_ptr_id_ae5e347e_fk_accounts_">
       <ColNames>defaultuser_ptr_id</ColNames>
       <RefTableName>accounts_defaultuser</RefTableName>
       <RefColNames>user_ptr_id</RefColNames>
     </foreign-key>
-    <column id="270" parent="212" name="id">
+    <column id="272" parent="212" name="discount_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="271" parent="212" name="name">
+    <column id="273" parent="212" name="creation_date">
+      <Position>2</Position>
+      <DataType>date|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="274" parent="212" name="percentage">
+      <Position>3</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="275" parent="212" name="start_date">
+      <Position>4</Position>
+      <DataType>date|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="276" parent="212" name="end_date">
+      <Position>5</Position>
+      <DataType>date|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="277" parent="212" name="admin_username_id">
+      <Position>6</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="278" parent="212" name="adminpanel_offered_d_admin_username_id_ef92b523_fk_accounts_">
+      <ColNames>admin_username_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="279" parent="212" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>discount_id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="280" parent="212" name="adminpanel_offered_d_admin_username_id_ef92b523_fk_accounts_">
+      <ColNames>admin_username_id</ColNames>
+      <RefTableName>accounts_siteadmin</RefTableName>
+      <RefColNames>defaultuser_ptr_id</RefColNames>
+    </foreign-key>
+    <column id="281" parent="213" name="id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="282" parent="213" name="name">
       <Position>2</Position>
       <DataType>varchar(150)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="272" parent="212" name="name">
+    <index id="283" parent="213" name="name">
       <ColNames>name</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <key id="273" parent="212" name="PRIMARY">
+    <key id="284" parent="213" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="274" parent="212" name="name">
+    <key id="285" parent="213" name="name">
       <ColNames>name</ColNames>
       <UnderlyingIndexName>name</UnderlyingIndexName>
     </key>
-    <column id="275" parent="213" name="id">
+    <column id="286" parent="214" name="id">
       <Position>1</Position>
       <DataType>bigint(20)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="276" parent="213" name="group_id">
+    <column id="287" parent="214" name="group_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="277" parent="213" name="permission_id">
+    <column id="288" parent="214" name="permission_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="278" parent="213" name="auth_group_permissions_group_id_permission_id_0cd325b0_uniq">
+    <index id="289" parent="214" name="auth_group_permissions_group_id_permission_id_0cd325b0_uniq">
       <ColNames>group_id
 permission_id</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <index id="279" parent="213" name="auth_group_permissio_permission_id_84c5c92e_fk_auth_perm">
+    <index id="290" parent="214" name="auth_group_permissio_permission_id_84c5c92e_fk_auth_perm">
       <ColNames>permission_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="280" parent="213" name="PRIMARY">
+    <key id="291" parent="214" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="281" parent="213" name="auth_group_permissions_group_id_permission_id_0cd325b0_uniq">
+    <key id="292" parent="214" name="auth_group_permissions_group_id_permission_id_0cd325b0_uniq">
       <ColNames>group_id
 permission_id</ColNames>
       <UnderlyingIndexName>auth_group_permissions_group_id_permission_id_0cd325b0_uniq</UnderlyingIndexName>
     </key>
-    <foreign-key id="282" parent="213" name="auth_group_permissions_group_id_b120cbf9_fk_auth_group_id">
+    <foreign-key id="293" parent="214" name="auth_group_permissions_group_id_b120cbf9_fk_auth_group_id">
       <ColNames>group_id</ColNames>
       <RefTableName>auth_group</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <foreign-key id="283" parent="213" name="auth_group_permissio_permission_id_84c5c92e_fk_auth_perm">
+    <foreign-key id="294" parent="214" name="auth_group_permissio_permission_id_84c5c92e_fk_auth_perm">
       <ColNames>permission_id</ColNames>
       <RefTableName>auth_permission</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="284" parent="214" name="id">
+    <column id="295" parent="215" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="285" parent="214" name="name">
+    <column id="296" parent="215" name="name">
       <Position>2</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="286" parent="214" name="content_type_id">
+    <column id="297" parent="215" name="content_type_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="287" parent="214" name="codename">
+    <column id="298" parent="215" name="codename">
       <Position>4</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="288" parent="214" name="auth_permission_content_type_id_codename_01ab375a_uniq">
+    <index id="299" parent="215" name="auth_permission_content_type_id_codename_01ab375a_uniq">
       <ColNames>content_type_id
 codename</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <key id="289" parent="214" name="PRIMARY">
+    <key id="300" parent="215" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="290" parent="214" name="auth_permission_content_type_id_codename_01ab375a_uniq">
+    <key id="301" parent="215" name="auth_permission_content_type_id_codename_01ab375a_uniq">
       <ColNames>content_type_id
 codename</ColNames>
       <UnderlyingIndexName>auth_permission_content_type_id_codename_01ab375a_uniq</UnderlyingIndexName>
     </key>
-    <foreign-key id="291" parent="214" name="auth_permission_content_type_id_2f476e4b_fk_django_co">
+    <foreign-key id="302" parent="215" name="auth_permission_content_type_id_2f476e4b_fk_django_co">
       <ColNames>content_type_id</ColNames>
       <RefTableName>django_content_type</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="292" parent="215" name="id">
+    <column id="303" parent="216" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="293" parent="215" name="password">
+    <column id="304" parent="216" name="password">
       <Position>2</Position>
       <DataType>varchar(128)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="294" parent="215" name="last_login">
+    <column id="305" parent="216" name="last_login">
       <Position>3</Position>
       <DataType>datetime(6)|0s</DataType>
     </column>
-    <column id="295" parent="215" name="is_superuser">
+    <column id="306" parent="216" name="is_superuser">
       <Position>4</Position>
       <DataType>tinyint(1)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="296" parent="215" name="username">
+    <column id="307" parent="216" name="username">
       <Position>5</Position>
       <DataType>varchar(150)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="297" parent="215" name="first_name">
+    <column id="308" parent="216" name="first_name">
       <Position>6</Position>
       <DataType>varchar(150)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="298" parent="215" name="last_name">
+    <column id="309" parent="216" name="last_name">
       <Position>7</Position>
       <DataType>varchar(150)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="299" parent="215" name="email">
+    <column id="310" parent="216" name="email">
       <Position>8</Position>
       <DataType>varchar(254)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="300" parent="215" name="is_staff">
+    <column id="311" parent="216" name="is_staff">
       <Position>9</Position>
       <DataType>tinyint(1)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="301" parent="215" name="is_active">
+    <column id="312" parent="216" name="is_active">
       <Position>10</Position>
       <DataType>tinyint(1)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="302" parent="215" name="date_joined">
+    <column id="313" parent="216" name="date_joined">
       <Position>11</Position>
       <DataType>datetime(6)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="303" parent="215" name="username">
+    <index id="314" parent="216" name="username">
       <ColNames>username</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <key id="304" parent="215" name="PRIMARY">
+    <key id="315" parent="216" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="305" parent="215" name="username">
+    <key id="316" parent="216" name="username">
       <ColNames>username</ColNames>
       <UnderlyingIndexName>username</UnderlyingIndexName>
     </key>
-    <column id="306" parent="216" name="id">
+    <column id="317" parent="217" name="id">
       <Position>1</Position>
       <DataType>bigint(20)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="307" parent="216" name="user_id">
+    <column id="318" parent="217" name="user_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="308" parent="216" name="group_id">
+    <column id="319" parent="217" name="group_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="309" parent="216" name="auth_user_groups_user_id_group_id_94350c0c_uniq">
+    <index id="320" parent="217" name="auth_user_groups_user_id_group_id_94350c0c_uniq">
       <ColNames>user_id
 group_id</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <index id="310" parent="216" name="auth_user_groups_group_id_97559544_fk_auth_group_id">
+    <index id="321" parent="217" name="auth_user_groups_group_id_97559544_fk_auth_group_id">
       <ColNames>group_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="311" parent="216" name="PRIMARY">
+    <key id="322" parent="217" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="312" parent="216" name="auth_user_groups_user_id_group_id_94350c0c_uniq">
+    <key id="323" parent="217" name="auth_user_groups_user_id_group_id_94350c0c_uniq">
       <ColNames>user_id
 group_id</ColNames>
       <UnderlyingIndexName>auth_user_groups_user_id_group_id_94350c0c_uniq</UnderlyingIndexName>
     </key>
-    <foreign-key id="313" parent="216" name="auth_user_groups_user_id_6a12ed8b_fk_auth_user_id">
+    <foreign-key id="324" parent="217" name="auth_user_groups_user_id_6a12ed8b_fk_auth_user_id">
       <ColNames>user_id</ColNames>
       <RefTableName>auth_user</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <foreign-key id="314" parent="216" name="auth_user_groups_group_id_97559544_fk_auth_group_id">
+    <foreign-key id="325" parent="217" name="auth_user_groups_group_id_97559544_fk_auth_group_id">
       <ColNames>group_id</ColNames>
       <RefTableName>auth_group</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="315" parent="217" name="id">
+    <column id="326" parent="218" name="id">
       <Position>1</Position>
       <DataType>bigint(20)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="316" parent="217" name="user_id">
+    <column id="327" parent="218" name="user_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="317" parent="217" name="permission_id">
+    <column id="328" parent="218" name="permission_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="318" parent="217" name="auth_user_user_permissions_user_id_permission_id_14a6b632_uniq">
+    <index id="329" parent="218" name="auth_user_user_permissions_user_id_permission_id_14a6b632_uniq">
       <ColNames>user_id
 permission_id</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <index id="319" parent="217" name="auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm">
+    <index id="330" parent="218" name="auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm">
       <ColNames>permission_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="320" parent="217" name="PRIMARY">
+    <key id="331" parent="218" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="321" parent="217" name="auth_user_user_permissions_user_id_permission_id_14a6b632_uniq">
+    <key id="332" parent="218" name="auth_user_user_permissions_user_id_permission_id_14a6b632_uniq">
       <ColNames>user_id
 permission_id</ColNames>
       <UnderlyingIndexName>auth_user_user_permissions_user_id_permission_id_14a6b632_uniq</UnderlyingIndexName>
     </key>
-    <foreign-key id="322" parent="217" name="auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id">
+    <foreign-key id="333" parent="218" name="auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id">
       <ColNames>user_id</ColNames>
       <RefTableName>auth_user</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <foreign-key id="323" parent="217" name="auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm">
+    <foreign-key id="334" parent="218" name="auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm">
       <ColNames>permission_id</ColNames>
       <RefTableName>auth_permission</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="324" parent="218" name="cno">
+    <column id="335" parent="219" name="cno">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="325" parent="218" name="cname">
+    <column id="336" parent="219" name="cname">
       <Position>2</Position>
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="326" parent="218" name="price">
+    <column id="337" parent="219" name="price">
       <Position>3</Position>
       <DataType>decimal(6,2 digit)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="327" parent="218" name="slug">
+    <column id="338" parent="219" name="slug">
       <Position>4</Position>
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="328" parent="218" name="situation">
+    <column id="339" parent="219" name="situation">
       <Position>5</Position>
       <DataType>varchar(8)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="329" parent="218" name="is_private">
+    <column id="340" parent="219" name="is_private">
       <Position>6</Position>
       <DataType>tinyint(1)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="330" parent="218" name="course_img">
+    <column id="341" parent="219" name="course_img">
       <Position>7</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="331" parent="218" name="description">
+    <column id="342" parent="219" name="description">
       <Position>8</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="332" parent="218" name="owner_id">
+    <column id="343" parent="219" name="owner_id">
       <Position>9</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="333" parent="218" name="courses_course_slug_9c670f14">
+    <column id="344" parent="219" name="is_complete">
+      <Position>10</Position>
+      <DataType>tinyint(1)|0s</DataType>
+      <NotNull>1</NotNull>
+      <DefaultExpression>0</DefaultExpression>
+    </column>
+    <column id="345" parent="219" name="new_price">
+      <Position>11</Position>
+      <DataType>decimal(6,2 digit)|0s</DataType>
+    </column>
+    <index id="346" parent="219" name="courses_course_slug_9c670f14">
       <ColNames>slug</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="334" parent="218" name="courses_course_owner_id_97a468c6_fk_accounts_">
+    <index id="347" parent="219" name="courses_course_owner_id_97a468c6_fk_accounts_">
       <ColNames>owner_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="335" parent="218" name="PRIMARY">
+    <key id="348" parent="219" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>cno</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="336" parent="218" name="courses_course_owner_id_97a468c6_fk_accounts_">
+    <foreign-key id="349" parent="219" name="courses_course_owner_id_97a468c6_fk_accounts_">
       <ColNames>owner_id</ColNames>
       <RefTableName>accounts_instructor</RefTableName>
       <RefColNames>student_ptr_id</RefColNames>
     </foreign-key>
-    <column id="337" parent="219" name="lecture_no">
+    <column id="350" parent="220" name="lecture_no">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="338" parent="219" name="lecture_name">
+    <column id="351" parent="220" name="lecture_name">
       <Position>2</Position>
       <DataType>varchar(200)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="339" parent="219" name="lecture_slug">
+    <column id="352" parent="220" name="lecture_slug">
       <Position>3</Position>
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="340" parent="219" name="video_url">
+    <column id="353" parent="220" name="video_url">
       <Position>4</Position>
       <DataType>varchar(200)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="341" parent="219" name="cno_id">
+    <column id="354" parent="220" name="cno_id">
       <Position>5</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="342" parent="219" name="courses_lecture_lecture_slug_659d0997">
+    <index id="355" parent="220" name="courses_lecture_lecture_slug_659d0997">
       <ColNames>lecture_slug</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="343" parent="219" name="courses_lecture_cno_id_ea9b1a22_fk_courses_course_cno">
+    <index id="356" parent="220" name="courses_lecture_cno_id_ea9b1a22_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="344" parent="219" name="PRIMARY">
+    <key id="357" parent="220" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>lecture_no</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="345" parent="219" name="courses_lecture_cno_id_ea9b1a22_fk_courses_course_cno">
+    <foreign-key id="358" parent="220" name="courses_lecture_cno_id_ea9b1a22_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <RefTableName>courses_course</RefTableName>
       <RefColNames>cno</RefColNames>
     </foreign-key>
-    <column id="346" parent="220" name="materialno">
+    <column id="359" parent="221" name="materialno">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="347" parent="220" name="material">
+    <column id="360" parent="221" name="material">
       <Position>2</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="348" parent="220" name="lecture_no_id">
+    <column id="361" parent="221" name="lecture_no_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="349" parent="220" name="courses_lecturemater_lecture_no_id_2a7ae8d7_fk_courses_l">
+    <index id="362" parent="221" name="courses_lecturemater_lecture_no_id_2a7ae8d7_fk_courses_l">
       <ColNames>lecture_no_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="350" parent="220" name="PRIMARY">
+    <key id="363" parent="221" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>materialno</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="351" parent="220" name="courses_lecturemater_lecture_no_id_2a7ae8d7_fk_courses_l">
+    <foreign-key id="364" parent="221" name="courses_lecturemater_lecture_no_id_2a7ae8d7_fk_courses_l">
       <ColNames>lecture_no_id</ColNames>
       <RefTableName>courses_lecture</RefTableName>
       <RefColNames>lecture_no</RefColNames>
-    </foreign-key>
-    <column id="352" parent="221" name="id">
-      <Position>1</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-      <SequenceIdentity>null</SequenceIdentity>
-    </column>
-    <column id="353" parent="221" name="action_time">
-      <Position>2</Position>
-      <DataType>datetime(6)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="354" parent="221" name="object_id">
-      <Position>3</Position>
-      <DataType>longtext|0s</DataType>
-    </column>
-    <column id="355" parent="221" name="object_repr">
-      <Position>4</Position>
-      <DataType>varchar(200)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="356" parent="221" name="action_flag">
-      <Position>5</Position>
-      <DataType>smallint(5) unsigned|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="357" parent="221" name="change_message">
-      <Position>6</Position>
-      <DataType>longtext|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="358" parent="221" name="content_type_id">
-      <Position>7</Position>
-      <DataType>int(11)|0s</DataType>
-    </column>
-    <column id="359" parent="221" name="user_id">
-      <Position>8</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <index id="360" parent="221" name="django_admin_log_content_type_id_c4bce8eb_fk_django_co">
-      <ColNames>content_type_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="361" parent="221" name="django_admin_log_user_id_c564eba6_fk_auth_user_id">
-      <ColNames>user_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="362" parent="221" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>id</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <foreign-key id="363" parent="221" name="django_admin_log_content_type_id_c4bce8eb_fk_django_co">
-      <ColNames>content_type_id</ColNames>
-      <RefTableName>django_content_type</RefTableName>
-      <RefColNames>id</RefColNames>
-    </foreign-key>
-    <foreign-key id="364" parent="221" name="django_admin_log_user_id_c564eba6_fk_auth_user_id">
-      <ColNames>user_id</ColNames>
-      <RefTableName>auth_user</RefTableName>
-      <RefColNames>id</RefColNames>
     </foreign-key>
     <column id="365" parent="222" name="id">
       <Position>1</Position>
@@ -1317,970 +1312,1069 @@ permission_id</ColNames>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="366" parent="222" name="app_label">
+    <column id="366" parent="222" name="action_time">
+      <Position>2</Position>
+      <DataType>datetime(6)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="367" parent="222" name="object_id">
+      <Position>3</Position>
+      <DataType>longtext|0s</DataType>
+    </column>
+    <column id="368" parent="222" name="object_repr">
+      <Position>4</Position>
+      <DataType>varchar(200)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="369" parent="222" name="action_flag">
+      <Position>5</Position>
+      <DataType>smallint(5) unsigned|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="370" parent="222" name="change_message">
+      <Position>6</Position>
+      <DataType>longtext|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="371" parent="222" name="content_type_id">
+      <Position>7</Position>
+      <DataType>int(11)|0s</DataType>
+    </column>
+    <column id="372" parent="222" name="user_id">
+      <Position>8</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="373" parent="222" name="django_admin_log_content_type_id_c4bce8eb_fk_django_co">
+      <ColNames>content_type_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <index id="374" parent="222" name="django_admin_log_user_id_c564eba6_fk_auth_user_id">
+      <ColNames>user_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="375" parent="222" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="376" parent="222" name="django_admin_log_content_type_id_c4bce8eb_fk_django_co">
+      <ColNames>content_type_id</ColNames>
+      <RefTableName>django_content_type</RefTableName>
+      <RefColNames>id</RefColNames>
+    </foreign-key>
+    <foreign-key id="377" parent="222" name="django_admin_log_user_id_c564eba6_fk_auth_user_id">
+      <ColNames>user_id</ColNames>
+      <RefTableName>auth_user</RefTableName>
+      <RefColNames>id</RefColNames>
+    </foreign-key>
+    <column id="378" parent="223" name="id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="379" parent="223" name="app_label">
       <Position>2</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="367" parent="222" name="model">
+    <column id="380" parent="223" name="model">
       <Position>3</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="368" parent="222" name="django_content_type_app_label_model_76bd3d3b_uniq">
+    <index id="381" parent="223" name="django_content_type_app_label_model_76bd3d3b_uniq">
       <ColNames>app_label
 model</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <key id="369" parent="222" name="PRIMARY">
+    <key id="382" parent="223" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="370" parent="222" name="django_content_type_app_label_model_76bd3d3b_uniq">
+    <key id="383" parent="223" name="django_content_type_app_label_model_76bd3d3b_uniq">
       <ColNames>app_label
 model</ColNames>
       <UnderlyingIndexName>django_content_type_app_label_model_76bd3d3b_uniq</UnderlyingIndexName>
     </key>
-    <column id="371" parent="223" name="id">
+    <column id="384" parent="224" name="id">
       <Position>1</Position>
       <DataType>bigint(20)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="372" parent="223" name="app">
+    <column id="385" parent="224" name="app">
       <Position>2</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="373" parent="223" name="name">
+    <column id="386" parent="224" name="name">
       <Position>3</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="374" parent="223" name="applied">
+    <column id="387" parent="224" name="applied">
       <Position>4</Position>
       <DataType>datetime(6)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="375" parent="223" name="PRIMARY">
+    <key id="388" parent="224" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="376" parent="224" name="session_key">
+    <column id="389" parent="225" name="session_key">
       <Position>1</Position>
       <DataType>varchar(40)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="377" parent="224" name="session_data">
+    <column id="390" parent="225" name="session_data">
       <Position>2</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="378" parent="224" name="expire_date">
+    <column id="391" parent="225" name="expire_date">
       <Position>3</Position>
       <DataType>datetime(6)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="379" parent="224" name="django_session_expire_date_a5c62663">
+    <index id="392" parent="225" name="django_session_expire_date_a5c62663">
       <ColNames>expire_date</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="380" parent="224" name="PRIMARY">
+    <key id="393" parent="225" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>session_key</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="381" parent="225" name="advertisementno">
+    <column id="394" parent="226" name="advertisementno">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="382" parent="225" name="advertisement">
+    <column id="395" parent="226" name="advertisement">
       <Position>2</Position>
       <DataType>varchar(512)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="383" parent="225" name="status">
+    <column id="396" parent="226" name="status">
       <Position>3</Position>
       <DataType>smallint(6)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="384" parent="225" name="payment">
+    <column id="397" parent="226" name="payment">
       <Position>4</Position>
       <DataType>decimal(20,2 digit)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="385" parent="225" name="startdate">
+    <column id="398" parent="226" name="startdate">
       <Position>5</Position>
       <DataType>date|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="386" parent="225" name="finishdate">
+    <column id="399" parent="226" name="finishdate">
       <Position>6</Position>
       <DataType>date|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="387" parent="225" name="ad_username_id">
+    <column id="400" parent="226" name="ad_username_id">
       <Position>7</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="388" parent="225" name="cno_id">
+    <column id="401" parent="226" name="cno_id">
       <Position>8</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="389" parent="225" name="main_advertisement_ad_username_id_6de5b703_fk_accounts_">
+    <index id="402" parent="226" name="main_advertisement_ad_username_id_6de5b703_fk_accounts_">
       <ColNames>ad_username_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="390" parent="225" name="main_advertisement_cno_id_86f58d42_fk_courses_course_cno">
+    <index id="403" parent="226" name="main_advertisement_cno_id_86f58d42_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="391" parent="225" name="PRIMARY">
+    <key id="404" parent="226" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>advertisementno</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="392" parent="225" name="main_advertisement_ad_username_id_6de5b703_fk_accounts_">
+    <foreign-key id="405" parent="226" name="main_advertisement_ad_username_id_6de5b703_fk_accounts_">
       <ColNames>ad_username_id</ColNames>
       <RefTableName>accounts_advertiser</RefTableName>
       <RefColNames>defaultuser_ptr_id</RefColNames>
     </foreign-key>
-    <foreign-key id="393" parent="225" name="main_advertisement_cno_id_86f58d42_fk_courses_course_cno">
+    <foreign-key id="406" parent="226" name="main_advertisement_cno_id_86f58d42_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <RefTableName>courses_course</RefTableName>
       <RefColNames>cno</RefColNames>
     </foreign-key>
-    <column id="394" parent="226" name="ann_date">
+    <column id="407" parent="227" name="ann_date">
       <Position>1</Position>
       <DataType>date|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="395" parent="226" name="ann_id">
+    <column id="408" parent="227" name="ann_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="396" parent="226" name="ann_text">
+    <column id="409" parent="227" name="ann_text">
       <Position>3</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="397" parent="226" name="cno_id">
+    <column id="410" parent="227" name="cno_id">
       <Position>4</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="398" parent="226" name="i_user_id">
+    <column id="411" parent="227" name="i_user_id">
       <Position>5</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="399" parent="226" name="main_announcement_cno_id_8fae97f5_fk_courses_course_cno">
+    <index id="412" parent="227" name="main_announcement_cno_id_8fae97f5_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="400" parent="226" name="main_announcement_i_user_id_36208625_fk_accounts_">
+    <index id="413" parent="227" name="main_announcement_i_user_id_36208625_fk_accounts_">
       <ColNames>i_user_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="401" parent="226" name="PRIMARY">
+    <key id="414" parent="227" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>ann_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="402" parent="226" name="main_announcement_cno_id_8fae97f5_fk_courses_course_cno">
+    <foreign-key id="415" parent="227" name="main_announcement_cno_id_8fae97f5_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <RefTableName>courses_course</RefTableName>
       <RefColNames>cno</RefColNames>
     </foreign-key>
-    <foreign-key id="403" parent="226" name="main_announcement_i_user_id_36208625_fk_accounts_">
+    <foreign-key id="416" parent="227" name="main_announcement_i_user_id_36208625_fk_accounts_">
       <ColNames>i_user_id</ColNames>
       <RefTableName>accounts_instructor</RefTableName>
       <RefColNames>student_ptr_id</RefColNames>
     </foreign-key>
-    <column id="404" parent="227" name="assignmentno">
+    <column id="417" parent="228" name="assignmentno">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="405" parent="227" name="assignment">
+    <column id="418" parent="228" name="assignment">
       <Position>2</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="406" parent="227" name="lecture_no_id">
+    <column id="419" parent="228" name="lecture_no_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="407" parent="227" name="main_assignment_lecture_no_id_c0c09d2d_fk_courses_l">
+    <index id="420" parent="228" name="main_assignment_lecture_no_id_c0c09d2d_fk_courses_l">
       <ColNames>lecture_no_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="408" parent="227" name="PRIMARY">
+    <key id="421" parent="228" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>assignmentno</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="409" parent="227" name="main_assignment_lecture_no_id_c0c09d2d_fk_courses_l">
+    <foreign-key id="422" parent="228" name="main_assignment_lecture_no_id_c0c09d2d_fk_courses_l">
       <ColNames>lecture_no_id</ColNames>
       <RefTableName>courses_lecture</RefTableName>
       <RefColNames>lecture_no</RefColNames>
     </foreign-key>
-    <column id="410" parent="228" name="creation_date">
+    <column id="423" parent="229" name="avg">
+      <Position>1</Position>
+      <DataType>double|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="424" parent="229" name="cno_id">
+      <Position>2</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="425" parent="229" name="main_avg_rate_cno_id_2a5e5b9b_uniq">
+      <ColNames>cno_id</ColNames>
+      <Unique>1</Unique>
+      <Type>btree</Type>
+    </index>
+    <key id="426" parent="229" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>cno_id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <key id="427" parent="229" name="main_avg_rate_cno_id_2a5e5b9b_uniq">
+      <ColNames>cno_id</ColNames>
+      <UnderlyingIndexName>main_avg_rate_cno_id_2a5e5b9b_uniq</UnderlyingIndexName>
+    </key>
+    <foreign-key id="428" parent="229" name="main_avg_rate_cno_id_2a5e5b9b_fk_courses_course_cno">
+      <ColNames>cno_id</ColNames>
+      <RefTableName>courses_course</RefTableName>
+      <RefColNames>cno</RefColNames>
+    </foreign-key>
+    <column id="429" parent="230" name="creation_date">
       <Position>1</Position>
       <DataType>date|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="411" parent="228" name="comp_id">
+    <column id="430" parent="230" name="comp_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="412" parent="228" name="description">
+    <column id="431" parent="230" name="description">
       <Position>3</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="413" parent="228" name="course_id">
+    <column id="432" parent="230" name="course_id">
       <Position>4</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="414" parent="228" name="s_user_id">
+    <column id="433" parent="230" name="s_user_id">
       <Position>5</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="415" parent="228" name="main_complaint_course_id_b8fc6931_fk_courses_course_cno">
+    <index id="434" parent="230" name="main_complaint_course_id_b8fc6931_fk_courses_course_cno">
       <ColNames>course_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="416" parent="228" name="main_complaint_s_user_id_aa5778ea_fk_accounts_">
+    <index id="435" parent="230" name="main_complaint_s_user_id_aa5778ea_fk_accounts_">
       <ColNames>s_user_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="417" parent="228" name="PRIMARY">
+    <key id="436" parent="230" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>comp_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="418" parent="228" name="main_complaint_course_id_b8fc6931_fk_courses_course_cno">
+    <foreign-key id="437" parent="230" name="main_complaint_course_id_b8fc6931_fk_courses_course_cno">
       <ColNames>course_id</ColNames>
       <RefTableName>courses_course</RefTableName>
       <RefColNames>cno</RefColNames>
     </foreign-key>
-    <foreign-key id="419" parent="228" name="main_complaint_s_user_id_aa5778ea_fk_accounts_">
+    <foreign-key id="438" parent="230" name="main_complaint_s_user_id_aa5778ea_fk_accounts_">
       <ColNames>s_user_id</ColNames>
       <RefTableName>accounts_student</RefTableName>
       <RefColNames>defaultuser_ptr_id</RefColNames>
     </foreign-key>
-    <column id="420" parent="229" name="cont_id">
+    <column id="439" parent="231" name="cont_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="421" parent="229" name="cno_id">
+    <column id="440" parent="231" name="cno_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="422" parent="229" name="user_id">
+    <column id="441" parent="231" name="user_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="423" parent="229" name="main_contributor_cno_id_1cb022a0_fk_courses_course_cno">
+    <index id="442" parent="231" name="main_contributor_cno_id_1cb022a0_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="424" parent="229" name="main_contributor_user_id_430baba2_fk_accounts_">
+    <index id="443" parent="231" name="main_contributor_user_id_430baba2_fk_accounts_">
       <ColNames>user_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="425" parent="229" name="PRIMARY">
+    <key id="444" parent="231" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>cont_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="426" parent="229" name="main_contributor_cno_id_1cb022a0_fk_courses_course_cno">
+    <foreign-key id="445" parent="231" name="main_contributor_cno_id_1cb022a0_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <RefTableName>courses_course</RefTableName>
       <RefColNames>cno</RefColNames>
     </foreign-key>
-    <foreign-key id="427" parent="229" name="main_contributor_user_id_430baba2_fk_accounts_">
+    <foreign-key id="446" parent="231" name="main_contributor_user_id_430baba2_fk_accounts_">
       <ColNames>user_id</ColNames>
       <RefTableName>accounts_instructor</RefTableName>
       <RefColNames>student_ptr_id</RefColNames>
     </foreign-key>
-    <column id="428" parent="230" name="course_topic_id">
+    <column id="447" parent="232" name="course_topic_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="429" parent="230" name="cno_id">
+    <column id="448" parent="232" name="cno_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="430" parent="230" name="topicname_id">
+    <column id="449" parent="232" name="topicname_id">
       <Position>3</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="431" parent="230" name="main_course_topic_cno_id_61e89e81_fk_courses_course_cno">
+    <index id="450" parent="232" name="main_course_topic_cno_id_61e89e81_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="432" parent="230" name="main_course_topic_topicname_id_543225b6_fk_main_topic_topicname">
+    <index id="451" parent="232" name="main_course_topic_topicname_id_543225b6_fk_main_topic_topicname">
       <ColNames>topicname_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="433" parent="230" name="PRIMARY">
+    <key id="452" parent="232" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>course_topic_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="434" parent="230" name="main_course_topic_cno_id_61e89e81_fk_courses_course_cno">
+    <foreign-key id="453" parent="232" name="main_course_topic_cno_id_61e89e81_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <RefTableName>courses_course</RefTableName>
       <RefColNames>cno</RefColNames>
     </foreign-key>
-    <foreign-key id="435" parent="230" name="main_course_topic_topicname_id_543225b6_fk_main_topic_topicname">
+    <foreign-key id="454" parent="232" name="main_course_topic_topicname_id_543225b6_fk_main_topic_topicname">
       <ColNames>topicname_id</ColNames>
       <RefTableName>main_topic</RefTableName>
       <RefColNames>topicname</RefColNames>
     </foreign-key>
-    <column id="436" parent="231" name="startdate">
-      <Position>1</Position>
-      <DataType>datetime(6)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="437" parent="231" name="discountno">
-      <Position>2</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-      <SequenceIdentity>null</SequenceIdentity>
-    </column>
-    <column id="438" parent="231" name="newprice">
-      <Position>3</Position>
-      <DataType>decimal(6,2 digit)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="439" parent="231" name="finishdate">
-      <Position>4</Position>
-      <DataType>datetime(6)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="440" parent="231" name="situation">
-      <Position>5</Position>
-      <DataType>smallint(6)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="441" parent="231" name="admin_username_id">
-      <Position>6</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="442" parent="231" name="cno_id">
-      <Position>7</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <index id="443" parent="231" name="main_discount_admin_username_id_fafac6bf_fk_accounts_">
-      <ColNames>admin_username_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="444" parent="231" name="main_discount_cno_id_3be8ba11_fk_courses_course_cno">
-      <ColNames>cno_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="445" parent="231" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>discountno</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <foreign-key id="446" parent="231" name="main_discount_admin_username_id_fafac6bf_fk_accounts_">
-      <ColNames>admin_username_id</ColNames>
-      <RefTableName>accounts_siteadmin</RefTableName>
-      <RefColNames>defaultuser_ptr_id</RefColNames>
-    </foreign-key>
-    <foreign-key id="447" parent="231" name="main_discount_cno_id_3be8ba11_fk_courses_course_cno">
-      <ColNames>cno_id</ColNames>
-      <RefTableName>courses_course</RefTableName>
-      <RefColNames>cno</RefColNames>
-    </foreign-key>
-    <column id="448" parent="232" name="enroll_id">
+    <column id="455" parent="233" name="discountno">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="449" parent="232" name="cno_id">
+    <column id="456" parent="233" name="cno_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="450" parent="232" name="user_id">
+    <column id="457" parent="233" name="offerno_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="451" parent="232" name="main_enroll_cno_id_e6b93284_fk_courses_course_cno">
+    <index id="458" parent="233" name="main_discount_cno_id_3be8ba11_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="452" parent="232" name="main_enroll_user_id_448a5bb3_fk_accounts_">
-      <ColNames>user_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="453" parent="232" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>enroll_id</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <foreign-key id="454" parent="232" name="main_enroll_cno_id_e6b93284_fk_courses_course_cno">
-      <ColNames>cno_id</ColNames>
-      <RefTableName>courses_course</RefTableName>
-      <RefColNames>cno</RefColNames>
-    </foreign-key>
-    <foreign-key id="455" parent="232" name="main_enroll_user_id_448a5bb3_fk_accounts_">
-      <ColNames>user_id</ColNames>
-      <RefTableName>accounts_student</RefTableName>
-      <RefColNames>defaultuser_ptr_id</RefColNames>
-    </foreign-key>
-    <column id="456" parent="233" name="refund_id_id">
-      <Position>1</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="457" parent="233" name="reply_date">
-      <Position>2</Position>
-      <DataType>date|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="458" parent="233" name="admin_username_id">
-      <Position>3</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <index id="459" parent="233" name="main_evaluates_admin_username_id_f2bb8d27_fk_accounts_">
-      <ColNames>admin_username_id</ColNames>
+    <index id="459" parent="233" name="main_discount_offerno_id_1c9f5560_fk_adminpane">
+      <ColNames>offerno_id</ColNames>
       <Type>btree</Type>
     </index>
     <key id="460" parent="233" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
-      <ColNames>refund_id_id</ColNames>
+      <ColNames>discountno</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="461" parent="233" name="main_evaluates_refund_id_id_8c732bb5_fk_main_refu">
-      <ColNames>refund_id_id</ColNames>
-      <RefTableName>main_refundrequest</RefTableName>
-      <RefColNames>refund_id</RefColNames>
+    <foreign-key id="461" parent="233" name="main_discount_cno_id_3be8ba11_fk_courses_course_cno">
+      <ColNames>cno_id</ColNames>
+      <RefTableName>courses_course</RefTableName>
+      <RefColNames>cno</RefColNames>
     </foreign-key>
-    <foreign-key id="462" parent="233" name="main_evaluates_admin_username_id_f2bb8d27_fk_accounts_">
-      <ColNames>admin_username_id</ColNames>
-      <RefTableName>accounts_siteadmin</RefTableName>
-      <RefColNames>defaultuser_ptr_id</RefColNames>
+    <foreign-key id="462" parent="233" name="main_discount_offerno_id_1c9f5560_fk_adminpane">
+      <ColNames>offerno_id</ColNames>
+      <RefTableName>adminpanel_offered_discount</RefTableName>
+      <RefColNames>discount_id</RefColNames>
     </foreign-key>
-    <column id="463" parent="234" name="finishes_id">
+    <trigger id="463" parent="233" name="trig">
+      <SourceTextLength>247</SourceTextLength>
+      <Definer>betul.ciftci@%</Definer>
+      <Turn>after-row</Turn>
+      <Events>I</Events>
+    </trigger>
+    <trigger id="464" parent="233" name="discount_delete_trigger">
+      <SourceTextLength>90</SourceTextLength>
+      <Definer>betul.ciftci@%</Definer>
+      <Turn>after-row</Turn>
+      <Events>D</Events>
+    </trigger>
+    <column id="465" parent="234" name="enroll_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="464" parent="234" name="comment">
+    <column id="466" parent="234" name="cno_id">
       <Position>2</Position>
-      <DataType>longtext|0s</DataType>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
     </column>
-    <column id="465" parent="234" name="cno_id">
+    <column id="467" parent="234" name="user_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="466" parent="234" name="user_id">
-      <Position>4</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="467" parent="234" name="score">
-      <Position>5</Position>
-      <DataType>smallint(5) unsigned|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <index id="468" parent="234" name="main_finishes_cno_id_ae4b4c02_fk_courses_course_cno">
+    <index id="468" parent="234" name="main_enroll_cno_id_e6b93284_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="469" parent="234" name="main_finishes_user_id_3bbeaa73_fk_accounts_">
+    <index id="469" parent="234" name="main_enroll_user_id_448a5bb3_fk_accounts_">
       <ColNames>user_id</ColNames>
       <Type>btree</Type>
     </index>
     <key id="470" parent="234" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
-      <ColNames>finishes_id</ColNames>
+      <ColNames>enroll_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="471" parent="234" name="main_finishes_cno_id_ae4b4c02_fk_courses_course_cno">
+    <foreign-key id="471" parent="234" name="main_enroll_cno_id_e6b93284_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <RefTableName>courses_course</RefTableName>
       <RefColNames>cno</RefColNames>
     </foreign-key>
-    <foreign-key id="472" parent="234" name="main_finishes_user_id_3bbeaa73_fk_accounts_">
+    <foreign-key id="472" parent="234" name="main_enroll_user_id_448a5bb3_fk_accounts_">
       <ColNames>user_id</ColNames>
       <RefTableName>accounts_student</RefTableName>
       <RefColNames>defaultuser_ptr_id</RefColNames>
     </foreign-key>
-    <column id="473" parent="235" name="gift_id">
+    <column id="473" parent="235" name="refund_id_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
-      <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="474" parent="235" name="date">
+    <column id="474" parent="235" name="reply_date">
       <Position>2</Position>
       <DataType>date|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="475" parent="235" name="course_id">
+    <column id="475" parent="235" name="admin_username_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="476" parent="235" name="receiver_id">
+    <index id="476" parent="235" name="main_evaluates_admin_username_id_f2bb8d27_fk_accounts_">
+      <ColNames>admin_username_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="477" parent="235" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>refund_id_id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="478" parent="235" name="main_evaluates_refund_id_id_8c732bb5_fk_main_refu">
+      <ColNames>refund_id_id</ColNames>
+      <RefTableName>main_refundrequest</RefTableName>
+      <RefColNames>refund_id</RefColNames>
+    </foreign-key>
+    <foreign-key id="479" parent="235" name="main_evaluates_admin_username_id_f2bb8d27_fk_accounts_">
+      <ColNames>admin_username_id</ColNames>
+      <RefTableName>accounts_siteadmin</RefTableName>
+      <RefColNames>defaultuser_ptr_id</RefColNames>
+    </foreign-key>
+    <column id="480" parent="236" name="finishes_id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="481" parent="236" name="comment">
+      <Position>2</Position>
+      <DataType>longtext|0s</DataType>
+    </column>
+    <column id="482" parent="236" name="cno_id">
+      <Position>3</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="483" parent="236" name="user_id">
       <Position>4</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="477" parent="235" name="sender_id">
+    <column id="484" parent="236" name="score">
+      <Position>5</Position>
+      <DataType>smallint(5) unsigned|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="485" parent="236" name="main_finishes_cno_id_ae4b4c02_fk_courses_course_cno">
+      <ColNames>cno_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <index id="486" parent="236" name="main_finishes_user_id_3bbeaa73_fk_accounts_">
+      <ColNames>user_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="487" parent="236" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>finishes_id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="488" parent="236" name="main_finishes_cno_id_ae4b4c02_fk_courses_course_cno">
+      <ColNames>cno_id</ColNames>
+      <RefTableName>courses_course</RefTableName>
+      <RefColNames>cno</RefColNames>
+    </foreign-key>
+    <foreign-key id="489" parent="236" name="main_finishes_user_id_3bbeaa73_fk_accounts_">
+      <ColNames>user_id</ColNames>
+      <RefTableName>accounts_student</RefTableName>
+      <RefColNames>defaultuser_ptr_id</RefColNames>
+    </foreign-key>
+    <trigger id="490" parent="236" name="insert_average">
+      <SourceTextLength>189</SourceTextLength>
+      <Definer>betul.ciftci@%</Definer>
+      <Turn>after-row</Turn>
+      <Events>I</Events>
+    </trigger>
+    <column id="491" parent="237" name="gift_id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="492" parent="237" name="date">
+      <Position>2</Position>
+      <DataType>date|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="493" parent="237" name="course_id">
+      <Position>3</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="494" parent="237" name="receiver_id">
+      <Position>4</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="495" parent="237" name="sender_id">
       <Position>5</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="478" parent="235" name="main_gift_course_id_fe6d1b2a_fk_courses_course_cno">
+    <index id="496" parent="237" name="main_gift_course_id_fe6d1b2a_fk_courses_course_cno">
       <ColNames>course_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="479" parent="235" name="main_gift_receiver_id_bf751306_fk_accounts_">
+    <index id="497" parent="237" name="main_gift_receiver_id_bf751306_fk_accounts_">
       <ColNames>receiver_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="480" parent="235" name="main_gift_sender_id_4eb19a25_fk_auth_user_id">
+    <index id="498" parent="237" name="main_gift_sender_id_4eb19a25_fk_auth_user_id">
       <ColNames>sender_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="481" parent="235" name="PRIMARY">
+    <key id="499" parent="237" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>gift_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="482" parent="235" name="main_gift_course_id_fe6d1b2a_fk_courses_course_cno">
+    <foreign-key id="500" parent="237" name="main_gift_course_id_fe6d1b2a_fk_courses_course_cno">
       <ColNames>course_id</ColNames>
       <RefTableName>courses_course</RefTableName>
       <RefColNames>cno</RefColNames>
     </foreign-key>
-    <foreign-key id="483" parent="235" name="main_gift_receiver_id_bf751306_fk_accounts_">
+    <foreign-key id="501" parent="237" name="main_gift_receiver_id_bf751306_fk_accounts_">
       <ColNames>receiver_id</ColNames>
       <RefTableName>accounts_student</RefTableName>
       <RefColNames>defaultuser_ptr_id</RefColNames>
     </foreign-key>
-    <foreign-key id="484" parent="235" name="main_gift_sender_id_4eb19a25_fk_auth_user_id">
+    <foreign-key id="502" parent="237" name="main_gift_sender_id_4eb19a25_fk_auth_user_id">
       <ColNames>sender_id</ColNames>
       <RefTableName>auth_user</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="485" parent="236" name="inside_cart_id">
+    <column id="503" parent="238" name="inside_cart_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="486" parent="236" name="cno_id">
+    <column id="504" parent="238" name="cno_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="487" parent="236" name="receiver_username_id">
+    <column id="505" parent="238" name="receiver_username_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
     </column>
-    <column id="488" parent="236" name="username_id">
+    <column id="506" parent="238" name="username_id">
       <Position>4</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="489" parent="236" name="main_inside_cart_cno_id_44944db4_fk_courses_course_cno">
+    <index id="507" parent="238" name="main_inside_cart_cno_id_44944db4_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="490" parent="236" name="main_inside_cart_receiver_username_id_c58bf972_fk_accounts_">
+    <index id="508" parent="238" name="main_inside_cart_receiver_username_id_c58bf972_fk_accounts_">
       <ColNames>receiver_username_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="491" parent="236" name="main_inside_cart_username_id_80c8936c_fk_auth_user_id">
-      <ColNames>username_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="492" parent="236" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>inside_cart_id</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <foreign-key id="493" parent="236" name="main_inside_cart_cno_id_44944db4_fk_courses_course_cno">
-      <ColNames>cno_id</ColNames>
-      <RefTableName>courses_course</RefTableName>
-      <RefColNames>cno</RefColNames>
-    </foreign-key>
-    <foreign-key id="494" parent="236" name="main_inside_cart_receiver_username_id_c58bf972_fk_accounts_">
-      <ColNames>receiver_username_id</ColNames>
-      <RefTableName>accounts_student</RefTableName>
-      <RefColNames>defaultuser_ptr_id</RefColNames>
-    </foreign-key>
-    <foreign-key id="495" parent="236" name="main_inside_cart_username_id_80c8936c_fk_auth_user_id">
-      <ColNames>username_id</ColNames>
-      <RefTableName>auth_user</RefTableName>
-      <RefColNames>id</RefColNames>
-    </foreign-key>
-    <column id="496" parent="237" name="interested_in_id">
-      <Position>1</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-      <SequenceIdentity>null</SequenceIdentity>
-    </column>
-    <column id="497" parent="237" name="s_username_id">
-      <Position>2</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="498" parent="237" name="topic_id">
-      <Position>3</Position>
-      <DataType>varchar(100)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <index id="499" parent="237" name="main_interested_in_s_username_id_a42c195d_fk_accounts_">
-      <ColNames>s_username_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="500" parent="237" name="main_interested_in_topic_id_e8bf11d5_fk_main_topic_topicname">
-      <ColNames>topic_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="501" parent="237" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>interested_in_id</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <foreign-key id="502" parent="237" name="main_interested_in_s_username_id_a42c195d_fk_accounts_">
-      <ColNames>s_username_id</ColNames>
-      <RefTableName>accounts_student</RefTableName>
-      <RefColNames>defaultuser_ptr_id</RefColNames>
-    </foreign-key>
-    <foreign-key id="503" parent="237" name="main_interested_in_topic_id_e8bf11d5_fk_main_topic_topicname">
-      <ColNames>topic_id</ColNames>
-      <RefTableName>main_topic</RefTableName>
-      <RefColNames>topicname</RefColNames>
-    </foreign-key>
-    <column id="504" parent="238" name="postno">
-      <Position>1</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-      <SequenceIdentity>null</SequenceIdentity>
-    </column>
-    <column id="505" parent="238" name="post">
-      <Position>2</Position>
-      <DataType>longtext|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="506" parent="238" name="lecture_no_id">
-      <Position>3</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="507" parent="238" name="username_id">
-      <Position>4</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <index id="508" parent="238" name="main_post_lecture_no_id_c14e5268_fk_courses_lecture_lecture_no">
-      <ColNames>lecture_no_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="509" parent="238" name="main_post_username_id_f5960da9_fk_auth_user_id">
+    <index id="509" parent="238" name="main_inside_cart_username_id_80c8936c_fk_auth_user_id">
       <ColNames>username_id</ColNames>
       <Type>btree</Type>
     </index>
     <key id="510" parent="238" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
-      <ColNames>postno</ColNames>
+      <ColNames>inside_cart_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="511" parent="238" name="main_post_lecture_no_id_c14e5268_fk_courses_lecture_lecture_no">
-      <ColNames>lecture_no_id</ColNames>
-      <RefTableName>courses_lecture</RefTableName>
-      <RefColNames>lecture_no</RefColNames>
+    <foreign-key id="511" parent="238" name="main_inside_cart_cno_id_44944db4_fk_courses_course_cno">
+      <ColNames>cno_id</ColNames>
+      <RefTableName>courses_course</RefTableName>
+      <RefColNames>cno</RefColNames>
     </foreign-key>
-    <foreign-key id="512" parent="238" name="main_post_username_id_f5960da9_fk_auth_user_id">
+    <foreign-key id="512" parent="238" name="main_inside_cart_receiver_username_id_c58bf972_fk_accounts_">
+      <ColNames>receiver_username_id</ColNames>
+      <RefTableName>accounts_student</RefTableName>
+      <RefColNames>defaultuser_ptr_id</RefColNames>
+    </foreign-key>
+    <foreign-key id="513" parent="238" name="main_inside_cart_username_id_80c8936c_fk_auth_user_id">
       <ColNames>username_id</ColNames>
       <RefTableName>auth_user</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="513" parent="239" name="prog_id">
+    <column id="514" parent="239" name="interested_in_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
-    </column>
-    <column id="514" parent="239" name="lecture_no_id">
-      <Position>2</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
     </column>
     <column id="515" parent="239" name="s_username_id">
-      <Position>3</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <index id="516" parent="239" name="main_progress_lecture_no_id_98d3a60a_fk_courses_l">
-      <ColNames>lecture_no_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="517" parent="239" name="main_progress_s_username_id_80f807cb_fk_accounts_">
-      <ColNames>s_username_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="518" parent="239" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>prog_id</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <foreign-key id="519" parent="239" name="main_progress_lecture_no_id_98d3a60a_fk_courses_l">
-      <ColNames>lecture_no_id</ColNames>
-      <RefTableName>courses_lecture</RefTableName>
-      <RefColNames>lecture_no</RefColNames>
-    </foreign-key>
-    <foreign-key id="520" parent="239" name="main_progress_s_username_id_80f807cb_fk_accounts_">
-      <ColNames>s_username_id</ColNames>
-      <RefTableName>accounts_student</RefTableName>
-      <RefColNames>defaultuser_ptr_id</RefColNames>
-    </foreign-key>
-    <column id="521" parent="240" name="answer_no_id">
-      <Position>1</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="522" parent="240" name="question_no_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="523" parent="240" name="main_quest_answ_question_no_id_52f21d7d_fk_main_post_postno">
-      <ColNames>question_no_id</ColNames>
+    <column id="516" parent="239" name="topic_id">
+      <Position>3</Position>
+      <DataType>varchar(100)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="517" parent="239" name="main_interested_in_s_username_id_a42c195d_fk_accounts_">
+      <ColNames>s_username_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="524" parent="240" name="PRIMARY">
+    <index id="518" parent="239" name="main_interested_in_topic_id_e8bf11d5_fk_main_topic_topicname">
+      <ColNames>topic_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="519" parent="239" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
-      <ColNames>answer_no_id</ColNames>
+      <ColNames>interested_in_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="525" parent="240" name="main_quest_answ_answer_no_id_e3dc5e94_fk_main_post_postno">
-      <ColNames>answer_no_id</ColNames>
-      <RefTableName>main_post</RefTableName>
-      <RefColNames>postno</RefColNames>
+    <foreign-key id="520" parent="239" name="main_interested_in_s_username_id_a42c195d_fk_accounts_">
+      <ColNames>s_username_id</ColNames>
+      <RefTableName>accounts_student</RefTableName>
+      <RefColNames>defaultuser_ptr_id</RefColNames>
     </foreign-key>
-    <foreign-key id="526" parent="240" name="main_quest_answ_question_no_id_52f21d7d_fk_main_post_postno">
-      <ColNames>question_no_id</ColNames>
-      <RefTableName>main_post</RefTableName>
-      <RefColNames>postno</RefColNames>
+    <foreign-key id="521" parent="239" name="main_interested_in_topic_id_e8bf11d5_fk_main_topic_topicname">
+      <ColNames>topic_id</ColNames>
+      <RefTableName>main_topic</RefTableName>
+      <RefColNames>topicname</RefColNames>
     </foreign-key>
-    <column id="527" parent="241" name="refund_id">
+    <column id="522" parent="240" name="postno">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="528" parent="241" name="reason">
-      <Position>2</Position>
-      <DataType>varchar(500)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="529" parent="241" name="status">
-      <Position>3</Position>
-      <DataType>smallint(6)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="530" parent="241" name="cno_id">
-      <Position>4</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="531" parent="241" name="s_username_id">
-      <Position>5</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <index id="532" parent="241" name="main_refundrequest_cno_id_cffcc986_fk_courses_course_cno">
-      <ColNames>cno_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="533" parent="241" name="main_refundrequest_s_username_id_53641fd9_fk_accounts_">
-      <ColNames>s_username_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="534" parent="241" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>refund_id</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <foreign-key id="535" parent="241" name="main_refundrequest_cno_id_cffcc986_fk_courses_course_cno">
-      <ColNames>cno_id</ColNames>
-      <RefTableName>courses_course</RefTableName>
-      <RefColNames>cno</RefColNames>
-    </foreign-key>
-    <foreign-key id="536" parent="241" name="main_refundrequest_s_username_id_53641fd9_fk_accounts_">
-      <ColNames>s_username_id</ColNames>
-      <RefTableName>accounts_student</RefTableName>
-      <RefColNames>defaultuser_ptr_id</RefColNames>
-    </foreign-key>
-    <column id="537" parent="242" name="note_id">
-      <Position>1</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-      <SequenceIdentity>null</SequenceIdentity>
-    </column>
-    <column id="538" parent="242" name="note">
+    <column id="523" parent="240" name="post">
       <Position>2</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="539" parent="242" name="lecture_no_id">
+    <column id="524" parent="240" name="lecture_no_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="540" parent="242" name="s_username_id">
+    <column id="525" parent="240" name="username_id">
       <Position>4</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="541" parent="242" name="main_takes_note_lecture_no_id_cb4444b7_fk_courses_l">
+    <column id="526" parent="240" name="date">
+      <Position>5</Position>
+      <DataType>date|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="527" parent="240" name="main_post_lecture_no_id_c14e5268_fk_courses_lecture_lecture_no">
       <ColNames>lecture_no_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="542" parent="242" name="main_takes_note_s_username_id_6fde5adf_fk_accounts_">
-      <ColNames>s_username_id</ColNames>
+    <index id="528" parent="240" name="main_post_username_id_f5960da9_fk_auth_user_id">
+      <ColNames>username_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="543" parent="242" name="PRIMARY">
+    <key id="529" parent="240" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
-      <ColNames>note_id</ColNames>
+      <ColNames>postno</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="544" parent="242" name="main_takes_note_lecture_no_id_cb4444b7_fk_courses_l">
+    <foreign-key id="530" parent="240" name="main_post_lecture_no_id_c14e5268_fk_courses_lecture_lecture_no">
       <ColNames>lecture_no_id</ColNames>
       <RefTableName>courses_lecture</RefTableName>
       <RefColNames>lecture_no</RefColNames>
     </foreign-key>
-    <foreign-key id="545" parent="242" name="main_takes_note_s_username_id_6fde5adf_fk_accounts_">
+    <foreign-key id="531" parent="240" name="main_post_username_id_f5960da9_fk_auth_user_id">
+      <ColNames>username_id</ColNames>
+      <RefTableName>auth_user</RefTableName>
+      <RefColNames>id</RefColNames>
+    </foreign-key>
+    <column id="532" parent="241" name="prog_id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="533" parent="241" name="lecture_no_id">
+      <Position>2</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="534" parent="241" name="s_username_id">
+      <Position>3</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="535" parent="241" name="main_progress_lecture_no_id_98d3a60a_fk_courses_l">
+      <ColNames>lecture_no_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <index id="536" parent="241" name="main_progress_s_username_id_80f807cb_fk_accounts_">
+      <ColNames>s_username_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="537" parent="241" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>prog_id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="538" parent="241" name="main_progress_lecture_no_id_98d3a60a_fk_courses_l">
+      <ColNames>lecture_no_id</ColNames>
+      <RefTableName>courses_lecture</RefTableName>
+      <RefColNames>lecture_no</RefColNames>
+    </foreign-key>
+    <foreign-key id="539" parent="241" name="main_progress_s_username_id_80f807cb_fk_accounts_">
       <ColNames>s_username_id</ColNames>
       <RefTableName>accounts_student</RefTableName>
       <RefColNames>defaultuser_ptr_id</RefColNames>
     </foreign-key>
-    <column id="546" parent="243" name="teach_id">
+    <column id="540" parent="242" name="answer_no_id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="541" parent="242" name="question_no_id">
+      <Position>2</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="542" parent="242" name="main_quest_answ_question_no_id_52f21d7d_fk_main_post_postno">
+      <ColNames>question_no_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="543" parent="242" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>answer_no_id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="544" parent="242" name="main_quest_answ_answer_no_id_e3dc5e94_fk_main_post_postno">
+      <ColNames>answer_no_id</ColNames>
+      <RefTableName>main_post</RefTableName>
+      <RefColNames>postno</RefColNames>
+    </foreign-key>
+    <foreign-key id="545" parent="242" name="main_quest_answ_question_no_id_52f21d7d_fk_main_post_postno">
+      <ColNames>question_no_id</ColNames>
+      <RefTableName>main_post</RefTableName>
+      <RefColNames>postno</RefColNames>
+    </foreign-key>
+    <column id="546" parent="243" name="refund_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="547" parent="243" name="lecture_no_id">
+    <column id="547" parent="243" name="reason">
       <Position>2</Position>
-      <DataType>int(11)|0s</DataType>
+      <DataType>varchar(500)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="548" parent="243" name="user_id">
+    <column id="548" parent="243" name="status">
       <Position>3</Position>
+      <DataType>smallint(6)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="549" parent="243" name="cno_id">
+      <Position>4</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="549" parent="243" name="main_teaches_lecture_no_id_5953d258_fk_courses_l">
-      <ColNames>lecture_no_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="550" parent="243" name="main_teaches_user_id_4f7c9ab4_fk_accounts_">
-      <ColNames>user_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="551" parent="243" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>teach_id</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <foreign-key id="552" parent="243" name="main_teaches_lecture_no_id_5953d258_fk_courses_l">
-      <ColNames>lecture_no_id</ColNames>
-      <RefTableName>courses_lecture</RefTableName>
-      <RefColNames>lecture_no</RefColNames>
-    </foreign-key>
-    <foreign-key id="553" parent="243" name="main_teaches_user_id_4f7c9ab4_fk_accounts_">
-      <ColNames>user_id</ColNames>
-      <RefTableName>accounts_instructor</RefTableName>
-      <RefColNames>student_ptr_id</RefColNames>
-    </foreign-key>
-    <column id="554" parent="244" name="topicname">
-      <Position>1</Position>
-      <DataType>varchar(100)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <key id="555" parent="244" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>topicname</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <column id="556" parent="245" name="wishes_id">
-      <Position>1</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-      <SequenceIdentity>null</SequenceIdentity>
-    </column>
-    <column id="557" parent="245" name="cno_id">
-      <Position>2</Position>
+    <column id="550" parent="243" name="s_username_id">
+      <Position>5</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="558" parent="245" name="user_id">
-      <Position>3</Position>
-      <DataType>int(11)|0s</DataType>
+    <column id="551" parent="243" name="date">
+      <Position>6</Position>
+      <DataType>date|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="559" parent="245" name="main_wishes_cno_id_c77b09dd_fk_courses_course_cno">
+    <index id="552" parent="243" name="main_refundrequest_cno_id_cffcc986_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="560" parent="245" name="main_wishes_user_id_7c2f949d_fk_accounts_">
-      <ColNames>user_id</ColNames>
+    <index id="553" parent="243" name="main_refundrequest_s_username_id_53641fd9_fk_accounts_">
+      <ColNames>s_username_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="561" parent="245" name="PRIMARY">
+    <key id="554" parent="243" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
-      <ColNames>wishes_id</ColNames>
+      <ColNames>refund_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="562" parent="245" name="main_wishes_cno_id_c77b09dd_fk_courses_course_cno">
+    <foreign-key id="555" parent="243" name="main_refundrequest_cno_id_cffcc986_fk_courses_course_cno">
       <ColNames>cno_id</ColNames>
       <RefTableName>courses_course</RefTableName>
       <RefColNames>cno</RefColNames>
     </foreign-key>
-    <foreign-key id="563" parent="245" name="main_wishes_user_id_7c2f949d_fk_accounts_">
+    <foreign-key id="556" parent="243" name="main_refundrequest_s_username_id_53641fd9_fk_accounts_">
+      <ColNames>s_username_id</ColNames>
+      <RefTableName>accounts_student</RefTableName>
+      <RefColNames>defaultuser_ptr_id</RefColNames>
+    </foreign-key>
+    <column id="557" parent="244" name="note_id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="558" parent="244" name="note">
+      <Position>2</Position>
+      <DataType>longtext|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="559" parent="244" name="lecture_no_id">
+      <Position>3</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="560" parent="244" name="s_username_id">
+      <Position>4</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="561" parent="244" name="main_takes_note_lecture_no_id_cb4444b7_fk_courses_l">
+      <ColNames>lecture_no_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <index id="562" parent="244" name="main_takes_note_s_username_id_6fde5adf_fk_accounts_">
+      <ColNames>s_username_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="563" parent="244" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>note_id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="564" parent="244" name="main_takes_note_lecture_no_id_cb4444b7_fk_courses_l">
+      <ColNames>lecture_no_id</ColNames>
+      <RefTableName>courses_lecture</RefTableName>
+      <RefColNames>lecture_no</RefColNames>
+    </foreign-key>
+    <foreign-key id="565" parent="244" name="main_takes_note_s_username_id_6fde5adf_fk_accounts_">
+      <ColNames>s_username_id</ColNames>
+      <RefTableName>accounts_student</RefTableName>
+      <RefColNames>defaultuser_ptr_id</RefColNames>
+    </foreign-key>
+    <column id="566" parent="245" name="teach_id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="567" parent="245" name="lecture_no_id">
+      <Position>2</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="568" parent="245" name="user_id">
+      <Position>3</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="569" parent="245" name="main_teaches_lecture_no_id_5953d258_fk_courses_l">
+      <ColNames>lecture_no_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <index id="570" parent="245" name="main_teaches_user_id_4f7c9ab4_fk_accounts_">
+      <ColNames>user_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="571" parent="245" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>teach_id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="572" parent="245" name="main_teaches_lecture_no_id_5953d258_fk_courses_l">
+      <ColNames>lecture_no_id</ColNames>
+      <RefTableName>courses_lecture</RefTableName>
+      <RefColNames>lecture_no</RefColNames>
+    </foreign-key>
+    <foreign-key id="573" parent="245" name="main_teaches_user_id_4f7c9ab4_fk_accounts_">
+      <ColNames>user_id</ColNames>
+      <RefTableName>accounts_instructor</RefTableName>
+      <RefColNames>student_ptr_id</RefColNames>
+    </foreign-key>
+    <column id="574" parent="246" name="topicname">
+      <Position>1</Position>
+      <DataType>varchar(100)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <key id="575" parent="246" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>topicname</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="576" parent="247" name="wishes_id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="577" parent="247" name="cno_id">
+      <Position>2</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="578" parent="247" name="user_id">
+      <Position>3</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="579" parent="247" name="main_wishes_cno_id_c77b09dd_fk_courses_course_cno">
+      <ColNames>cno_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <index id="580" parent="247" name="main_wishes_user_id_7c2f949d_fk_accounts_">
+      <ColNames>user_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="581" parent="247" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>wishes_id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="582" parent="247" name="main_wishes_cno_id_c77b09dd_fk_courses_course_cno">
+      <ColNames>cno_id</ColNames>
+      <RefTableName>courses_course</RefTableName>
+      <RefColNames>cno</RefColNames>
+    </foreign-key>
+    <foreign-key id="583" parent="247" name="main_wishes_user_id_7c2f949d_fk_accounts_">
       <ColNames>user_id</ColNames>
       <RefTableName>accounts_student</RefTableName>
       <RefColNames>defaultuser_ptr_id</RefColNames>

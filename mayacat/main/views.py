@@ -177,8 +177,6 @@ class MainView(View):
         # THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
         courses = Course.objects.raw('select * '
                                      'from courses_course;')
-        for course in courses:
-            print("---c---c--, ", course.course_img.url)
 
         topics = Topic.objects.raw('select * from main_topic order by topicname;')
 

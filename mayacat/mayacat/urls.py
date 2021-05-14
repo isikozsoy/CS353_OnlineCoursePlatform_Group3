@@ -21,7 +21,8 @@ from django.conf.urls.static import static
 
 from courses.views import LectureView
 
-from mayacat.trigger import create_trigger, create_discount_trigger, create_discount_trigger_deletion
+from mayacat.trigger import create_trigger, create_discount_trigger, create_discount_trigger_deletion\
+    , create_gift_trigger
 
 admin.site.site_header = "MayaCat Admin Panel"
 admin.site.site_title = "MayaCat Admin Portal"
