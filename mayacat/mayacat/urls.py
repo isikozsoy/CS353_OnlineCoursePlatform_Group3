@@ -41,3 +41,4 @@ urlpatterns += [
 create_trigger()
 create_discount_trigger()
 create_discount_trigger_deletion()
+create_gift_trigger()

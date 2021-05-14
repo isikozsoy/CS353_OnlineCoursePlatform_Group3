@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b3ec7be4-c8ca-44a3-9c3a-8f2322070260" name="Default Changelist" comment="Print stmts are deleted.">
+    <list default="true" id="b3ec7be4-c8ca-44a3-9c3a-8f2322070260" name="Default Changelist" comment="my courses = taught courses part was fixed.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/templates/main/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/templates/main/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/mayacat/trigger.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/mayacat/trigger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/mayacat/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/mayacat/urls.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +66,7 @@
       <workItem from="1620927455161" duration="224000" />
       <workItem from="1620928195473" duration="30000" />
       <workItem from="1620933426079" duration="2772000" />
-      <workItem from="1621004486256" duration="3008000" />
+      <workItem from="1621004486256" duration="5947000" />
     </task>
     <task id="LOCAL-00001" summary="workspace deleted.">
       <created>1620453995894</created>
@@ -137,7 +138,14 @@
       <option name="project" value="LOCAL" />
       <updated>1621005038624</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="my courses = taught courses part was fixed.">
+      <created>1621008820043</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1621008820043</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -179,6 +187,7 @@
     <MESSAGE value="Problem in course detail view is fixed." />
     <MESSAGE value="Problem in search is fixed (one import).&#10;In main page, the courses are demonstrated basing on the user's interests." />
     <MESSAGE value="Print stmts are deleted." />
-    <option name="LAST_COMMIT_MESSAGE" value="Print stmts are deleted." />
+    <MESSAGE value="my courses = taught courses part was fixed." />
+    <option name="LAST_COMMIT_MESSAGE" value="my courses = taught courses part was fixed." />
   </component>
 </project>
