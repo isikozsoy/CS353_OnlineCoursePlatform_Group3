@@ -18,7 +18,7 @@ class MyCoursesView(ListView):
             user_id = request.user.id
             cursor = connection.cursor()
 
-            cursor.execute('''SELECT cc.cname, cc.slug 
+            cursor.execute('''SELECT cc.cname, cc.slug, cc.cno 
                             FROM main_enroll as me, courses_course as cc 
                             WHERE me.user_id = %s and me.cno_id = cc.cno''', [user_id])
 
@@ -34,9 +34,42 @@ class MyCoursesView(ListView):
             if row:
                 user_type = row[0]
 
+            my_courses = ()
+
+            for course in my_courses_q:
+
+                cursor.execute('''SELECT MAX(MP.lecture_no_id) FROM main_progress as MP
+                                                WHERE MP.s_username_id = %s 
+                                                AND MP.lecture_no_id IN 
+                                                    ( SELECT lecture_no
+                                                        FROM courses_lecture 
+                                                        WHERE cno_id = %s );''' , [request.user.id, course[2]])
+                prog = cursor.fetchone()[0]
+
+                if(prog is None):
+                    prog = 0
+
+                cursor.execute('''SELECT MAX(lecture_no)
+                            FROM courses_lecture AS cl 
+                            WHERE cl.cno_id IN (SELECT me.cno_id
+                                                FROM main_enroll AS me 
+                                                WHERE me.user_id = %s );''', [request.user.id])
+
+                total = cursor.fetchone()[0]
+
+                if(total is None):
+                    total = 1
+                    prog = 1
+
+                percentage = int(100*prog/total)
+
+                course = course + (percentage,)
+                my_courses = my_courses + (course,)
+            print(my_courses)
+
             topic_list = Topic.objects.raw('select topicname from main_topic;')
             context = {
-                'my_courses_q': my_courses_q,
+                'my_courses_q': my_courses,
                 'user_type': user_type,
                 'topic_list': topic_list,
             }
