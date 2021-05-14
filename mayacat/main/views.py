@@ -389,7 +389,9 @@ class NotificationView(View):
                     notifications.append(notifications1[not1_i])
                     not1_i = not1_i + 1
 
-        context = {'user_type': user_type, 'notifications': notifications}
+        topic_list = Topic.objects.raw('select * from main_topic;')
+
+        context = {'user_type': user_type, 'notifications': notifications, "topic_list": topic_list}
         return render(request, 'main/notifications.html', context)
 
 
@@ -593,7 +595,9 @@ class AdOffersView(View):
                     'ad_username': advertiser_usernames[i]
                 }
 
-        context = {'items': items, 'user_type': user_type}
+        topic_list = Topic.objects.raw('select * from main_topic;')
+
+        context = {'items': items, 'user_type': user_type, "topic_list": topic_list}
         return render(request, 'main/ad_offers.html', context)
 
 
@@ -646,7 +650,10 @@ class TaughtCoursesView(View):
             ' (SELECT cno FROM courses_course WHERE owner_id = %s)', [request.user.id, request.user.id])
         taught_courses = cursor.fetchall()
 
-        context = {'user_type': user_type, 'owned_courses': owned_courses, 'taught_courses': taught_courses}
+        topic_list = Topic.objects.raw('select * from main_topic;')
+
+        context = {'user_type': user_type, 'owned_courses': owned_courses, 'taught_courses': taught_courses,
+                   "topic_list": topic_list}
         return render(request, 'main/taught_courses.html', context)
 
 

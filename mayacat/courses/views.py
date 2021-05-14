@@ -332,9 +332,13 @@ class AddAnswerView(View):
     def get(self, request, course_slug, lecture_slug, question_no, *args, **kwargs):
         answer = "to be completed"
         form = AnswerQuestion()
+
+        topic_list = Topic.objects.raw('select * from main_topic;')
+
         context = {
             'question_no': question_no,
-            'answer': answer
+            'answer': answer,
+            'topic_list': topic_list
         }
         return render(request, 'courses/add_answer.html', context)
 
@@ -624,13 +628,17 @@ class CourseFinishView(View):
         user_type = -1
         if row:
             user_type = row[0]
+
+        topic_list = Topic.objects.raw('select * from main_topic;')
+
         context = {
             'currate': currate,
             'curcomment': curcomment,
             'url': '/' + course_slug + '/finish',
             'curcourse': course,
             'user': curuser_id,
-            'user_type': user_type
+            'user_type': user_type,
+            'topic_list': topic_list
         }
         cursor.close()
         return render(request, 'courses/coursefinish.html', context)
