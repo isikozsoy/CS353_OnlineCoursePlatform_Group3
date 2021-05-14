@@ -20,12 +20,14 @@ class MyCoursesView(ListView):
     def get(self, request):
         if request.user.is_authenticated:
             user_id = request.user.id
-
-            my_courses_q = Enroll.objects.raw('''SELECT *
-                                                FROM main_enroll
-                                                WHERE user_id = %s''', [user_id])
-
             cursor = connection.cursor()
+
+            cursor.execute('''SELECT cc.cname, cc.slug 
+                            FROM main_enroll as me, courses_course as cc 
+                            WHERE me.user_id = %s and me.cno_id = cc.cno''', [user_id])
+
+            my_courses_q = cursor.fetchall()
+
             cursor.execute('select type '
                            'from auth_user '
                            'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '

@@ -398,7 +398,7 @@ class ShoppingCartView(View):
         total_price = cursor.fetchone()[0]
 
         cursor.execute(
-            'SELECT inside_cart_id, cname, price, slug, course_img, receiver_username_id '
+            'SELECT inside_cart_id, cname, price, slug, course_img, receiver_username_id, inside_cart_id '
             'FROM courses_course AS cc, main_inside_cart AS mic '
             'WHERE cc.cno = mic.cno_id AND mic.username_id = %s;', [request.user.id])
         items_on_cart = cursor.fetchall()
@@ -418,6 +418,7 @@ class ShoppingCartView(View):
                     'slug': items_on_cart[i][3],
                     'course_img': items_on_cart[i][4],
                     'isGift': items_on_cart[i][5],
+                    'inside_cart_id': items_on_cart[i][6],
                     'receiver_username': receivers[i]
                 }
         else:
@@ -668,7 +669,7 @@ def add_to_my_courses(request, item):
 
 class TrashView(View):
 
-    def post(self, request, course_slug, inside_cart_id):
+    def post(self, request, inside_cart_id):
         cursor = connection.cursor()
 
         course = Inside_Cart.objects.raw(
