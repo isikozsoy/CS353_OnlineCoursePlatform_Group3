@@ -77,7 +77,7 @@ class MyCoursesView(ListView):
 
             topic_list = Topic.objects.raw('select topicname from main_topic;')
             context = {
-                'my_courses_q': my_courses_q,
+                'my_courses_q': my_courses,
                 'user_type': user_type,
                 'topic_list': topic_list,
             }
@@ -271,7 +271,6 @@ class CourseDetailView(View):
             'rating': rating,
             'advertisement': advertisement,
             'comments': comments,
-            'discounted_price' : discounted_price,
             'is_gift': is_only_gift,
             'is_owner': is_owner,
             'is_enrolled': is_enrolled,
