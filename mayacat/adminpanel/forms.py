@@ -3,8 +3,8 @@ from django.db import connection
 
 from accounts.models import Instructor
 from main.models import Topic
-
 from courses.models import Lecture
+from .models import Offered_Discount
 
 
 class SiteAdminSaveForm(forms.Form):
@@ -44,7 +44,7 @@ class CourseCreate(forms.Form):
         cursor.execute('select topicname from main_topic')
         topic = forms.ModelMultipleChoiceField(Topic.objects.filter(topicname__in=(x[0] for x in cursor)),
                                                label='Topic',
-                                               widget=forms.CheckboxSelectMultiple(attrs={'class': "form-control"}))
+                                               widget=forms.CheckboxSelectMultiple(attrs={'class': "select"}))
     finally:
         cursor.close()
 
@@ -74,3 +74,17 @@ class LectureCreate(forms.Form):
                                        attrs={'class': 'form-control', 'placeholder': 'A Course Name'}))
     video_url = forms.CharField(label='Video URL', max_length=200, widget=forms.TextInput(attrs={
         'class': 'form-control', 'placeholder': 'yt.be/embed/some_embedded_code'}))
+
+
+class DiscountForm(forms.Form):
+    percentage = forms.IntegerField(label='Percentage', widget=forms.NumberInput(attrs={'class': 'form-control', }))
+    start_date = forms.DateField(label='Start Date',
+                                 input_formats=['%Y-%m-%d'],
+                                 widget=forms.DateInput(attrs={'class': 'datepicker-input',
+                                                               'data-target': '#datepicker_start'
+                                                               }))
+    end_date = forms.DateField(label='End Date',
+                               input_formats=['%Y-%m-%d'],
+                               widget=forms.DateInput(attrs={'class': 'form-control datepicker-input',
+                                                             'data-target': '#datepicker_end'
+                                                             }))

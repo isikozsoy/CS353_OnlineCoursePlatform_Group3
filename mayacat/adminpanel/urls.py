@@ -12,4 +12,5 @@ urlpatterns = [
     path('admin/save_course', save_courses, name='admin_save_course'),
     path('admin/create_lecture', save_courses, name='admin_create_lecture'),
     path('admin/list', AdminRefundView.as_view(), name='admin_list'),
+    path('admin/discount', create_discount, name='admin_discount'),
 ]

@@ -5,6 +5,8 @@ import datetime
 from courses.models import *
 from accounts.models import *
 
+from adminpanel.models import Offered_Discount
+
 
 class Gift(models.Model):
     # added a gift-id because Django does not support composite primary keys with 2+ columns
@@ -125,15 +127,9 @@ class Interested_in(models.Model):
 
 class Discount(models.Model):
     discountno = models.AutoField(primary_key=True)
+    offerno = models.ForeignKey(Offered_Discount, on_delete=models.CASCADE)
 
     cno = models.ForeignKey(Course, on_delete=models.CASCADE)
-    admin_username = models.ForeignKey(SiteAdmin, on_delete=models.CASCADE)
-
-    newprice = models.DecimalField(max_digits=6, decimal_places=2)
-    startdate = models.DateTimeField(auto_created=True)
-    finishdate = models.DateTimeField()
-
-    situation = models.SmallIntegerField()
 
 
 class Post(models.Model):
