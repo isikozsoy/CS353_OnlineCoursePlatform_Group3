@@ -1,3 +1,5 @@
+import sys
+
 from django.shortcuts import render, redirect
 from django.db import connection, DatabaseError, Error
 from django.http import HttpResponse, HttpResponseRedirect
@@ -33,7 +35,7 @@ def topic_course_listing_page(request, topicname):
                 if type_row:
                     user_type = type_row[0]
             except DatabaseError:
-                return HttpResponse('There was an error.')
+                return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
             finally:
                 cursor_.close()
 
@@ -147,7 +149,7 @@ class MainView(View):
                            'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
                            'where id = %s;', [request.user.id])
         except DatabaseError:
-            return HttpResponse('An error occurred. <a href="/">Return to the main page...</a>')
+            return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
         finally:
             cursor.close()
 
@@ -682,3 +684,85 @@ class TrashView(View):
         cursor.close()
 
         return HttpResponseRedirect('/cart')
+
+
+class DiscountsView(View):
+    template_name = "main/discounts.html"
+
+    def get(self, request):
+        try:
+            current_discounts = Offered_Discount.objects.raw('select * '
+                                                             'from adminpanel_offered_discount '
+                                                             'where curdate() between start_date and end_date;')
+        except Error:
+            return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
+
+        user_type = get_user_type(request)
+
+        topic_list = Topic.objects.raw('select * from main_topic;')
+        return render(request, self.template_name, {'topic_list': topic_list,
+                                                    'current_discounts': current_discounts,
+                                                    'user_type': user_type, })
+
+
+class JoinCoursesView(View):
+    template_name = "main/discount_course.html"
+
+    def get(self, request, offer_no):
+        if request.user.is_authenticated:
+            # check if the user is an instructor, list the instructor's courses, and create multiple selection boxes
+            cursor = connection.cursor()
+            try:
+                cursor.execute('select type from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
+                user_type = cursor.fetchone()
+                if user_type:  # the user ought to be recorded inside defaultuser as well, but just in case
+                    user_type = user_type[0]
+            except Error:
+                return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
+            finally:
+                cursor.close()
+
+            if user_type != 1:  # not an instructor
+                return HttpResponseRedirect('/')  # return to main page
+
+            topic_list = Topic.objects.raw('select * from main_topic;')
+
+            courses_from_instructor = CoursesDiscount(instructor_id=request.user.id)
+            return render(request, self.template_name, {'user_type': user_type, 'topic_list': topic_list,
+                                                        'courses_from_instructor': courses_from_instructor, })
+
+    def post(self, request, offer_no):
+        # add offer to the new discount table
+        if request.user.is_authenticated:
+            courses_from_instructor = CoursesDiscount(request.POST, instructor_id=request.user.id)
+
+            if courses_from_instructor.is_valid():
+                courses = courses_from_instructor.cleaned_data.get('courses')
+
+                for course in courses:
+                    cursor = connection.cursor()
+                    try:
+                        cursor.execute('insert into main_discount (cno_id, offerno_id) values (%s, %s);',
+                                       [course.cno, offer_no])
+                    except Error:
+                        return HttpResponse('Error.')
+                    finally:
+                        cursor.close()
+        return redirect('main:discounts')
+
+
+def get_user_type(request):
+    if request.user.is_authenticated:
+        cursor = connection.cursor()
+        try:
+            cursor.execute('select type from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
+            user_type = cursor.fetchone()
+            if user_type:
+                user_type = user_type[0]
+        except Error:
+            HttpResponse("There was an error.<p> " + str(sys.exc_info()))
+        finally:
+            cursor.close()
+
+        return user_type
+    return -1

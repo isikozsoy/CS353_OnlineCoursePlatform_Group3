@@ -1,3 +1,5 @@
+import sys
+
 from django.contrib.auth.models import User
 from django.db import Error, DatabaseError
 from django.http import HttpResponseRedirect, HttpResponse
@@ -16,10 +18,35 @@ class AdminMainView(View):
 
     def get(self, request):
         if request.method == 'GET' and request.user.is_authenticated and request.user.is_superuser:
-            cursor = connection.cursor()
-            cursor.execute()
-            return render(request, self.template_name)
+            discount_form = DiscountForm()
+
+            return render(request, self.template_name, {'discount_form': discount_form})
         return HttpResponseRedirect('/')
+
+
+def create_discount(request):
+    if request.method == 'POST' and request.user.is_authenticated and request.user.is_superuser:
+        discount_form = DiscountForm(request.POST)
+
+        if discount_form.is_valid():
+            start_date = discount_form.cleaned_data['start_date']
+            end_date = discount_form.cleaned_data['end_date']
+            percentage = discount_form.cleaned_data['percentage']
+
+            cursor = connection.cursor()
+            try:
+                cursor.execute('insert into adminpanel_offered_discount '
+                               '(creation_date, percentage, start_date, end_date, admin_username_id) '
+                               'values (curdate(), %s, %s, %s, %s);',
+                               [percentage, start_date, end_date, request.user.id])
+            except Error:
+                return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
+            finally:
+                cursor.close()
+        else:
+            print(discount_form.errors)
+        return redirect('adminpanel:admin_main')
+    return HttpResponseRedirect('/login')
 
 
 class AdminRefundView(View):
@@ -34,18 +61,15 @@ class AdminRefundView(View):
             try:  # status = 0 are refunds that are pending for a decision
                 cursor.execute('select refund_id, reason, status, cno_id, s_username_id, date '
                                'from main_refundrequest '
-                               'where status = 0;')
+                               'where status = 0 order by date;')
                 refund_set = cursor.fetchall()
-
-                if refund_set:
-                    refund_set = [refund + (dateDiff(refund[5]),) for refund in refund_set]
 
                 cursor = connection.cursor()
                 try:
                     cursor.execute('select topicname from main_topic;')
                     topic_list = cursor.fetchall()
                 except DatabaseError:
-                    return HttpResponse('There was an error.')
+                    return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
                 finally:
                     cursor.close()
 
@@ -53,7 +77,7 @@ class AdminRefundView(View):
                                                             'user_type': 3,
                                                             'topic_list': topic_list}, )
             except Error:
-                return HttpResponse('There was an error. <a href="/">Return to main page...</a>')
+                return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
             finally:
                 cursor.close()
         return HttpResponseRedirect('/logout')
@@ -71,7 +95,7 @@ def accept_refund(request, refund_id, accepted):
             cursor.execute('insert into main_evaluates (refund_id_id, reply_date, admin_username_id) '
                            'values (%s, %s, %s);', [refund_id, date.today(), request.user.id])
         except Error:
-            return HttpResponse('There was an error. <a href="/">Return to main page...</a>')
+            return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
         finally:
             cursor.close()
         return redirect('adminpanel:admin_main')
@@ -296,7 +320,7 @@ def save_courses(request):
                     cursor.execute('insert into main_course_topic (cno_id, topicname_id) VALUES (%s, %s);',
                                     [cno, topic])
             except Error:
-                return HttpResponse('There was an error.')
+                return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
             finally:
                 cursor.close()
         print(form_course.errors)

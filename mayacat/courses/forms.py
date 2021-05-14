@@ -50,7 +50,7 @@ class CreateCourseForm(forms.Form):
     price = forms.DecimalField(label='Price (up to $9999.99)', max_digits=6, decimal_places=2,
                                widget=forms.NumberInput(attrs={'class': 'form-control'}))
     topic = forms.MultipleChoiceField(label='Topic', choices=TOPIC_CHOICES, widget=forms.CheckboxSelectMultiple(
-        attrs={'class': "form-control"}))
+        attrs={'class': 'select'}))
 
     description = forms.CharField(label='Description', max_length=4000,
                                   widget=forms.Textarea(attrs={'class': 'form-control'}))
@@ -77,7 +77,7 @@ class EditCourseForm(forms.ModelForm):
 
 class EditTopicForm(forms.ModelForm):
     topic = forms.MultipleChoiceField(label='Topic', choices=TOPIC_CHOICES, widget=forms.CheckboxSelectMultiple(
-        attrs={'class': "form-control"}))
+        attrs={'class': "select"}))
 
     class Meta:
         model = Course_Topic

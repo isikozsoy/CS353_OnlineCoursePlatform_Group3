@@ -23,4 +23,7 @@ urlpatterns = [
     path('ad_offers/refuse_ad/<ad_no>', refuse_ad, name='refuse_ad'),
     path('taught_courses', TaughtCoursesView.as_view(), name='taught_courses'),
     path('cart/gift/<course_slug>', AddAsGift.as_view(), name='cart_gift'),
+    path('discounts', DiscountsView.as_view(), name='discounts'),
+    path('discounts/<offer_no>', JoinCoursesView.as_view(), name='discount_courses'),
+
 ]
