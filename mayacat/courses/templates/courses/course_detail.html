@@ -11,6 +11,16 @@
 
     <h2>Rating: {{rating}}</h2>
 
+    {% if lecture_list != 0 and lecture_slug != None %}
+        {% if finished  %}
+            <br><a href="/{{course.slug}}/{{ lecture_slug }}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">RESTART</a>
+        {% elif prog is None %}
+            <br><a href="/{{course.slug}}/{{ lecture_slug }}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">START</a>
+        {% else %}
+            <br><a href="/{{course.slug}}/{{ lecture_slug }}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">CONTINUE</a>
+        {% endif %}
+    {% endif %}
+
     <h3>Description</h3>
     <a>{{ course.description }}</a>
 

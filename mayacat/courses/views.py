@@ -38,30 +38,34 @@ class MyCoursesView(ListView):
 
             for course in my_courses_q:
 
-                cursor.execute('''SELECT MAX(MP.lecture_no_id) FROM main_progress as MP
-                                                WHERE MP.s_username_id = %s 
-                                                AND MP.lecture_no_id IN 
-                                                    ( SELECT lecture_no
-                                                        FROM courses_lecture 
-                                                        WHERE cno_id = %s );''' , [request.user.id, course[2]])
-                prog = cursor.fetchone()[0]
-
-                if(prog is None):
-                    prog = 0
-
-                cursor.execute('''SELECT MAX(lecture_no)
-                            FROM courses_lecture AS cl 
-                            WHERE cl.cno_id IN (SELECT me.cno_id
-                                                FROM main_enroll AS me 
-                                                WHERE me.user_id = %s );''', [request.user.id])
+                cursor.execute('''SELECT COUNT(lecture_no)
+                                            FROM courses_lecture AS cl 
+                                            WHERE cl.cno_id = %s AND 
+                                            cl.cno_id IN (SELECT me.cno_id
+                                                                FROM main_enroll AS me 
+                                                                WHERE me.user_id = %s );''',
+                               [course[2], request.user.id])
 
                 total = cursor.fetchone()[0]
 
-                if(total is None):
-                    total = 1
-                    prog = 1
+                if (total is None or total == 0):
+                    percentage = 100
 
-                percentage = int(100*prog/total)
+                else:
+
+                    cursor.execute('''SELECT COUNT(MP.lecture_no_id) FROM main_progress as MP
+                                        WHERE MP.s_username_id = %s 
+                                        AND MP.lecture_no_id IN 
+                                            ( SELECT lecture_no
+                                                FROM courses_lecture 
+                                                WHERE cno_id = %s );''' , [request.user.id, course[2]])
+                    prog = cursor.fetchone()[0]
+
+                    if(prog is None):
+                        prog = 0
+
+                    percentage = int(100*prog/total)
+
 
                 course = course + (percentage,)
                 my_courses = my_courses + (course,)
@@ -216,9 +220,6 @@ class CourseDetailView(View):
         today = date.today()
         print("Today:",today)
 
-
-
-
         #cursor.execute('''SELECT * FROM main_discount AS MD
          #                   WHERE MD.cno_id = %s AND (CURRENT_TIMESTAMP BETWEEN MD.startdate AND MD.finishdate)
           #                      AND MD.situation = 1 ;''',
@@ -251,6 +252,43 @@ class CourseDetailView(View):
             discounted_price = discounts[0][2]
         '''
 
+        cursor.execute('''SELECT MAX(MP.lecture_no_id) 
+                            FROM main_progress as MP
+                            WHERE MP.s_username_id = %s 
+                            AND MP.lecture_no_id IN 
+                                ( SELECT lecture_no
+                                FROM courses_lecture 
+                                WHERE cno_id = %s );''', [request.user.id, cno])
+        prog = cursor.fetchone()[0]
+
+        cursor.execute('''SELECT COUNT(MP.lecture_no_id)
+                                    FROM main_progress as MP
+                                    WHERE MP.s_username_id = %s 
+                                    AND MP.lecture_no_id IN 
+                                        ( SELECT lecture_no
+                                        FROM courses_lecture 
+                                        WHERE cno_id = %s );''', [request.user.id, cno])
+        completed_lec_count = cursor.fetchone()[0]
+
+        finished = False
+        if completed_lec_count == len(lectures):
+            finished = True
+
+        lecture_slug = None
+
+        if lecture_count != 0 and is_enrolled:
+            if (prog is None or finished):
+                cursor.execute('''SELECT MIN(lecture_no) FROM courses_lecture WHERE cno_id = %s''', [cno])
+                min_lecture_no = cursor.fetchone()[0]
+
+                cursor.execute('''SELECT lecture_slug FROM courses_lecture 
+                                    WHERE cno_id = %s AND lecture_no = %s ''', [cno, min_lecture_no])
+                lecture_slug = cursor.fetchone()[0]
+
+            else:
+                cursor.execute('''SELECT lecture_slug FROM courses_lecture WHERE lecture_no > %s''', [prog])
+                lecture_slug = cursor.fetchone()[0]
+
         context = {
             'lecture_list': lectures,
             'form': form,
@@ -268,7 +306,10 @@ class CourseDetailView(View):
             'discounted_price' : discounted_price,
             'is_gift': is_only_gift,
             'is_owner': is_owner,
-            'is_enrolled': is_enrolled
+            'is_enrolled': is_enrolled,
+            'prog': prog,
+            'lecture_slug': lecture_slug,
+            'finished': finished
         }
 
         cursor.close()
