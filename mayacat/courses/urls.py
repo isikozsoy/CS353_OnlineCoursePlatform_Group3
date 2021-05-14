@@ -16,6 +16,7 @@ urlpatterns = [
     path('<course_slug>/deletecontributor/<c_username>', DeleteContributerView.as_view(),name = 'delete_contributor'),
     path('<course_slug>/complain', AddComplainView.as_view(), name='complaint'),
     path('<course_slug>/refund', RefundRequestView.as_view(), name='refund'),
+    path('<course_slug>/mark_as_complete', mark_as_complete, name='mark_as_complete'),
     path('<course_slug>/', CourseDetailView.as_view(), name='desc'),
     path('<course_slug>', CourseDetailView.as_view(), name='desc'),
     path('add_gift_to_cart/<course_slug>', add_gift_to_cart, name='add_gift_to_cart'),

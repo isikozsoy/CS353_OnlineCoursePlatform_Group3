@@ -1,0 +1,12 @@
+{% extends "main/base.html" %}
+{% block main_content %}
+    <ol>
+    {% for discount in current_discounts %}
+        <li>{{ discount.percentage }}% Discount<br>
+            Start date: {{ discount.start_date }}<br>
+            End date: {{ discount.end_date }}<br>
+        <a type="button" class="btn btn-primary" href="{% url 'main:discount_courses' discount.discount_id %}">Join</a>
+        </li>
+    {% endfor %}
+    </ol>
+{% endblock %}

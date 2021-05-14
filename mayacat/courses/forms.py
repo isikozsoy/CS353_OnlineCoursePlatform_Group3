@@ -36,7 +36,10 @@ class ComplainForm(forms.Form):
     description = forms.CharField(label='Description', max_length=1000)
 
 class GiftInfo(forms.Form):
-    is_gift = forms.BooleanField(label='Add to cart as a gift.', required=False)
+    is_gift = forms.BooleanField(label='Add to cart as a gift: ', required=False)
+
+class AddAsGift(forms.Form):
+    course_slug = forms.CharField(label='Course Slug', max_length = 50)
 
 
 TOPIC_CHOICES = (
@@ -52,14 +55,14 @@ TOPIC_CHOICES = (
 
 
 class CreateCourseForm(forms.Form):
-    course_img = forms.ImageField(label='Thumbnail', widget=forms.FileInput(attrs={'class': 'form-control-file',
-                                                                                   'enctype': 'multipart/form-data'}))
+    course_img = forms.CharField(label='Embedded URL for Course', max_length=100,
+                                  widget=forms.TextInput(attrs={'class': 'form-control'}))
     cname = forms.CharField(label='Course name:', max_length=50,
                             widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A Course Name'}))
     price = forms.DecimalField(label='Price (up to $9999.99)', max_digits=6, decimal_places=2,
                                widget=forms.NumberInput(attrs={'class': 'form-control'}))
     topic = forms.MultipleChoiceField(label='Topic', choices=TOPIC_CHOICES, widget=forms.CheckboxSelectMultiple(
-        attrs={'class': "form-control"}))
+        attrs={'class': 'select'}))
 
     description = forms.CharField(label='Description', max_length=4000,
                                   widget=forms.Textarea(attrs={'class': 'form-control'}))
@@ -67,10 +70,9 @@ class CreateCourseForm(forms.Form):
 
 
 class EditCourseForm(forms.ModelForm):
-    course_img = forms.ImageField(label='Thumbnail', widget=forms.FileInput(attrs={'class': 'form-control-file',
-                                                                                   'enctype': 'multipart/form-data',
-                                                                                   'onchange': 'showPreview(event)',
-                                                                                   'id':'img-add'}))
+    course_img = forms.CharField(label='Embedded URL for Course', max_length=100,
+                                  widget=forms.TextInput(attrs={'class': 'form-control'}))
+
     cname = forms.CharField(label='Course name:', max_length=50,
                             widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A Course Name'}))
     price = forms.DecimalField(label='Price (up to $9999.99)', max_digits=6, decimal_places=2,
@@ -86,7 +88,7 @@ class EditCourseForm(forms.ModelForm):
 
 class EditTopicForm(forms.ModelForm):
     topic = forms.MultipleChoiceField(label='Topic', choices=TOPIC_CHOICES, widget=forms.CheckboxSelectMultiple(
-        attrs={'class': "form-control"}))
+        attrs={'class': "select"}))
 
     class Meta:
         model = Course_Topic

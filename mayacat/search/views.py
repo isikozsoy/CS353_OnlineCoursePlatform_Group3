@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.views.generic import View, ListView
 
 from courses.models import Course
+from main.models import Topic
 
 
 class SearchView(View):
