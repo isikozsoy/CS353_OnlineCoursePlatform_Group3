@@ -148,13 +148,10 @@ class MainView(View):
             cursor.execute('SELECT count(*) FROM main_course_topic CT, courses_course C '
                            'WHERE CT.topicname_id = %s AND C.cno = CT.cno_id LIMIT 5', [topic[0]])
             cnt = cursor.fetchone()[0]
-            print("-----cnt: ", cnt)
-            print("-----------topic: ", topic[0])
 
             cursor.execute('SELECT slug, course_img, cname FROM main_course_topic CT, courses_course C '
                            'WHERE CT.topicname_id = %s AND C.cno = CT.cno_id LIMIT 5', [topic[0]])
             interested_courses = cursor.fetchall()
-            print("------in c: ", interested_courses)
 
             topic_based_courses[i] = [None] * (cnt+1)
 
@@ -170,7 +167,7 @@ class MainView(View):
                     "course_img": interested_courses[k-1][1],
                     "cname": interested_courses[k-1][2]
                 }
-        print("---------", topic_based_courses)
+
         # TODO: THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
         #  also the courses that are not private will be listed here
         cursor = connection.cursor()
