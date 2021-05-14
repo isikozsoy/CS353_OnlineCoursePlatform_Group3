@@ -4,6 +4,18 @@ from main.models import Course_Topic
 from datetime import datetime, date, timedelta
 from main.models import Post
 
+class AddTeacherForm(forms.Form):
+    addteacher = forms.CharField(label='addteacher', max_length=500)
+
+class AddContributorForm(forms.Form):
+    addcontributor = forms.CharField(label='addcontributor', max_length=500)
+
+class AddAnnouncementForm(forms.Form):
+    addannouncement = forms.CharField(label='addannouncement', max_length=500)
+
+class TeacherDelete(forms.Form):
+    addteacher = forms.CharField(label='addteacher', max_length=500)
+
 class NewNoteForm(forms.Form):
     note = forms.CharField(label='note', max_length=500)
 class AskQuestion(forms.Form):

@@ -30,3 +30,23 @@
     </div>
   </div>
 </div>
+
+<br>
+     <form action="{{url}}" method="post">
+       {% csrf_token %}
+        <label for="addteacher">New Teacher for the lecture: </label>
+        <input id="addteacher" type="text" name="addteacher" value="{{ addteacher }}">
+        <input type="submit" value="OK">
+      </form>
+    <h2>Teacher List</h2>
+    {% for t in teaches %}
+
+        <!--<button name="teacherdelete" id = "teacherdelete" onclick="location.href= '/delete'" > Delete the Teacher </button>-->
+        <form action="{{url}}/deleteteacher/{{t}}" method="post">
+           {% csrf_token %}
+            <a href="account/{{t}}">{{t}}</a>
+            <input type="submit" value="delete_teacher">
+        </form>
+
+        <br>
+    {% endfor %}

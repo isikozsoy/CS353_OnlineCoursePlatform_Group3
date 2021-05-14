@@ -9,4 +9,24 @@
     <button type="submit" formmethod="post" class="btn btn-primary">Save</button><br>
 </form>
 
+
+<br>
+     <form action="/{{course_slug}}/edit" method="post">
+       {% csrf_token %}
+        <label for="addcontributor">New Teacher for the lecture: </label>
+        <input id="addcontributor" type="text" name="addcontributor" value="{{ addcontributor }}">
+        <input type="submit" value="OK">
+      </form>
+    <h2>Contributor List</h2>
+    {% for c_username in contributors %}
+
+        <form action="/{{course_slug}}/deletecontributor/{{c_username}}" method="post">
+           {% csrf_token %}
+            <a href="account/{{c_username}}">{{c_username}}</a>
+            <input type="submit" value="delete_contributor">
+        </form>
+
+        <br>
+    {% endfor %}
+
 {% endblock %}
