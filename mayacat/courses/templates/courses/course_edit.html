@@ -13,7 +13,7 @@
 <br>
      <form action="/{{course_slug}}/edit" method="post">
        {% csrf_token %}
-        <label for="addcontributor">New Teacher for the lecture: </label>
+        <label for="addcontributor">New Contributor for the lecture: </label>
         <input id="addcontributor" type="text" name="addcontributor" value="{{ addcontributor }}">
         <input type="submit" value="OK">
       </form>
