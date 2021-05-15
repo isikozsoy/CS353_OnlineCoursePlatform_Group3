@@ -187,7 +187,10 @@ class CourseDetailView(View):
         cursor.execute('SELECT AVG(score) FROM main_finishes WHERE cno_id = %s AND score !=0', [cno])
         rating = cursor.fetchone()
         if rating:
-            rating = int(rating[0])
+            if rating[0]:
+                rating = rating[0]
+            else:
+                rating = 0
 
         print("Rating:", rating)
 
@@ -382,7 +385,7 @@ class AddAnswerView(View):
         lecture_no_row = cursor.fetchone()
         cursor.close()
         if not lecture_no_row:
-            return HttpResponseRedirect('/')
+            return HttpResponse('There is no lecture with this name. <a href="/">Return to main page...</a>')
         cursor = connection.cursor()
 
         lecture_no = lecture_no_row[0]
@@ -589,7 +592,7 @@ class LectureView(View):
         lecture_no_row = cursor.fetchone()
         cursor.close()
         if not lecture_no_row:
-            return HttpResponseRedirect('/')
+            return HttpResponse('There is no lecture with this name. <a href="/">Return to main page...</a>')
 
         lecture_no = lecture_no_row[0]
         cursor = connection.cursor()
@@ -730,7 +733,7 @@ class AddComplainView(View):
             return render(request, self.template_name, {'form': form,
                                                         'user_type': user_type,
                                                         'topic_list': topic_list, })
-        return HttpResponseRedirect('/')
+        return HttpResponse('You need to log in. <a href="/login">Return to login page</a>')
 
     def post(self, request, course_slug):
         cursor = connection.cursor()
