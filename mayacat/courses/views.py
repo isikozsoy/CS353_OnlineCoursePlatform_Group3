@@ -22,7 +22,7 @@ class MyCoursesView(ListView):
             user_id = request.user.id
             cursor = connection.cursor()
 
-            cursor.execute('''SELECT cc.cname, cc.slug, cc.cno 
+            cursor.execute('''SELECT cc.cname, cc.slug, cc.cno, cc.course_img 
                             FROM main_enroll as me, courses_course as cc 
                             WHERE me.user_id = %s and me.cno_id = cc.cno''', [user_id])
 
