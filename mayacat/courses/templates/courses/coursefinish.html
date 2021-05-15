@@ -1,8 +1,7 @@
 {% extends "main/base.html" %}
 
-
 {% block main_content %}
-    <h1>{{curcourse.cname}} is finished by {{user}}</h1>
+    <h1>{{curcourse.cname}} is finished by {{username}}</h1>
 
     {% if curcomment == "" %}
     <form action="{{url}}" method="post">
@@ -12,20 +11,30 @@
         <input type="submit" value="OK">
     </form>
     {%else%}
-    <a>{{curcomment}}</a>
+    <a>Your Comment : {{curcomment}}</a>
     <br>
     {% endif %}
     {% if currate == 0 %}
     <form action="{{url}}" method="post">
    {% csrf_token %}
-    <label for="rate">Your Rate: </label>
-    <input id="rate" type="text" name="rate" value="{{ rate }}">
-    <input type="submit" value="OK">
+    <a>Your Rate: </a>
+    <input type="radio" id="one" name="rate" value="one">
+    <label for="one">1</label>
+    <input type="radio" id="two" name="rate" value="two">
+    <label for="two">2</label>
+    <input type="radio" id="three" name="rate" value="three">
+    <label for="three">3</label>
+    <input type="radio" id="four" name="rate" value="four">
+    <label for="four">4</label>
+    <input type="radio" id="five" name="rate" value="five">
+    <label for="five">5</label>
+    <input type="submit" value="Submit">
   </form>
     {%else%}
-    <a>{{currate}}</a>
+    <a>Your Rate : {{currate}}</a>
     <br>
     {% endif %}
-
-
+<br>
+<a href = "/{{course_slug}}"> Continue to the course page</a>
+<br>
 {% endblock %}

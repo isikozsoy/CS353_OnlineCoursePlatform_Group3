@@ -22,15 +22,14 @@ class MyCoursesView(ListView):
             user_id = request.user.id
             cursor = connection.cursor()
 
-            cursor.execute('''SELECT cc.cname, cc.slug, cc.cno 
+            cursor.execute('''SELECT cc.cname, cc.slug, cc.cno, cc.course_img 
                             FROM main_enroll as me, courses_course as cc 
                             WHERE me.user_id = %s and me.cno_id = cc.cno''', [user_id])
 
             my_courses_q = cursor.fetchall()
 
             cursor.execute('select type '
-                           'from auth_user '
-                           'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                           'from user_types '
                            'where id = %s;', [user_id])
 
             row = cursor.fetchone()
@@ -181,6 +180,16 @@ class CourseDetailView(View):
         registered = len(list(Enroll.objects.raw('SELECT * FROM main_enroll WHERE cno_id = %s AND user_id = %s;',
                                                  [cno, request.user.id])))
 
+        cursor.execute('''SELECT U.username 
+                                FROM main_contributor AS MC,auth_user AS U
+                                WHERE MC.cno_id = %s AND MC.user_id = U.id;''', [course.cno])
+
+        contributor_list = cursor.fetchall()
+        contributors = [None] * len(contributor_list)
+        for i in range(0, len(contributors)):
+            contributors[i] = contributor_list[i][0]
+            print(contributor_list[i][0])
+
         lectures = Lecture.objects.raw('''SELECT * FROM courses_lecture as CL WHERE CL.cno_id = %s;''', [cno])
         lecture_count = len(lectures)
 
@@ -193,7 +202,6 @@ class CourseDetailView(View):
             else:
                 rating = 0
 
-        rating = int(rating)
 
         print("Rating:", rating)
 
@@ -223,8 +231,7 @@ class CourseDetailView(View):
             comments[i] = comment_list[i][0]
 
         cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'from user_types '
                        'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
@@ -312,7 +319,8 @@ class CourseDetailView(View):
             'is_enrolled': is_enrolled,
             'prog': prog,
             'lecture_slug': lecture_slug,
-            'finished': finished
+            'finished': finished,
+            'contributors' : contributors
         }
 
         cursor.close()
@@ -388,7 +396,7 @@ class AddAnswerView(View):
         lecture_no_row = cursor.fetchone()
         cursor.close()
         if not lecture_no_row:
-            return HttpResponseRedirect('/')
+            return HttpResponse('There is no lecture with this name. <a href="/">Return to main page...</a>')
         cursor = connection.cursor()
 
         lecture_no = lecture_no_row[0]
@@ -410,24 +418,37 @@ class LectureView(View):
     # model = Lecture
 
     def get(self, request, course_slug, lecture_slug, *args, **kwargs):
+        cursor = connection.cursor()
+        if not request.user.id:
+            return HttpResponseRedirect("/login")
 
-        cursor = connections['default'].cursor()
-
-        course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
-
-        # check whether the student is enrolled into this course
-        # is course slug primary key
-
-        curuser_id = request.user.id
-        print(curuser_id)
+        course_queue = Course.objects.raw( '''SELECT * FROM courses_course WHERE slug = %s;''',[course_slug])
+        print(request.user.id)
 
         print("=1", course_queue)
         if len(course_queue) > 0:
             course = course_queue[0]
             print("=2", course, course.cno)
         else:
-            # 404 error
-            print("error no course as the stated");
+            return HttpResponseRedirect("/")
+
+        cursor.execute('''SELECT U.username 
+                                    FROM main_contributor AS MC,auth_user AS U
+                                    WHERE MC.cno_id = %s AND MC.user_id = U.id AND U.id = %s;''',
+                       [course.cno, request.user.id])
+        isContributor = (course.owner_id == request.user.id) and (course.is_complete == 0)
+        if cursor.fetchone():
+            isContributor = True and (course.is_complete == 0)
+
+        cursor.execute( '''SELECT enroll_id FROM main_enroll WHERE cno_id = %s AND user_id = %s''',
+                                [course.cno, request.user.id])
+        tmp = cursor.fetchone()
+        print(tmp, not isContributor and not tmp)
+        if not isContributor and not tmp:
+            return HttpResponseRedirect("/"+course_slug)
+
+        cursor.execute('''SELECT username FROM auth_user WHERE id = %s;''',[course.owner_id])
+        owner_username = cursor.fetchone()[0]
 
         lecture_q = Lecture.objects.raw('''SELECT * FROM courses_lecture as CL WHERE CL.lecture_slug = %s;''',
                                         [lecture_slug])
@@ -438,6 +459,7 @@ class LectureView(View):
             # error no such lecture
             print("error no lecture as the stated");
 
+        curuser_id = request.user.id
         print("=4", lecture_q)
         print("=5", lecture)
         isWatched = Progress.objects.raw('''SELECT * FROM main_progress as MP 
@@ -458,17 +480,19 @@ class LectureView(View):
                                                                         WHERE cno_id = %s );'''
                                         , [curuser_id, cno])
             print("prog : ", len(prog))  # raw must include primary key - cursor
-            if (len(prog) == len(lectures)):
-                print("course finished")
-                cursor.execute('''INSERT INTO main_finishes(comment,cno_id,user_id,score) VALUES (%s,%s, %s,%s);''',
-                               ["", cno, curuser_id, 0])
+
         prog = Progress.objects.raw('''SELECT MP.prog_id FROM main_progress as MP
                                                     WHERE MP.s_username_id = %s AND 
                                                           MP.lecture_no_id IN ( SELECT lecture_no
                                                                                 FROM courses_lecture 
                                                                                 WHERE cno_id = %s );'''
                                     , [curuser_id, cno])
-        if (len(prog) == len(lectures)):
+        if (len(prog) == len(lectures) and not isContributor and course.is_complete == 1):
+            cursor.execute( '''SELECT user_id FROM main_finishes WHERE cno_id = %s and user_id = %s;''',
+                                [cno, curuser_id])
+            if not cursor.fetchone():
+                cursor.execute('''INSERT INTO main_finishes(comment,cno_id,user_id,score) VALUES (%s,%s, %s,%s);''',
+                                ["", cno, curuser_id, 0])
             print("This course is finished")
             isFinished = 1
 
@@ -489,6 +513,20 @@ class LectureView(View):
             else:
                 lecandprog[i] = (lectures[i], "Unwatched")
 
+        cursor.execute('''SELECT COUNT(MP.prog_id) FROM main_progress as MP
+                                                    WHERE MP.s_username_id = %s AND 
+                                                          MP.lecture_no_id IN ( SELECT lecture_no
+                                                                                FROM courses_lecture 
+                                                                                WHERE cno_id = %s );'''
+                                    , [curuser_id, cno])
+        cnt_prog = cursor.fetchone()[0]
+
+        cursor.execute('''SELECT COUNT(lecture_no) FROM courses_lecture as CL WHERE CL.cno_id = %s;''', [cno])
+        cnt_lec = cursor.fetchone()[0]
+
+        print("Progress and lecture count : ",cnt_prog, cnt_lec)
+
+        avg_prog =(cnt_prog/cnt_lec)*100
 
         announcements = Announcement.objects.raw('''SELECT * FROM main_announcement as MA,auth_user as U 
                                                     WHERE MA.cno_id = %s and MA.i_user_id = U.id;''', [cno])
@@ -551,8 +589,7 @@ class LectureView(View):
 
         cursor = connection.cursor()
         cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'from user_types '
                        'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
@@ -560,7 +597,11 @@ class LectureView(View):
         if row:
             user_type = row[0]
 
+        form_teacher = AddTeacherForm()
+
         form_question = AskQuestion()
+
+        add_announcement = AddAnnouncementForm()
         topic_list = Topic.objects.raw('select topicname from main_topic;')
         context = {
             'curlecture': lecture,
@@ -579,8 +620,11 @@ class LectureView(View):
             'form_lecmat_assignment': form_lecmat_assignment,
             'user_type': user_type,
             'topic_list': topic_list,
-            'isFinished': isFinished,
-            'teaches': teaches
+            'isFinished' : isFinished,
+            'teaches' : teaches,
+            'avg_prog' : avg_prog,
+            'isContributor' : isContributor,
+            'owner_username' : owner_username
         }
         cursor.close()
 
@@ -595,7 +639,7 @@ class LectureView(View):
         lecture_no_row = cursor.fetchone()
         cursor.close()
         if not lecture_no_row:
-            return HttpResponseRedirect('/')
+            return HttpResponse('There is no lecture with this name. <a href="/">Return to main page...</a>')
 
         lecture_no = lecture_no_row[0]
         cursor = connection.cursor()
@@ -613,6 +657,21 @@ class LectureView(View):
                 cursor.execute('insert into main_assignment (assignment, lecture_no_id) values (%s, %s);',
                                [pdf_url_assignment, lecture_no])
 
+        form_teacher = AddTeacherForm(request.POST)
+        if form_teacher.is_valid():
+            t_username = form_teacher.cleaned_data['addteacher']
+            print("t_username", t_username)
+            cursor.execute('SELECT id from auth_user where username = %s', [t_username])
+            t_id_list = cursor.fetchone()
+            if not t_id_list:
+                return HttpResponseRedirect(request.path)
+
+            t_id = t_id_list[0]
+
+            cursor.execute( '''SELECT user_id from main_teaches WHERE lecture_no_id = %s and user_id = %s''',
+                            [lecture_no, t_id])
+            if not cursor.fetchone():
+                cursor.execute('INSERT INTO main_teaches(lecture_no_id,user_id) VALUES (%s,%s);', [lecture_no, t_id])
 
         form_note = NewNoteForm(request.POST)
         if form_note.is_valid():
@@ -627,12 +686,135 @@ class LectureView(View):
             cursor.execute('insert into main_post (post, lecture_no_id, username_id) values (%s, %s, %s);',
                            [question, lecture_no, request.user.id])
 
+        course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
+        if len(course_queue) > 0:
+            course = course_queue[0]
+
+        add_announcement = AddAnnouncementForm(request.POST)
+        if add_announcement.is_valid():
+            newannouncement = add_announcement.cleaned_data['addannouncement']
+            cursor.execute( '''insert into main_announcement (ann_date, ann_text, cno_id,i_user_id)
+                                values (CURRENT_TIMESTAMP,%s, %s, %s);''',
+                            [newannouncement, course.cno, request.user.id])
+
         cursor.close()
         return HttpResponseRedirect(request.path)
+
+class DeleteTeacherView( View ):
+    def post(self, request, course_slug, lecture_slug, t_username, *args, **kwarg):
+
+        cursor = connection.cursor()
+
+        cursor.execute( 'SELECT id FROM auth_user WHERE username = %s;',[t_username] )
+        t_id_list = cursor.fetchone()
+        if(t_id_list == None):
+            return HttpResponseRedirect("/",course_slug,"/",lecture_slug)
+        t_id = t_id_list[0];
+        print(t_id)
+        cursor.execute('select lecture_no from courses_lecture where lecture_slug = %s;', [lecture_slug])
+        lecture_no_row = cursor.fetchone()
+        if not lecture_no_row:
+            return HttpResponseRedirect('/')
+
+        lecture_no = lecture_no_row[0]
+
+        cursor.execute('DELETE FROM main_teaches WHERE user_id = %s and lecture_no_id = %s;', [t_id, lecture_no])
+        cursor.close()
+        return HttpResponseRedirect("/"+course_slug+"/"+lecture_slug)
+
+class DeleteAssignmentView( View ):
+    def post(self, request, course_slug, lecture_slug, a_id, *args, **kwarg):
+
+        cursor = connection.cursor()
+
+        cursor.execute('select lecture_no from courses_lecture where lecture_slug = %s;', [lecture_slug])
+        lecture_no_row = cursor.fetchone()
+        if not lecture_no_row:
+            cursor.close()
+            return HttpResponseRedirect("/" + course_slug + "/" + lecture_slug)
+
+        lecture_no = lecture_no_row[0]
+
+        cursor.execute( 'DELETE FROM main_assignment WHERE assignmentno = %s AND lecture_no_id = %s',
+                        [a_id,lecture_no] )
+
+        cursor.close()
+        return HttpResponseRedirect("/"+course_slug+"/"+lecture_slug)
+
+class DeleteLectureMaterialView( View ):
+    def post(self, request, course_slug, lecture_slug, lm_id, *args, **kwarg):
+        cursor = connection.cursor()
+
+        cursor.execute('select lecture_no from courses_lecture where lecture_slug = %s;', [lecture_slug])
+        lecture_no_row = cursor.fetchone()
+        if not lecture_no_row:
+            cursor.close()
+            return HttpResponseRedirect("/" + course_slug + "/" + lecture_slug)
+
+        lecture_no = lecture_no_row[0]
+
+        cursor.execute('DELETE FROM courses_lecturematerial WHERE materialno = %s AND lecture_no_id = %s',
+                       [lm_id, lecture_no])
+
+        cursor.close()
+        return HttpResponseRedirect("/" + course_slug + "/" + lecture_slug)
+
+class DeleteAnnouncementView( View ):
+    def post(self, request, course_slug, lecture_slug, ann_id, *args, **kwarg):
+
+        cursor = connection.cursor()
+
+        cursor.execute('select cno from courses_course where slug = %s;', [course_slug])
+        cno_row = cursor.fetchone()
+        if not cno_row:  # no course with this course slug (i.e. URL)
+            return HttpResponseRedirect("/" + course_slug + "/" + lecture_slug)  # return to main page
+        cno = cno_row[0]
+
+        cursor.execute( 'DELETE FROM main_announcement WHERE ann_id = %s AND cno_id = %s',[ann_id,cno] )
+
+        cursor.close()
+        return HttpResponseRedirect("/"+course_slug+"/"+lecture_slug)
+
+class DeleteNoteView( View ):
+    def post(self, request, course_slug, lecture_slug, note_id, *args, **kwarg):
+
+        cursor = connection.cursor()
+
+        cursor.execute('DELETE FROM main_takes_note WHERE note_id = %s;', [note_id])
+        cursor.close()
+        return HttpResponseRedirect("/"+course_slug+"/"+lecture_slug)
+
+class DeleteQuestionView( View ):
+    def post(self, request, course_slug, lecture_slug, q_id, *args, **kwarg):
+
+        cursor = connection.cursor()
+
+        cursor.execute('DELETE FROM main_quest_answ WHERE question_no_id = %s;''',[q_id])
+
+
+        cursor.execute('DELETE FROM main_post WHERE postno = %s;', [q_id])
+        cursor.close()
+        return HttpResponseRedirect("/"+course_slug+"/"+lecture_slug)
+
+class DeleteAnswerView( View ):
+    def post(self, request, course_slug, lecture_slug, a_id, *args, **kwarg):
+
+        cursor = connection.cursor()
+
+
+        cursor.execute('DELETE FROM main_quest_answ WHERE answer_no_id = %s;''',[a_id])
+
+        cursor.execute('DELETE FROM main_post WHERE postno = %s;', [a_id])
+        cursor.close()
+        return HttpResponseRedirect("/"+course_slug+"/"+lecture_slug)
 
 
 class CourseFinishView(View):
     def get(self, request, course_slug, *args, **kwargs):
+
+        if not request.user.id:
+            return HttpResponseRedirect("/login")
+
         cursor = connections['default'].cursor()
 
         course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
@@ -640,12 +822,20 @@ class CourseFinishView(View):
         curuser_id = request.user.id
         print(curuser_id)
 
+        cursor.execute( '''SELECT username FROM auth_user WHERE id = %s''',[curuser_id] )
+        username = cursor.fetchone()[0];
+
         if len(course_queue) > 0:
             course = course_queue[0]
         else:
             # 404 error
             print("error no course as the stated");
 
+        finish_list = Finishes.objects.raw('''SELECT * FROM main_finishes as MF WHERE MF.cno_id = %s AND MF.user_id = %s;''',
+                                        [course.cno, curuser_id])
+
+        if( not finish_list ):
+            return HttpResponseRedirect("/"+course_slug)
         finish_list = Finishes.objects.raw(
             '''SELECT * FROM main_finishes as MF WHERE MF.cno_id = %s AND MF.user_id = %s;''',
             [course.cno, curuser_id])
@@ -656,8 +846,7 @@ class CourseFinishView(View):
         rate = FinishCourseRateForm()
 
         cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'from user_types '
                        'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
@@ -673,8 +862,11 @@ class CourseFinishView(View):
             'url': '/' + course_slug + '/finish',
             'curcourse': course,
             'user': curuser_id,
+            'username' : username,
             'user_type': user_type,
-            'topic_list': topic_list
+            'topic_list': topic_list,
+            'form':rate,
+            'course_slug':course_slug
         }
         cursor.close()
         return render(request, 'courses/coursefinish.html', context)
@@ -702,10 +894,21 @@ class CourseFinishView(View):
                            [comment, course.cno, curuser_id])
 
         form_rate = FinishCourseRateForm(request.POST)
+        print("form_rate: ",form_rate)
 
         if form_rate.is_valid():
-            rate = form_rate.cleaned_data['rate']
-            print("Rate: ", rate)
+            rate_s = form_rate.cleaned_data.get("rate")
+            print("Rate: ", rate_s)
+            if rate_s == 'one':
+                rate = 1
+            elif rate_s == 'two':
+                rate = 2
+            elif rate_s == 'three':
+                rate = 3
+            elif rate_s == 'four':
+                rate = 4
+            elif rate_s == 'five':
+                rate = 5
             cursor.execute('UPDATE main_finishes SET score = %s where cno_id = %s AND user_id = %s;',
                            [int(rate), course.cno, curuser_id])
         cursor.close()
@@ -722,8 +925,7 @@ class AddComplainView(View):
         if request.user.is_authenticated:  # we need to check enrollments as well
             cursor = connection.cursor()
             cursor.execute('select type '
-                           'from auth_user '
-                           'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                           'from user_types '
                            'where id = %s;', [request.user.id])
 
             row = cursor.fetchone()
@@ -736,7 +938,7 @@ class AddComplainView(View):
             return render(request, self.template_name, {'form': form,
                                                         'user_type': user_type,
                                                         'topic_list': topic_list, })
-        return HttpResponseRedirect('/')
+        return HttpResponse('You need to log in. <a href="/login">Return to login page</a>')
 
     def post(self, request, course_slug):
         cursor = connection.cursor()
@@ -773,8 +975,7 @@ class RefundRequestView(View):
         if request.user.is_authenticated:  # we need to check enrollments as well
             cursor = connection.cursor()
             cursor.execute('select type '
-                           'from auth_user '
-                           'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                           'from user_types '
                            'where id = %s;', [request.user.id])
 
             row = cursor.fetchone()
@@ -868,8 +1069,7 @@ class AddCourseView(View):
 
         cursor = connection.cursor()
         cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'from user_types '
                        'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
@@ -901,9 +1101,9 @@ class AddCourseView(View):
 
             cursor = connection.cursor()
             try:
-                cursor.execute('insert into courses_course (cname, price, slug, situation, is_private, course_img, '
+                cursor.execute('insert into courses_course (cname, price, slug, is_private, course_img, '
                                'description, owner_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);',
-                               [cname, price, orig_slug, 0, private, thumbnail, description, request.user.id])
+                               [cname, price, orig_slug, private, thumbnail, description, request.user.id])
             finally:
                 cursor.close()
 
@@ -950,8 +1150,7 @@ class AddLectureToCourseView(View):
 
         cursor = connection.cursor()
         cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'from user_types '
                        'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
@@ -1045,8 +1244,24 @@ class ChangeCourseSettingsView(View):
             finally:
                 cursor.close()
 
+            cursor = connection.cursor()
+            cursor.execute('''SELECT U.username 
+                                    FROM main_contributor AS MC,auth_user AS U
+                                    WHERE MC.cno_id = %s AND MC.user_id = U.id;''', [cno])
+
+            contributor_list = cursor.fetchall()
+            contributors = [None] * len(contributor_list)
+            for i in range(0, len(contributors)):
+                contributors[i] = contributor_list[i][0]
+                print(contributor_list[i][0])
+
+            cursor.close()
+
+            contributor_form = AddContributorForm()
+
             return render(request, self.template_name, {'course_form': course_form, 'course': course,
-                                                        'user_type': user_type, 'topic_list': topic_list, })
+                                                        'user_type': user_type, 'topic_list': topic_list,
+                                                        'course_slug' : course_slug, 'contributors': contributors })
         return HttpResponseRedirect('/')
 
     def post(self, request, course_slug):
@@ -1071,9 +1286,49 @@ class ChangeCourseSettingsView(View):
                            'where cno = %s;', [cname, price, course_img, description, private, cno])
             cursor.close()
 
+        contributor_form = AddContributorForm(request.POST)
+        cursor = connection.cursor()
+        if contributor_form.is_valid():
+            contributor_username = contributor_form.cleaned_data['addcontributor']
+            cursor.execute('SELECT id FROM auth_user WHERE username = %s;', [contributor_username])
+            c_id_list = cursor.fetchone()
+            if (c_id_list == None):
+                cursor.close()
+                return HttpResponseRedirect("/" + course_slug + "/" + edit)
+            c_id = c_id_list[0];
+
+            cursor.execute('SELECT user_id FROM main_contributor WHERE cno_id = %s and user_id = %s;',[cno, c_id])
+            if not cursor.fetchone():
+                cursor.execute( 'INSERT INTO main_contributor(cno_id, user_id) VALUES( %s, %s); ',
+                            [cno, c_id])
+            return HttpResponseRedirect('/' + course_slug+'/edit')
+
+        cursor.close()
         return HttpResponseRedirect('/' + course_slug)
 
+class DeleteContributerView( View ):
+    def post(self, request, course_slug, c_username, *args, **kwarg):
 
+        cursor = connection.cursor()
+
+        cursor.execute('select cno from courses_course where slug = %s;', [course_slug])
+        cno_row = cursor.fetchone()
+        if not cno_row:  # no course with this course slug (i.e. URL)
+            return HttpResponseRedirect("/"+course_slug+"/"+edit)  # return to main page
+        cno = cno_row[0]
+
+        cursor.execute('SELECT id FROM auth_user WHERE username = %s;', [c_username])
+        c_id_list = cursor.fetchone()
+        if (c_id_list == None):
+            return HttpResponseRedirect("/"+course_slug+"/"+edit)
+        c_id = c_id_list[0];
+
+
+        cursor.execute('DELETE FROM main_contributor WHERE cno_id = %s AND user_id = %s;', [ cno, c_id ])
+
+
+        cursor.close()
+        return HttpResponseRedirect("/"+course_slug+"/edit")
 class OfferAdView(View):
     template_name = "courses/offer_ad.html"
 
@@ -1082,8 +1337,7 @@ class OfferAdView(View):
 
         cursor = connection.cursor()
         cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'from user_types '
                        'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()

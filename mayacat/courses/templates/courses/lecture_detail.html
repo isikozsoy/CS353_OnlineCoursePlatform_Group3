@@ -10,61 +10,89 @@
 
   <iframe width="320" height="240" src={{curlecture.video_url}} allowfullscreen></iframe>
 
-      {% if course.owner_id == request.user.id %} <!-- TODO: CONTRIBUTORLAR -->
+      {% if isContributor %} <!-- TODO: CONTRIBUTORLAR -->
           {% include "courses/lecture_assignment_material_addition.html" %}
       {% endif %}
 
   <h2>{{ course.cname }}</h2>
+    <h3>Your Progress</h3>
+        <a>{{avg_prog}}/100<br><br></a>
+    <h3>Lectures</h3>
   {% for lecture,prog in lecandprog %}
     <a href="{{ lecture.get_url }}">{{ lecture }}</a>
     <a>{{prog}}<br></a>
   {% endfor %}
 
-  {% if isFinished == 1 %}
-    <a>{{ course.slug }}/finish</a>
-    <a href="{{ course.get_url }}/finish">Finish</a>
+  {% if isFinished == 1 and course.is_complete != 0 %}
+    <a href="{{ course.get_url }}/finish">Finish the Course</a>
   {% endif %}
 
   <h2>Overview</h2>
   <h3>Description</h3>
   <a>{{course.description}}</a>
   <h4>Owner</h4>
-  <a>{{ course.owner_id }} <br></a>
+  <a>{{ owner_username }} <br></a>
 
-    <h4>Contributors</h4>
+    <h4>Contributors of the Course</h4>
     {% for contributor in contributors %}
-      <a href = /{{contributor}}>{{contributor}} {{ contributor.username }} <br></a>
+      <a href = /account/{{contributor}}>{{contributor}} {{ contributor.username }} <br></a>
     {% endfor %}
 
-    <h4>Teaches</h4>
+    <h4>Teachers of the Lecture</h4>
     {% for teacher in teaches %}
-        <a href = /{{teacher}}>{{teacher}} {{ teacher.username }} <br></a>
+        <a href = /account/{{teacher}}>{{teacher}} {{ teacher.username }} <br></a>
     {% endfor %}
 
-  <h3>Including</h3>
+  <h3>This Course Includes</h3>
   <a>{{lecturecnt}} lecture is included.<br></a>
-  <a>{{assignmentcnt}} assignment<br></a>
-  <a>{{lecturematcnt}} lecture material<br></a>
+  <a>{{assignmentcnt}} assignment is included.<br></a>
+  <a>{{lecturematcnt}} lecture material is included.<br></a>
 
   <h3>Assignments</h3>
   {% for assignment in assignments %}
-  <a>{{ assignment }} <br></a>
   <iframe src={{assignment.assignment}} width="320" height="240"></iframe>
+    {% if isContributor %} <!-- TODO: CONTRIBUTORLAR -->
+        <form action="{{url}}/deleteassignment/{{assignment.assignmentno}}" method="post">
+           {% csrf_token %}
+            <input type="submit" value="Delete Assignment">
+        </form>
+    {% endif %}
   {% endfor %}
 
   <h3>Lecture Materials</h3>
   {% for lm in lecturemat %}
-  <a>{{ lm }} <br></a>
   <iframe src={{lm.material}} width="320" height="240"></iframe>
-
+    {% if isContributor %} <!-- TODO: CONTRIBUTORLAR -->
+        <form action="{{url}}/deletelecturematerial/{{lm.materialno}}" method="post">
+           {% csrf_token %}
+            <input type="submit" value="Delete Lecture Material">
+        </form>
+    {% endif %}
   {% endfor %}
 
 
-
-
   <h2>Announcements</h2>
+
+    {% if isContributor %} <!-- TODO: CONTRIBUTORLAR -->
+        <form action="{{url}}" method="post">
+            {% csrf_token %}
+            <label for="addannouncement">New Announcement: </label>
+            <input id="addannouncement" type="text" name="addannouncement" value="{{ addannouncement }}">
+            <input type="submit" value="OK">
+        </form>
+    {% endif %}
+
+
+
   {% for announcement in announcements %}
-  <a>{{ announcement.ann_text }} {{ announcement.ann_date }} {{ announcement.i_user_id }} {{announcement.username}}</a>
+    <a>Announcement : {{ announcement.ann_text }} Date : {{ announcement.ann_date }} by {{announcement.username}}</a>
+    {% if announcement.i_user_id == request.user.id %}
+        <form action="{{url}}/deleteannouncement/{{announcement.ann_id}}" method="post">
+           {% csrf_token %}
+            <input type="submit" value="Delete Announcement">
+        </form>
+    {% endif %}
+    <br>
   {% endfor %}
 
   <h2>Notes</h2>
@@ -78,6 +106,13 @@
   <br>
   {% for note in notes %}
   <a>{{ note.note }} {{ note.s_username_id }} <br></a>
+
+    <form action="{{url}}/deletenote/{{note.note_id}}" method="post">
+           {% csrf_token %}
+            <input type="submit" value="Delete Note">
+    </form>
+
+
   {% endfor %}
  <br>
   <h2>Q&A</h2>
@@ -92,9 +127,24 @@
   <br>
 
   {% for question,answers in qanda %}
-  <a>Question : {{ question.postno }} {{ question.post }}<br> </a>
+  <a>Question : {{ question.postno }} {{ question.post }}</a>
+    {% if question.username_id == request.user.id %}
+        <form action="{{url}}/deletequestion/{{question.postno}}" method="post">
+           {% csrf_token %}
+            <input type="submit" value="Delete Question">
+        </form>
+    {% endif %}
+<br>
   {% for a in answers %}
-  <a>Answer : {{ a.postno }} {{ a.post }}<br> </a>
+  <a>Answer : {{ a.postno }} {{ a.post }}</a>
+    {% if a.username_id == request.user.id %}
+        <form action="{{url}}/deleteanswer/{{a.postno}}" method="post">
+           {% csrf_token %}
+            <input type="submit" value="Delete Answer">
+        </form>
+    {% endif %}
+    <br>
+
   {% endfor %}
   <form action="{{url}}/answer/{{question.postno}}" method="post">
    {% csrf_token %}

@@ -69,3 +69,18 @@ def create_gift_trigger():
         print(sys.exc_info())
     finally:
         cursor.close()
+
+
+def create_view():
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute('drop view if exists user_types;')
+        cursor.execute('create view user_types as '
+                       'select id, type '
+                       'from accounts_defaultuser '
+                       'inner join auth_user au on accounts_defaultuser.user_ptr_id = au.id;')
+    except Error:
+        print(sys.exc_info())
+    finally:
+        cursor.close()
