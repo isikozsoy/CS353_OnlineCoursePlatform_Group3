@@ -5,22 +5,31 @@
     {% csrf_token %}
         Username: {{ user.username }}<br>
         Email: {{ form.email }}<br>
-        Phone: {{ form.phone }}<br>
 
-        Type:
         {% if user_type == 2 %}
+            Phone: {{ form.phone }}<br>
+            Type:
             Advertiser<br>
-            Company Name: {{ user.company_name }}<br>
-        {% else %}
-            {% if user_type == 0 %}
-                Student<br>
-            {% else %}
-                Instructor<br>
-                Your Instructor Description: <br>
-            {% endif %}
+            Company Name: {{ form.company_name }}<br>
+            Name & Surname: {{ form.name }}<br>
+        {% elif user_type == 0 %}
+            Phone: {{ form.phone }}<br>
+            Type:
+            Student<br>
+        {% elif user_type == 1 %}
+            Phone: {{ form.phone }}<br>
+            Type:
+            Instructor<br>
+            Your Instructor Description: <br>
             {{ form.description }}<br>
+        {% elif user_type == 3 %}
+            Type: Admin<br>
+            SSN: {{ form.ssn }}<br>
+            Address: {{ form.address }}<br>
         {% endif %}
+    {% if request.user.id == user.id %}
         <button type="submit" formmethod="post">Save</button><br>
+    {% endif %}
     </form>
 
     {% if user_type != 2 %}

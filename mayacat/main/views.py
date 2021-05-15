@@ -57,8 +57,7 @@ class WishlistView(ListView):
 
         cursor = connection.cursor()
         cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'from user_types '
                        'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
@@ -87,10 +86,7 @@ class OffersView(ListView):
                                             WHERE ad_username_id = %s''', [user_id])
 
         cursor = connection.cursor()
-        cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
-                       'where id = %s;', [request.user.id])
+        cursor.execute('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
         user_type = -1
@@ -129,10 +125,7 @@ def add_to_wishlist(request, course_slug):
 class MainView(View):
     def get(self, request):
         cursor = connection.cursor()
-        cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
-                       'where id = %s;', [request.user.id])
+        cursor.execute('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
         user_type = -1
@@ -227,8 +220,7 @@ def course_detail(request, course_slug):
 
     cursor = connection.cursor()
     cursor.execute('select type '
-                   'from auth_user '
-                   'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                   'from user_types '
                    'where id = %s;', [request.user.id])
 
     row = cursor.fetchone()
@@ -248,10 +240,7 @@ def course_detail(request, course_slug):
 class NotificationView(View):
     def get(self, request):
         cursor = connection.cursor()
-        cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
-                       'where id = %s;', [request.user.id])
+        cursor.execute('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
         user_type = -1
@@ -401,10 +390,7 @@ class ShoppingCartView(View):
 
         cursor = connection.cursor()
 
-        cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
-                       'where id = %s;', [request.user.id])
+        cursor.execute('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
         user_type = -1
@@ -525,10 +511,7 @@ class ShoppingCheckoutView(View):
     def get(self, request):
         cursor = connection.cursor()
 
-        cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
-                       'where id = %s;', [request.user.id])
+        cursor.execute('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
         user_type = -1
@@ -571,10 +554,7 @@ class ShoppingCheckoutView(View):
 class AdOffersView(View):
     def get(self, request):
         cursor = connection.cursor()
-        cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
-                       'where id = %s;', [request.user.id])
+        cursor.execute('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
         user_type = -1
@@ -660,10 +640,7 @@ def refuse_ad(request, ad_no):
 class TaughtCoursesView(View):
     def get(self, request):
         cursor = connection.cursor()
-        cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
-                       'where id = %s;', [request.user.id])
+        cursor.execute('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
         user_type = -1

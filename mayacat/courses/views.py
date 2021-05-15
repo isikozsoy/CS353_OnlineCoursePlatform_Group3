@@ -29,8 +29,7 @@ class MyCoursesView(ListView):
             my_courses_q = cursor.fetchall()
 
             cursor.execute('select type '
-                           'from auth_user '
-                           'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                           'from user_types '
                            'where id = %s;', [user_id])
 
             row = cursor.fetchone()
@@ -220,8 +219,7 @@ class CourseDetailView(View):
             comments[i] = comment_list[i][0]
 
         cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'from user_types '
                        'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
@@ -548,8 +546,7 @@ class LectureView(View):
 
         cursor = connection.cursor()
         cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'from user_types '
                        'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
@@ -653,8 +650,7 @@ class CourseFinishView(View):
         rate = FinishCourseRateForm()
 
         cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'from user_types '
                        'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
@@ -719,8 +715,7 @@ class AddComplainView(View):
         if request.user.is_authenticated:  # we need to check enrollments as well
             cursor = connection.cursor()
             cursor.execute('select type '
-                           'from auth_user '
-                           'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                           'from user_types '
                            'where id = %s;', [request.user.id])
 
             row = cursor.fetchone()
@@ -770,8 +765,7 @@ class RefundRequestView(View):
         if request.user.is_authenticated:  # we need to check enrollments as well
             cursor = connection.cursor()
             cursor.execute('select type '
-                           'from auth_user '
-                           'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                           'from user_types '
                            'where id = %s;', [request.user.id])
 
             row = cursor.fetchone()
@@ -865,8 +859,7 @@ class AddCourseView(View):
 
         cursor = connection.cursor()
         cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'from user_types '
                        'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
@@ -947,8 +940,7 @@ class AddLectureToCourseView(View):
 
         cursor = connection.cursor()
         cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'from user_types '
                        'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
@@ -1079,8 +1071,7 @@ class OfferAdView(View):
 
         cursor = connection.cursor()
         cursor.execute('select type '
-                       'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'from user_types '
                        'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()

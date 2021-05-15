@@ -2,70 +2,45 @@ from django import forms
 from .models import *
 
 
-class StudentEditForm(forms.ModelForm):
-    email = forms.CharField(label='Email', max_length=50,
-                            widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'email@example.com'}))
-    phone = forms.CharField(label='Phone', max_length=50,
-                            widget=forms.TextInput(attrs={'class': 'form-control'}))
+class AccountViewForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.user_type = kwargs.pop('user_type')
+        self.user = kwargs.pop('user')
+        self.readonly = kwargs.pop('readonly')
+        super(AccountViewForm, self).__init__(*args, **kwargs)
 
-    def __init__(self, readonly=False, *args, **kwargs):
-        super(StudentEditForm, self).__init__(*args, **kwargs)
-        instance = getattr(self, 'instance', None)
-        if instance and instance.pk:
-            self.fields['email'].widget.attrs['readonly'] = readonly
-            self.fields['phone'].widget.attrs['readonly'] = readonly
+        self.fields['email'] = forms.CharField(label='Email', max_length=50, required=False,
+                                               widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                             'placeholder': self.user.email}))
+        self.fields['email'].widget.attrs['readonly'] = self.readonly
 
-    class Meta:
-        model = Student
-        fields = ('email', 'phone')
+        if self.user_type != 3:  # only admins do not have a phone recorded
+            self.fields['phone'] = forms.CharField(label='Phone number', max_length=50, required=False,
+                                                   widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                                 'placeholder': self.user.phone}))
+            self.fields['phone'].widget.attrs['readonly'] = self.readonly
 
-
-class InstructorEditForm(forms.ModelForm):
-    email = forms.CharField(label='Email', max_length=50,
-                            widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'email@example.com'}))
-    phone = forms.CharField(label='Phone', max_length=50,
-                            widget=forms.TextInput(attrs={'class': 'form-control'}))
-    description = forms.CharField(label='Description', max_length=50, required=False,
-                                  widget=forms.TextInput(attrs={'class': 'form-control',
-                                                                'placeholder': 'A description'}))
-
-    def __init__(self, readonly=False, *args, **kwargs):
-        super(InstructorEditForm, self).__init__(*args, **kwargs)
-        instance = getattr(self, 'instance', None)
-        if instance and instance.pk:
-            self.fields['email'].widget.attrs['readonly'] = readonly
-            self.fields['phone'].widget.attrs['readonly'] = readonly
-            self.fields['description'].widget.attrs['readonly'] = readonly
-
-    class Meta:
-        model = Instructor
-        fields = ('email', 'phone', 'description')
-
-
-class AdvertiserEditForm(forms.ModelForm):
-    email = forms.CharField(label='Email', max_length=50,
-                            widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'email@example.com'}))
-    phone = forms.CharField(label='Phone', max_length=50,
-                            widget=forms.TextInput(attrs={'class': 'form-control'}))
-    name = forms.CharField(label='Name & Surname', max_length=50, required=False,
-                           widget=forms.TextInput(attrs={'class': 'form-control',
-                                                         'placeholder': 'Name Surname'}))
-    company_name = forms.CharField(label='Company Name', max_length=100, required=False,
-                                   widget=forms.TextInput(attrs={'class': 'form-control',
-                                                                 'placeholder': 'Company'}))
-
-    def __init__(self, readonly=False, *args, **kwargs):
-        super(AdvertiserEditForm, self).__init__(*args, **kwargs)
-        instance = getattr(self, 'instance', None)
-        if instance and instance.pk:
-            self.fields['email'].widget.attrs['readonly'] = readonly
-            self.fields['phone'].widget.attrs['readonly'] = readonly
-            self.fields['name'].widget.attrs['readonly'] = readonly
-            self.fields['company_name'].widget.attrs['readonly'] = readonly
-
-    class Meta:
-        model = Advertiser
-        fields = ('email', 'phone', 'name', 'company_name')
+        if self.user_type == 2:  # advertiser
+            self.fields['name'] = forms.CharField(label='Phone number', max_length=50, required=False,
+                                                  widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                                'placeholder': self.user.name}))
+            self.fields['company_name'] = forms.CharField(label='Company Name', max_length=100, required=False,
+                                                          widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                                        'placeholder': self.user.company_name}))
+            self.fields['name'].widget.attrs['readonly'] = self.readonly
+            self.fields['company_name'].widget.attrs['readonly'] = self.readonly
+        elif self.user_type == 1:  # instructor
+            self.fields['description'] = forms.CharField(label='Description', max_length=1000, required=False,
+                                                         widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                                       'placeholder': self.user.description}))
+            self.fields['description'].widget.attrs['readonly'] = self.readonly
+        elif self.user_type == 3:  # site admin
+            self.fields['ssn'] = forms.CharField(label='SSN', max_length=20, required=False,
+                                                 widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                               'placeholder': self.user.ssn}))
+            self.fields['address'] = forms.CharField(label='Description', max_length=20, required=False,
+                                                     widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                                   'placeholder': self.user.address}))
 
 
 class Account(forms.Form):
@@ -92,4 +67,3 @@ class Register(forms.Form):
     company_name = forms.CharField(label='Company Name', max_length=50, required=False)
 
     password = forms.CharField(label='Password', max_length=50, widget=forms.PasswordInput)
-
