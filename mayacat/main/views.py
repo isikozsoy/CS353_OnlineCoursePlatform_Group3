@@ -525,7 +525,7 @@ class ShoppingCheckoutView(View):
 
         for item in items:
             if item[0] is None:
-                html = "ERROR: The username of the gift's receiver cannot be left blank<p> <a href='/cart'>Go back to cart</a>"
+                html = "ERROR: For the course ' %s ': The username of the gift's receiver cannot be left blank<p> <a href='/cart'>Go back to cart</a>" % item[1]
                 return HttpResponse(html)
 
 
