@@ -20,6 +20,10 @@ th, td {
     min-height: 70px;
 }
 
+.status[data-status="0"] { background-color:#faf4dd; }
+.status[data-status="1"] { background-color:#e34e43; }
+.status[data-status="2"]  { background-color:#98ee8a; }
+
 </style>
 
 {% endblock %}
@@ -46,12 +50,20 @@ th, td {
     </tr>
 
     {% for offer in offers_q %}
-        <tr>
+        <tr data-status="{{offer.status}}" class="status">
         <td>{{ offer.cno }}</td>
         <td>{{ offer.startdate }}</td>
         <td>{{ offer.finishdate }}</td>
         <td>{{ offer.payment }}</td>
-        <td>{{ offer.status }}</td>
+
+            {% if offer.status == 0 %}
+                <td>Waiting</td>
+            {% elif offer.status == 1 %}
+                <td>Refused</td>
+            {% elif offer.status == 2 %}
+                <td>Accepted</td>
+            {% endif %}
+
             </tr>
     {% endfor %}
 
