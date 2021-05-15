@@ -58,7 +58,8 @@ class LoginView(View):
                 login(request, user)
                 return HttpResponseRedirect('/')
             else:  # no user by this username
-                return HttpResponseRedirect('/register')
+                return HttpResponse("Either your username or your password is wrong.<p> "
+                                    "<a href='/login'>Return to login</a>")
 
 
 class RegisterView(View):
@@ -66,8 +67,6 @@ class RegisterView(View):
 
     def get(self, request):
         if request.user.is_authenticated:
-            print('Already logged in. Redirecting to the main page...')
-            print(request.user)
             return HttpResponseRedirect('/')
         form = Register()
 
@@ -109,7 +108,14 @@ class RegisterView(View):
 
             # if the user already exists, return to the original registration page
             if self.exists(username):
-                return HttpResponseRedirect('/register')
+                if "instructor" in request.path:
+                    return HttpResponse("The username is taken.<p> <a href='/register/instructor'>Return to register "
+                                        "page.</a>")
+                elif "advertiser" in request.path:
+                    return HttpResponse("The username is taken.<p> <a href='/register/advertiser'>Return to register "
+                                        "page.</a>")
+                else:
+                    return HttpResponse("The username is taken.<p> <a href='/register'>Return to register page.</a>")
 
             # we first create a new User object inside the auth.models.User model
             new_user = User(username=username, email=email, password=password)
@@ -147,7 +153,7 @@ class RegisterView(View):
                 cursor.close()
                 cursor = connection.cursor()
                 cursor.execute(
-                    "insert into accounts_instructor(student_ptr_id, description) values ( %s, %s, %s)",
+                    "insert into accounts_instructor(student_ptr_id, description) values ( %s, %s)",
                     [new_user.id, description])
             else:
                 cursor.execute(
@@ -163,9 +169,7 @@ class RegisterView(View):
 
             new_user.save()
             return HttpResponseRedirect('/login')  # /login
-        else:
-            print("Wrong form values")
-        return HttpResponse('This is Register view.')
+        return HttpResponse("The form values were not valid. <a href='/register'>Go back to register...</a>")
 
 
 class UserView(View):
