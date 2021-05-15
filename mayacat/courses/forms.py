@@ -4,6 +4,18 @@ from main.models import Course_Topic
 from datetime import datetime, date, timedelta
 from main.models import Post
 
+class AddTeacherForm(forms.Form):
+    addteacher = forms.CharField(label='addteacher', max_length=500)
+
+class AddContributorForm(forms.Form):
+    addcontributor = forms.CharField(label='addcontributor', max_length=500)
+
+class AddAnnouncementForm(forms.Form):
+    addannouncement = forms.CharField(label='addannouncement', max_length=500)
+
+class TeacherDelete(forms.Form):
+    addteacher = forms.CharField(label='addteacher', max_length=500)
+
 class NewNoteForm(forms.Form):
     note = forms.CharField(label='note', max_length=500)
 class AskQuestion(forms.Form):
@@ -16,9 +28,10 @@ class AnswerQuestion(forms.Form):
 
 class FinishCourseCommentForm(forms.Form):
     comment = forms.CharField(label='comment', max_length = 1000)
-class FinishCourseRateForm(forms.Form):
-    rate = forms.CharField(label='rate', max_length = 1000)
 
+CHOICES = [('one','one'),('two','two'),('three','three'),('four','four'),('five','five')]
+class FinishCourseRateForm(forms.Form):
+    rate = forms.ChoiceField(widget=forms.RadioSelect,choices=CHOICES)
 
 class ComplainForm(forms.Form):
     description = forms.CharField(label='Description', max_length=1000)
