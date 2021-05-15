@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b3ec7be4-c8ca-44a3-9c3a-8f2322070260" name="Default Changelist" comment="topic_list was added into context.">
+    <list default="true" id="b3ec7be4-c8ca-44a3-9c3a-8f2322070260" name="Default Changelist" comment="Course detailed view was modified.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/courses/templates/courses/course_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/templates/courses/course_detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/courses/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -170,7 +169,14 @@
       <option name="project" value="LOCAL" />
       <updated>1621020398792</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Course detailed view was modified.">
+      <created>1621112319032</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1621112319032</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -217,6 +223,7 @@
     <MESSAGE value="Images are visible now. Gift trigger was added." />
     <MESSAGE value="topic_list was added into context." />
     <MESSAGE value="Course image is added into my courses." />
-    <option name="LAST_COMMIT_MESSAGE" value="Course image is added into my courses." />
+    <MESSAGE value="Course detailed view was modified." />
+    <option name="LAST_COMMIT_MESSAGE" value="Course detailed view was modified." />
   </component>
 </project>
