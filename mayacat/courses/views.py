@@ -50,7 +50,10 @@ class MyCoursesView(ListView):
                                                                 WHERE me.user_id = %s );''',
                                [course[2], request.user.id])
 
-                total = cursor.fetchone()[0]
+                total = cursor.fetchone()
+
+                if total:
+                    total = total[0]
 
                 if (total is None or total == 0):
                     percentage = 100
@@ -63,9 +66,11 @@ class MyCoursesView(ListView):
                                             ( SELECT lecture_no
                                                 FROM courses_lecture 
                                                 WHERE cno_id = %s );''' , [request.user.id, course[2]])
-                    prog = cursor.fetchone()[0]
+                    prog = cursor.fetchone()
 
-                    if(prog is None):
+                    if prog:
+                        prog = prog[0]
+                    else:
                         prog = 0
 
                     percentage = int(100*prog/total)
@@ -159,7 +164,11 @@ class CourseDetailView(View):
         else:
             cursor.execute('SELECT count(*) FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
                            [cno, request.user.id])
-            is_enrolled = cursor.fetchone()[0]
+            is_enrolled = cursor.fetchone()
+
+            if is_enrolled:
+                is_enrolled = is_enrolled[0]
+
             is_in_cart = Inside_Cart.objects.raw(
                 'SELECT * FROM main_inside_cart WHERE cno_id = %s AND username_id= %s AND '
                 'receiver_username_id = %s', [cno, request.user.id, request.user.id])
@@ -178,8 +187,7 @@ class CourseDetailView(View):
         cursor.execute('SELECT AVG(score) FROM main_finishes WHERE cno_id = %s AND score !=0', [cno])
         rating = cursor.fetchone()
         if rating:
-            rating = rating[0]
-            rating = round(rating)
+            rating = int(rating[0])
 
         print("Rating:", rating)
 
@@ -220,7 +228,10 @@ class CourseDetailView(View):
         cursor.execute('SELECT count(*) '
                        'FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
                        [cno, request.user.id])
-        is_wish = cursor.fetchone()[0]
+        is_wish = cursor.fetchone()
+
+        if is_wish:
+            is_wish = is_wish[0]
 
         topic_list = Topic.objects.raw('select topicname from main_topic;')
 
@@ -231,7 +242,10 @@ class CourseDetailView(View):
                                         ( SELECT lecture_no
                                         FROM courses_lecture 
                                         WHERE cno_id = %s );''', [request.user.id, cno])
-        prog = cursor.fetchone()[0]
+        prog = cursor.fetchone()
+
+        if prog:
+            prog = prog[0]
 
         cursor.execute('''SELECT COUNT(MP.lecture_no_id)
                                             FROM main_progress as MP
@@ -240,7 +254,10 @@ class CourseDetailView(View):
                                                 ( SELECT lecture_no
                                                 FROM courses_lecture 
                                                 WHERE cno_id = %s );''', [request.user.id, cno])
-        completed_lec_count = cursor.fetchone()[0]
+        completed_lec_count = cursor.fetchone()
+
+        if completed_lec_count:
+            completed_lec_count = completed_lec_count[0]
 
         finished = False
         if completed_lec_count == len(lectures):
@@ -251,15 +268,24 @@ class CourseDetailView(View):
         if lecture_count != 0 and is_enrolled:
             if (prog is None or finished):
                 cursor.execute('''SELECT MIN(lecture_no) FROM courses_lecture WHERE cno_id = %s''', [cno])
-                min_lecture_no = cursor.fetchone()[0]
+                min_lecture_no = cursor.fetchone()
+
+                if min_lecture_no:
+                    min_lecture_no = min_lecture_no[0]
 
                 cursor.execute('''SELECT lecture_slug FROM courses_lecture 
                                             WHERE cno_id = %s AND lecture_no = %s ''', [cno, min_lecture_no])
-                lecture_slug = cursor.fetchone()[0]
+                lecture_slug = cursor.fetchone()
+
+                if lecture_slug:
+                    lecture_slug = lecture_slug[0]
 
             else:
                 cursor.execute('''SELECT lecture_slug FROM courses_lecture WHERE lecture_no > %s''', [prog])
-                lecture_slug = cursor.fetchone()[0]
+                lecture_slug = cursor.fetchone()
+
+                if lecture_slug:
+                    lecture_slug = lecture_slug[0]
 
         context = {
             'lecture_list': lectures,
@@ -795,7 +821,11 @@ def make_slug_for_url(name, for_course=True):
             cursor.execute('select count(*) from courses_course where slug = %s;', [orig_slug])
         else:
             cursor.execute('select count(*) from courses_lecture where lecture_slug = %s;', [orig_slug])
-        count = cursor.fetchone()[0]
+        count = cursor.fetchone()
+
+        if count:
+            count = count[0]
+
         cursor.close()
         if count != 0:
             orig_slug = slug + '-' + str(uniquifier)
@@ -818,7 +848,11 @@ class AddCourseView(View):
         cursor.execute('select count(*) '
                        'from accounts_instructor '
                        'where student_ptr_id = %s;', [request.user.id])
-        is_instructor = cursor.fetchone()[0]
+        is_instructor = cursor.fetchone()
+
+        if is_instructor:
+            is_instructor = is_instructor[0]
+
         cursor.close()
 
         if is_instructor == 0:  # this means that there is no instructor with the requested id
@@ -870,7 +904,11 @@ class AddCourseView(View):
             cursor = connection.cursor()
             try:
                 cursor.execute('select cno from courses_course where cname = %s;', [cname])
-                cno = cursor.fetchone()[0]
+                cno = cursor.fetchone()
+
+                if cno:
+                    cno = cno[0]
+
                 for topic in topics:
                     cursor.execute('insert into main_course_topic (cno_id, topicname_id) VALUES (%s, %s);',
                                    [cno, topic])
@@ -984,7 +1022,11 @@ class ChangeCourseSettingsView(View):
             cursor = connection.cursor()
             try:
                 cursor.execute('select type from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
-                user_type = cursor.fetchone()[0]
+                user_type = cursor.fetchone()
+
+                if user_type:
+                    user_type = user_type[0]
+
             finally:
                 cursor.close()
 
