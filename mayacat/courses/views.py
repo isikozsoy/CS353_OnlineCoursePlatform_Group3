@@ -807,7 +807,8 @@ class CourseFinishView(View):
             'curcourse': course,
             'user': curuser_id,
             'user_type': user_type,
-            'topic_list': topic_list
+            'topic_list': topic_list,
+            'form':rate
         }
         cursor.close()
         return render(request, 'courses/coursefinish.html', context)
@@ -835,10 +836,21 @@ class CourseFinishView(View):
                            [comment,course.cno,curuser_id])
 
         form_rate = FinishCourseRateForm(request.POST)
+        print("form_rate: ",form_rate)
 
         if form_rate.is_valid():
-            rate = form_rate.cleaned_data['rate']
-            print("Rate: ", rate)
+            rate_s = form_rate.cleaned_data.get("rate")
+            print("Rate: ", rate_s)
+            if rate_s == 'one':
+                rate = 1
+            elif rate_s == 'two':
+                rate = 2
+            elif rate_s == 'three':
+                rate = 3
+            elif rate_s == 'four':
+                rate = 4
+            elif rate_s == 'five':
+                rate = 5
             cursor.execute('UPDATE main_finishes SET score = %s where cno_id = %s AND user_id = %s;',
                            [int(rate), course.cno, curuser_id])
         cursor.close()
@@ -1026,9 +1038,9 @@ class AddCourseView(View):
 
             cursor = connection.cursor()
             try:
-                cursor.execute('insert into courses_course (cname, price, slug, situation, is_private, course_img, '
+                cursor.execute('insert into courses_course (cname, price, slug, is_private, course_img, '
                                'description, owner_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);',
-                               [cname, price, orig_slug, 0, private, thumbnail, description, request.user.id])
+                               [cname, price, orig_slug, private, thumbnail, description, request.user.id])
             finally:
                 cursor.close()
 
@@ -1178,7 +1190,8 @@ class ChangeCourseSettingsView(View):
             contributor_form = AddContributorForm()
 
             return render(request, self.template_name, {'course_form': course_form, 'course': course,
-                                                        'user_type': user_type, 'topic_list': topic_list, })
+                                                        'user_type': user_type, 'topic_list': topic_list,
+                                                        'course_slug' : course_slug, 'contributors': contributors })
         return HttpResponseRedirect('/')
 
     def post(self, request, course_slug):
@@ -1213,7 +1226,10 @@ class ChangeCourseSettingsView(View):
                 cursor.close()
                 return HttpResponseRedirect("/" + course_slug + "/" + edit)
             c_id = c_id_list[0];
-            cursor.execute( 'INSERT INTO main_contributor(cno_id, user_id) VALUES( %s, %s);',
+
+            cursor.execute('SELECT user_id FROM main_contributor WHERE cno_id = %s and user_id = %s;',[cno, c_id])
+            if not cursor.fetchone():
+                cursor.execute( 'INSERT INTO main_contributor(cno_id, user_id) VALUES( %s, %s); ',
                             [cno, c_id])
             return HttpResponseRedirect('/' + course_slug+'/edit')
 
