@@ -442,15 +442,13 @@ class LectureView(View):
                                     FROM main_contributor AS MC,auth_user AS U
                                     WHERE MC.cno_id = %s AND MC.user_id = U.id AND U.id = %s;''',
                        [course.cno, request.user.id])
-        isContributor = (course.owner_id == request.user.id) and (course.is_complete == 0)
+        isContributor = (course.owner_id == request.user.id)
         if cursor.fetchone():
-            isContributor = True and (course.is_complete == 0)
+            isContributor = True
 
         cursor.execute( '''SELECT enroll_id FROM main_enroll WHERE cno_id = %s AND user_id = %s''',
                                 [course.cno, request.user.id])
-        tmp = cursor.fetchone()
-        print(tmp, not isContributor and not tmp)
-        if not isContributor and not tmp:
+        if not isContributor and not cursor.fetchone():
             return HttpResponseRedirect("/"+course_slug)
 
         cursor.execute('''SELECT username FROM auth_user WHERE id = %s;''',[course.owner_id])
@@ -629,7 +627,7 @@ class LectureView(View):
             'isFinished' : isFinished,
             'teaches' : teaches,
             'avg_prog' : avg_prog,
-            'isContributor' : isContributor,
+            'isContributor' : isContributor and (course.is_complete == 0),
             'owner_username' : owner_username
         }
         cursor.close()
