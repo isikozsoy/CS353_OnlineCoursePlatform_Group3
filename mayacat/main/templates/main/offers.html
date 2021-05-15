@@ -1,14 +1,60 @@
 {% extends 'main/base.html' %}
 
+{% block style_block %}
+
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+
+.header {
+    text-align: center;
+    background-color: black;
+    padding-top: 5px;
+    color: white;
+    min-height: 70px;
+}
+
+</style>
+
+{% endblock %}
+
 {% block main_navigators %}
   <a href="/wishlist" class="btn btn-primary">Favorites</a>
   <a href="/offers" class="btn btn-primary">Offers</a>
 {% endblock %}
 
 {% block main_content %}
-    <h1>Welcome Your Offers</h1>
-    <h2>Offerings</h2>
+
+<div class = "header">
+<h1>Welcome Your Offers</h1>
+</div>
+
+    <table style="width:100%">
+    <caption>Offerings</caption>
+    <tr>
+        <th>Course Name</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Price</th>
+        <th>Status</th>
+    </tr>
+
     {% for offer in offers_q %}
-        <p>{{ offer.cno }}</p>
+        <tr>
+        <td>{{ offer.cno }}</td>
+        <td>{{ offer.startdate }}</td>
+        <td>{{ offer.finishdate }}</td>
+        <td>{{ offer.payment }}</td>
+        <td>{{ offer.status }}</td>
+            </tr>
     {% endfor %}
+
+</table>
+
 {% endblock %}
