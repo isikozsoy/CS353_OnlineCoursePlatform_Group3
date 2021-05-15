@@ -186,8 +186,14 @@ class CourseDetailView(View):
 
         cursor.execute('SELECT AVG(score) FROM main_finishes WHERE cno_id = %s AND score !=0', [cno])
         rating = cursor.fetchone()
+
         if rating:
-            rating = int(rating[0])
+            if rating[0]:
+                rating = rating[0]
+            else:
+                rating = 0
+
+        rating = int(rating)
 
         print("Rating:", rating)
 

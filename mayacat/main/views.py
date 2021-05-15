@@ -478,13 +478,16 @@ class ShoppingCartView(View):
             receiver_id = cursor.fetchall()
 
             if len(receiver_id) == 0:
-                return HttpResponseRedirect(request.path)
+                html = "ERROR: There is no such a user<p> <a href='/cart'>Go back to cart</a>"
+                return HttpResponse(html)
 
             if receiver_id[0][0] == request.user.id:
-                return HttpResponseRedirect(request.path)
+                html = "ERROR: You cannot send a gift to yourself<p> <a href='/cart'>Go back to cart</a>"
+                return HttpResponse(html)
 
             if receiver_id[0][2] == 1:
-                return HttpResponseRedirect(request.path)
+                html = "ERROR: You cannot send a gift to an admin<p> <a href='/cart'>Go back to cart</a>"
+                return HttpResponse(html)
 
             cursor.execute('SELECT cc.owner_id '
                            'FROM main_inside_cart AS mic, courses_course AS cc '
@@ -493,7 +496,8 @@ class ShoppingCartView(View):
             owner_id = cursor.fetchone()[0]
 
             if receiver_id[0][0] == owner_id:
-                return HttpResponseRedirect(request.path)
+                html = "ERROR: You cannot send the course to its owner<p> <a href='/cart'>Go back to cart</a>"
+                return HttpResponse(html)
 
             cursor.execute('SELECT cno_id FROM main_inside_cart WHERE inside_cart_id = %s', [item_id])
             cno = cursor.fetchone()[0]
@@ -512,7 +516,8 @@ class ShoppingCartView(View):
                                                 [receiver_id[0][0], cno])
 
             if len(list(my_courses)) != 0:
-                return HttpResponseRedirect(request.path)
+                html = "ERROR: The receiver of this course is already enrolled to the course<p> <a href='/cart'>Go back to cart</a>"
+                return HttpResponse(html)
 
             if receiver_id[0][0]:
                 cursor.execute('UPDATE main_inside_cart '
