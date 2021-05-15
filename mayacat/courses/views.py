@@ -298,6 +298,14 @@ class CourseDetailView(View):
                 if lecture_slug:
                     lecture_slug = lecture_slug[0]
 
+        cursor.execute('''SELECT count(*) FROM main_contributor AS MC
+                          WHERE MC.cno_id = %s AND MC.user_id = %s;''', [course.cno, request.user.id])
+
+        is_contributor = cursor.fetchone()[0]
+        if is_contributor != 0:
+            is_enrolled = True
+            is_only_gift = True
+
         context = {
             'lecture_list': lectures,
             'form': form,
@@ -312,7 +320,6 @@ class CourseDetailView(View):
             'rating': rating,
             'advertisement': advertisement,
             'comments': comments,
-            'is_gift': is_only_gift,
             'is_owner': is_owner,
             'is_enrolled': is_enrolled,
             'prog': prog,
