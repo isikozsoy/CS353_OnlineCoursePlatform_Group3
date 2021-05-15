@@ -4,8 +4,6 @@
     <list default="true" id="b3ec7be4-c8ca-44a3-9c3a-8f2322070260" name="Default Changelist" comment="topic_list was added into context.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mayacat/courses/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/courses/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/templates/main/ad_offers.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/templates/main/ad_offers.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
