@@ -56,7 +56,7 @@ TOPIC_CHOICES = (
 
 
 class CreateCourseForm(forms.Form):
-    course_img = forms.CharField(label='Embedded URL for Course', max_length=100,
+    course_img = forms.CharField(label='Embedded Image URL for Course', max_length=100,
                                   widget=forms.TextInput(attrs={'class': 'form-control'}))
     cname = forms.CharField(label='Course name:', max_length=50,
                             widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A Course Name'}))
@@ -71,7 +71,7 @@ class CreateCourseForm(forms.Form):
 
 
 class EditCourseForm(forms.ModelForm):
-    course_img = forms.CharField(label='Embedded URL for Course', max_length=100,
+    course_img = forms.CharField(label='Embedded Image URL for Course', max_length=100,
                                   widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     cname = forms.CharField(label='Course name:', max_length=50,
@@ -97,8 +97,8 @@ class EditTopicForm(forms.ModelForm):
 
 
 class OfferAdForm(forms.Form):
-    ad_img = forms.ImageField(label='Advertisement Image', widget=forms.FileInput(
-                               attrs={'class': 'form-control-file', 'enctype': 'multipart/form-data'}))
+    ad_img = forms.CharField(label='Embedded Image URL for Advertisement', max_length=100,
+                                  widget=forms.TextInput(attrs={'class': 'form-control'}))
     price = forms.DecimalField(label='Offered Price (TL)', max_digits=6, decimal_places=2,
                                widget=forms.NumberInput(attrs={'class': 'form-control'}))
     start_date = forms.DateField(label='Start Date', initial=date.today)

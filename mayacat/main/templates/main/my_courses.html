@@ -6,7 +6,7 @@
 .card {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s;
-    width: 250px;
+    width: 270px;
     border-radius: 5px;
 }
 
@@ -34,8 +34,9 @@ img {
     float: left;
     padding-left: 30px;
     min-height: 400px;
-    margin-bottom: 100px;
     clear: both;
+    display: inline-block;
+    padding-top: 20px;
 }
 
 /* Clear floats after the columns */
@@ -45,12 +46,24 @@ img {
     clear: both;
 }
 
+.Mycourses {
+    text-align: center;
+    background-color: black;
+    padding-top: 5px;
+    color: white;
+    min-height: 70px;
+}
+
 </style>
 
 {% endblock %}
 
 {% block main_content %}
+
+    <div class = "Mycourses">
     <h1>My Courses</h1>
+        </div>
+
 
     <div class="row">
         {% for course in my_courses_q %}
@@ -60,7 +73,7 @@ img {
                 <img src="https://www.niobehosting.com/blog/wp-content/uploads/database-nedir-840x400.jpg" style="width:100%">
 
                 <div class="container">
-                    <a href="/{{ course.1 }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">{{ course.0 }}</a>
+                    <a href="/{{ course.1 }}" >{{ course.0 }}</a>
                     <br><a>Progress: {{ course.3 }}%</a>
                 </div>
             </div>

@@ -45,4 +45,14 @@ class Migration(migrations.Migration):
                 ('lecture_no', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='courses.lecture')),
             ],
         ),
+        migrations.AddField(
+            model_name='course',
+            name='is_complete',
+            field=models.BooleanField(default=False),
+        ),
+        migrations.AddField(
+            model_name='course',
+            name='new_price',
+            field=models.DecimalField(blank=True, decimal_places=2, max_digits=6, null=True),
+        ),
     ]

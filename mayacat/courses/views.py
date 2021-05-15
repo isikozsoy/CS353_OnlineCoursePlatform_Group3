@@ -1,3 +1,5 @@
+import sys
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView
@@ -48,7 +50,10 @@ class MyCoursesView(ListView):
                                                                 WHERE me.user_id = %s );''',
                                [course[2], request.user.id])
 
-                total = cursor.fetchone()[0]
+                total = cursor.fetchone()
+
+                if total:
+                    total = total[0]
 
                 if (total is None or total == 0):
                     percentage = 100
@@ -61,9 +66,11 @@ class MyCoursesView(ListView):
                                             ( SELECT lecture_no
                                                 FROM courses_lecture 
                                                 WHERE cno_id = %s );''' , [request.user.id, course[2]])
-                    prog = cursor.fetchone()[0]
+                    prog = cursor.fetchone()
 
-                    if(prog is None):
+                    if prog:
+                        prog = prog[0]
+                    else:
                         prog = 0
 
                     percentage = int(100*prog/total)
@@ -75,7 +82,7 @@ class MyCoursesView(ListView):
 
             topic_list = Topic.objects.raw('select topicname from main_topic;')
             context = {
-                'my_courses_q': my_courses_q,
+                'my_courses_q': my_courses,
                 'user_type': user_type,
                 'topic_list': topic_list,
             }
@@ -157,7 +164,11 @@ class CourseDetailView(View):
         else:
             cursor.execute('SELECT count(*) FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
                            [cno, request.user.id])
-            is_enrolled = cursor.fetchone()[0]
+            is_enrolled = cursor.fetchone()
+
+            if is_enrolled:
+                is_enrolled = is_enrolled[0]
+
             is_in_cart = Inside_Cart.objects.raw(
                 'SELECT * FROM main_inside_cart WHERE cno_id = %s AND username_id= %s AND '
                 'receiver_username_id = %s', [cno, request.user.id, request.user.id])
@@ -168,30 +179,35 @@ class CourseDetailView(View):
                                               [cno, request.user.id])))
 
         registered = len(list(Enroll.objects.raw('SELECT * FROM main_enroll WHERE cno_id = %s AND user_id = %s;',
-                                                  [cno, request.user.id])))
+                                                 [cno, request.user.id])))
 
         lectures = Lecture.objects.raw('''SELECT * FROM courses_lecture as CL WHERE CL.cno_id = %s;''', [cno])
         lecture_count = len(lectures)
 
         cursor.execute('SELECT AVG(score) FROM main_finishes WHERE cno_id = %s AND score !=0', [cno])
-        rating = cursor.fetchone()[0]
-        print("Rating:",rating)
+        rating = cursor.fetchone()
+
+        if rating:
+            if rating[0]:
+                rating = rating[0]
+            else:
+                rating = 0
 
         cursor.execute('SELECT * '
                        'FROM main_advertisement '
                        'WHERE cno_id = %s AND status = 1 '
-                       'AND (CURRENT_TIMESTAMP BETWEEN startdate AND finishdate) ',[cno])
+                       'AND (CURRENT_TIMESTAMP BETWEEN startdate AND finishdate) ', [cno])
 
         advertisement_list = cursor.fetchone()
-        print("advertisement",advertisement_list)
+        print("advertisement", advertisement_list)
 
         advertisement = None
 
-        if (advertisement_list is not None ):
+        if (advertisement_list is not None):
             advertisement = {
-                'advertisement' : advertisement_list[1],
+                'advertisement': advertisement_list[1],
                 'ad_username_id': advertisement_list[6],
-                'startdate' : advertisement_list[4]
+                'startdate': advertisement_list[4]
             }
 
 
@@ -214,7 +230,10 @@ class CourseDetailView(View):
         cursor.execute('SELECT count(*) '
                        'FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
                        [cno, request.user.id])
-        is_wish = cursor.fetchone()[0]
+        is_wish = cursor.fetchone()
+
+        if is_wish:
+            is_wish = is_wish[0]
 
         topic_list = Topic.objects.raw('select topicname from main_topic;')
 
@@ -225,7 +244,10 @@ class CourseDetailView(View):
                                         ( SELECT lecture_no
                                         FROM courses_lecture 
                                         WHERE cno_id = %s );''', [request.user.id, cno])
-        prog = cursor.fetchone()[0]
+        prog = cursor.fetchone()
+
+        if prog:
+            prog = prog[0]
 
         cursor.execute('''SELECT COUNT(MP.lecture_no_id)
                                             FROM main_progress as MP
@@ -234,7 +256,10 @@ class CourseDetailView(View):
                                                 ( SELECT lecture_no
                                                 FROM courses_lecture 
                                                 WHERE cno_id = %s );''', [request.user.id, cno])
-        completed_lec_count = cursor.fetchone()[0]
+        completed_lec_count = cursor.fetchone()
+
+        if completed_lec_count:
+            completed_lec_count = completed_lec_count[0]
 
         finished = False
         if completed_lec_count == len(lectures):
@@ -245,15 +270,24 @@ class CourseDetailView(View):
         if lecture_count != 0 and is_enrolled:
             if (prog is None or finished):
                 cursor.execute('''SELECT MIN(lecture_no) FROM courses_lecture WHERE cno_id = %s''', [cno])
-                min_lecture_no = cursor.fetchone()[0]
+                min_lecture_no = cursor.fetchone()
+
+                if min_lecture_no:
+                    min_lecture_no = min_lecture_no[0]
 
                 cursor.execute('''SELECT lecture_slug FROM courses_lecture 
                                             WHERE cno_id = %s AND lecture_no = %s ''', [cno, min_lecture_no])
-                lecture_slug = cursor.fetchone()[0]
+                lecture_slug = cursor.fetchone()
+
+                if lecture_slug:
+                    lecture_slug = lecture_slug[0]
 
             else:
                 cursor.execute('''SELECT lecture_slug FROM courses_lecture WHERE lecture_no > %s''', [prog])
-                lecture_slug = cursor.fetchone()[0]
+                lecture_slug = cursor.fetchone()
+
+                if lecture_slug:
+                    lecture_slug = lecture_slug[0]
 
         context = {
             'lecture_list': lectures,
@@ -269,7 +303,6 @@ class CourseDetailView(View):
             'rating': rating,
             'advertisement': advertisement,
             'comments': comments,
-            'discounted_price' : discounted_price,
             'is_gift': is_only_gift,
             'is_owner': is_owner,
             'is_enrolled': is_enrolled,
@@ -290,12 +323,13 @@ class CourseDetailView(View):
         if form.is_valid():
             if not form.cleaned_data['is_gift']:
                 cursor.execute('INSERT INTO main_inside_cart (cno_id, receiver_username_id, username_id)'
-                               'VALUES (%s, %s, %s);', [cno, request.user.id, request.user.id])  # own id if it is not a gift
+                               'VALUES (%s, %s, %s);',
+                               [cno, request.user.id, request.user.id])  # own id if it is not a gift
                 cursor.close()
                 return redirect("main:cart")
 
         cursor.execute('INSERT INTO main_inside_cart (cno_id, receiver_username_id, username_id)'
-                           'VALUES (%s, %s, %s);', [cno, None, request.user.id])  # -1 if it is a gift
+                       'VALUES (%s, %s, %s);', [cno, None, request.user.id])  # -1 if it is a gift
 
         return redirect("main:cart")
 
@@ -327,23 +361,25 @@ def add_gift_to_cart(request, course_slug):
 class AddAnswerView(View):
     # model = Lecture
 
-    def get(self, request, course_slug, lecture_slug,question_no, *args, **kwargs):
+    def get(self, request, course_slug, lecture_slug, question_no, *args, **kwargs):
         answer = "to be completed"
         form = AnswerQuestion()
 
         topic_list = Topic.objects.raw('select * from main_topic;')
 
         context = {
-            'question_no' : question_no,
-            'answer' : answer
+            'question_no': question_no,
+            'answer': answer,
+            'topic_list': topic_list
         }
         return render(request, 'courses/add_answer.html', context)
-    def post(self, request, course_slug, lecture_slug,question_no, *args, **kwargs):
+
+    def post(self, request, course_slug, lecture_slug, question_no, *args, **kwargs):
         form = AnswerQuestion(request.POST)
         cursor = connection.cursor()
         if form.is_valid():
             answer = form.cleaned_data['answer']
-        print("course_slug",course_slug,"lecture_slug",lecture_slug,"question_no ",question_no)
+        print("course_slug", course_slug, "lecture_slug", lecture_slug, "question_no ", question_no)
         cursor.execute('select lecture_no from courses_lecture where lecture_slug = %s;', [lecture_slug])
         lecture_no_row = cursor.fetchone()
         cursor.close()
@@ -356,14 +392,14 @@ class AddAnswerView(View):
                        [answer, lecture_no, request.user.id])
         cursor.execute('select LAST_INSERT_ID()')
         row = cursor.fetchone()
-        print("row",row)
+        print("row", row)
         if row:
             ans_no = row[0]
-            print("In post of addanswerview",ans_no)
+            print("In post of addanswerview", ans_no)
             cursor.execute('insert into main_quest_answ (answer_no_id, question_no_id) values (%s, %s);',
                            [ans_no, question_no])
         cursor.close()
-        return HttpResponseRedirect("/"+course_slug+"/"+lecture_slug)
+        return HttpResponseRedirect("/" + course_slug + "/" + lecture_slug)
 
 
 class LectureView(View):
@@ -377,10 +413,10 @@ class LectureView(View):
         course_queue = Course.objects.raw( '''SELECT * FROM courses_course WHERE slug = %s;''',[course_slug])
         print(request.user.id)
 
-        print("=1",course_queue)
+        print("=1", course_queue)
         if len(course_queue) > 0:
             course = course_queue[0]
-            print("=2",course, course.cno)
+            print("=2", course, course.cno)
         else:
             return HttpResponseRedirect("/")
 
@@ -399,24 +435,20 @@ class LectureView(View):
 
 
 
-        #check whether the student is enrolled into this course
-        #is course slug primary key
-
-        curuser_id = request.user.id
-
-        lecture_q = Lecture.objects.raw( '''SELECT * FROM courses_lecture as CL WHERE CL.lecture_slug = %s;''',[lecture_slug])
+        lecture_q = Lecture.objects.raw('''SELECT * FROM courses_lecture as CL WHERE CL.lecture_slug = %s;''',
+                                        [lecture_slug])
         if len(lecture_q) > 0:
             lecture = lecture_q[0]
-            print("=3","lecture exists\n")
+            print("=3", "lecture exists\n")
         else:
-            #error no such lecture
+            # error no such lecture
             print("error no lecture as the stated");
 
-        print("=4",lecture_q)
-        print("=5",lecture)
+        print("=4", lecture_q)
+        print("=5", lecture)
         isWatched = Progress.objects.raw('''SELECT * FROM main_progress as MP 
                                             WHERE MP.lecture_no_id = %s AND MP.s_username_id = %s;'''
-                                            , [lecture.lecture_no, curuser_id])
+                                         , [lecture.lecture_no, curuser_id])
         print(isWatched)
 
         cno = course.cno
@@ -424,18 +456,18 @@ class LectureView(View):
         isFinished = 0
         if (len(isWatched) == 0):
             cursor.execute('''INSERT INTO main_progress(lecture_no_id ,s_username_id) VALUES (%s, %s); ''',
-                       [lecture.lecture_no, curuser_id])
-            prog = Progress.objects.raw( '''SELECT MP.prog_id FROM main_progress as MP
+                           [lecture.lecture_no, curuser_id])
+            prog = Progress.objects.raw('''SELECT MP.prog_id FROM main_progress as MP
                                             WHERE MP.s_username_id = %s AND 
                                                   MP.lecture_no_id IN ( SELECT lecture_no
                                                                         FROM courses_lecture 
                                                                         WHERE cno_id = %s );'''
-                                              ,[curuser_id,cno])
-            print("prog : ", len(prog))     #raw must include primary key - cursor
+                                        , [curuser_id, cno])
+            print("prog : ", len(prog))  # raw must include primary key - cursor
             if (len(prog) == len(lectures)):
                 print("course finished")
                 cursor.execute('''INSERT INTO main_finishes(comment,cno_id,user_id,score) VALUES (%s,%s, %s,%s);''',
-                                  ["",cno,curuser_id,0])
+                               ["", cno, curuser_id, 0])
         prog = Progress.objects.raw('''SELECT MP.prog_id FROM main_progress as MP
                                                     WHERE MP.s_username_id = %s AND 
                                                           MP.lecture_no_id IN ( SELECT lecture_no
@@ -452,14 +484,14 @@ class LectureView(View):
         print("=6", lecture_slug, course.cno, lectures, len(lectures))
 
         lecandprog = [None] * len(lectures)
-        for i in range(0,len(lectures)):
-            isWatched = Progress.objects.raw( '''SELECT * FROM main_progress as MP 
+        for i in range(0, len(lectures)):
+            isWatched = Progress.objects.raw('''SELECT * FROM main_progress as MP 
                                                     WHERE MP.lecture_no_id = %s AND MP.s_username_id = %s;'''
-                                              ,[lectures[i].lecture_no,curuser_id])
+                                             , [lectures[i].lecture_no, curuser_id])
             print(isWatched)
 
-            if(len(isWatched) > 0):
-                lecandprog[i] = (lectures[i],"Watched")
+            if (len(isWatched) > 0):
+                lecandprog[i] = (lectures[i], "Watched")
             else:
                 lecandprog[i] = (lectures[i], "Unwatched")
 
@@ -480,48 +512,49 @@ class LectureView(View):
 
         announcements = Announcement.objects.raw('''SELECT * FROM main_announcement as MA,auth_user as U 
                                                     WHERE MA.cno_id = %s and MA.i_user_id = U.id;''', [cno])
-        #announcements = Announcement.objects.filter(cno_id=course.cno)
+        # announcements = Announcement.objects.filter(cno_id=course.cno)
 
-        notes = Takes_note.objects.raw( '''SELECT * FROM main_takes_note as MTN 
+        notes = Takes_note.objects.raw('''SELECT * FROM main_takes_note as MTN 
                                             WHERE MTN.lecture_no_id = %s AND MTN.s_username_id = %s;''',
-                                            [lecture.lecture_no, curuser_id])
+                                       [lecture.lecture_no, curuser_id])
         newNote = NewNoteForm()
         lecturecnt = len(lectures)
 
         questions = Post.objects.raw('''SELECT postno
                                         FROM main_post
                                         WHERE postno NOT IN (SELECT answer_no_id AS postno FROM main_quest_answ ) 
-                                            AND lecture_no_id = %s; ''',[lecture.lecture_no])
+                                            AND lecture_no_id = %s; ''', [lecture.lecture_no])
 
         qanda = [None] * len(questions)
 
         answers = [None] * len(questions)
-        for i in range(0,len(questions)):
+        for i in range(0, len(questions)):
             answers[i] = Quest_answ.objects.raw('''SELECT *
                                                  FROM main_quest_answ, main_post
-                                                 WHERE question_no_id = %s AND answer_no_id = postno;''',[questions[i].postno])
+                                                 WHERE question_no_id = %s AND answer_no_id = postno;''',
+                                                [questions[i].postno])
             qanda[i] = (questions[i], answers[i])
         print(qanda)
 
-        assignments =Assignment.objects.raw('''SELECT *
+        assignments = Assignment.objects.raw('''SELECT *
                                                  FROM main_assignment
-                                                 WHERE lecture_no_id = %s;''',[lecture.lecture_no])
-        assignmentcnt  = len(assignments)
+                                                 WHERE lecture_no_id = %s;''', [lecture.lecture_no])
+        assignmentcnt = len(assignments)
         lecturemat = LectureMaterial.objects.raw('''SELECT *
                                                  FROM courses_lecturematerial
-                                                 WHERE lecture_no_id = %s;''',[lecture.lecture_no])
+                                                 WHERE lecture_no_id = %s;''', [lecture.lecture_no])
         lecturematcnt = len(lecturemat)
 
         cursor.execute('''SELECT U.username 
                         FROM main_contributor AS MC,auth_user AS U
-                        WHERE MC.cno_id = %s AND MC.user_id = U.id;''',[course.cno])
+                        WHERE MC.cno_id = %s AND MC.user_id = U.id;''', [course.cno])
 
         contributor_list = cursor.fetchall()
-        contributors = [None]*len(contributor_list)
-        for i in range(0,len(contributors)):
+        contributors = [None] * len(contributor_list)
+        for i in range(0, len(contributors)):
             contributors[i] = contributor_list[i][0]
             print(contributor_list[i][0])
-        print("Contributors:",contributors)
+        print("Contributors:", contributors)
 
         cursor.execute('''SELECT U.username 
                                 FROM main_teaches AS MT,auth_user AS U
@@ -563,10 +596,10 @@ class LectureView(View):
             'lecturemat': lecturemat,
             'lecturematcnt': lecturematcnt,
             'lecturecnt': lecturecnt,
-            'qanda' : qanda,
-            'lecandprog' : lecandprog,
-            'url' : '/'+course_slug+'/'+lecture_slug,
-            'contributors' : contributors,
+            'qanda': qanda,
+            'lecandprog': lecandprog,
+            'url': '/' + course_slug + '/' + lecture_slug,
+            'contributors': contributors,
             'form_lecmat_assignment': form_lecmat_assignment,
             'user_type': user_type,
             'topic_list': topic_list,
@@ -622,15 +655,15 @@ class LectureView(View):
         form_note = NewNoteForm(request.POST)
         if form_note.is_valid():
             newnote = form_note.cleaned_data['note']
-            cursor.execute( 'INSERT INTO main_takes_note(note,lecture_no_id, s_username_id ) VALUES(%s,%s,%s);',
-                            [newnote, lecture_no,request.user.id ])
+            cursor.execute('INSERT INTO main_takes_note(note,lecture_no_id, s_username_id ) VALUES(%s,%s,%s);',
+                           [newnote, lecture_no, request.user.id])
 
         form_question = AskQuestion(request.POST)
         if form_question.is_valid():
             question = form_question.cleaned_data['question']
-            print("Question : ",question)
-            cursor.execute('insert into main_post (post, lecture_no_id, username_id,date) values (%s, %s, %s,CURRENT_TIMESTAMP);',
-                           [question,lecture_no,request.user.id])
+            print("Question : ", question)
+            cursor.execute('insert into main_post (post, lecture_no_id, username_id) values (%s, %s, %s);',
+                           [question, lecture_no, request.user.id])
 
         course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
         if len(course_queue) > 0:
@@ -785,13 +818,13 @@ class CourseFinishView(View):
         currate = finish_list[0].score
         curcomment = finish_list[0].comment
 
-
         comment = FinishCourseCommentForm()
         rate = FinishCourseRateForm()
 
         cursor.execute('select type '
                        'from auth_user '
-                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id ')
+                       'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
+                       'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
         user_type = -1
@@ -816,7 +849,7 @@ class CourseFinishView(View):
     def post(self, request, course_slug, *args, **kwargs):
         cursor = connection.cursor()
 
-        #cursor.execute('select lecture_no from courses_lecture where lecture_slug = %s;', [lecture_slug])
+        # cursor.execute('select lecture_no from courses_lecture where lecture_slug = %s;', [lecture_slug])
         course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
 
         curuser_id = request.user.id
@@ -833,7 +866,7 @@ class CourseFinishView(View):
             comment = form_comment.cleaned_data['comment']
             print("Comment: ", comment)
             cursor.execute('UPDATE main_finishes SET comment = %s where cno_id = %s AND user_id = %s;',
-                           [comment,course.cno,curuser_id])
+                           [comment, course.cno, curuser_id])
 
         form_rate = FinishCourseRateForm(request.POST)
         print("form_rate: ",form_rate)
@@ -972,7 +1005,11 @@ def make_slug_for_url(name, for_course=True):
             cursor.execute('select count(*) from courses_course where slug = %s;', [orig_slug])
         else:
             cursor.execute('select count(*) from courses_lecture where lecture_slug = %s;', [orig_slug])
-        count = cursor.fetchone()[0]
+        count = cursor.fetchone()
+
+        if count:
+            count = count[0]
+
         cursor.close()
         if count != 0:
             orig_slug = slug + '-' + str(uniquifier)
@@ -995,7 +1032,11 @@ class AddCourseView(View):
         cursor.execute('select count(*) '
                        'from accounts_instructor '
                        'where student_ptr_id = %s;', [request.user.id])
-        is_instructor = cursor.fetchone()[0]
+        is_instructor = cursor.fetchone()
+
+        if is_instructor:
+            is_instructor = is_instructor[0]
+
         cursor.close()
 
         if is_instructor == 0:  # this means that there is no instructor with the requested id
@@ -1047,7 +1088,11 @@ class AddCourseView(View):
             cursor = connection.cursor()
             try:
                 cursor.execute('select cno from courses_course where cname = %s;', [cname])
-                cno = cursor.fetchone()[0]
+                cno = cursor.fetchone()
+
+                if cno:
+                    cno = cno[0]
+
                 for topic in topics:
                     cursor.execute('insert into main_course_topic (cno_id, topicname_id) VALUES (%s, %s);',
                                    [cno, topic])
@@ -1161,7 +1206,11 @@ class ChangeCourseSettingsView(View):
             cursor = connection.cursor()
             try:
                 cursor.execute('select type from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
-                user_type = cursor.fetchone()[0]
+                user_type = cursor.fetchone()
+
+                if user_type:
+                    user_type = user_type[0]
+
             finally:
                 cursor.close()
 
