@@ -207,7 +207,7 @@ class CourseDetailView(View):
 
         cursor.execute('SELECT * '
                        'FROM main_advertisement '
-                       'WHERE cno_id = %s AND status = 1 '
+                       'WHERE cno_id = %s AND status = 2 '
                        'AND (CURRENT_TIMESTAMP BETWEEN startdate AND finishdate) ', [cno])
 
         advertisement_list = cursor.fetchone()
@@ -217,9 +217,7 @@ class CourseDetailView(View):
 
         if (advertisement_list is not None):
             advertisement = {
-                'advertisement': advertisement_list[1],
-                'ad_username_id': advertisement_list[6],
-                'startdate': advertisement_list[4]
+                'advertisement': advertisement_list[1]
             }
 
 
@@ -320,7 +318,8 @@ class CourseDetailView(View):
             'prog': prog,
             'lecture_slug': lecture_slug,
             'finished': finished,
-            'contributors' : contributors
+            'contributors' : contributors,
+            'contributor_cnt': len(contributors)
         }
 
         cursor.close()

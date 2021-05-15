@@ -5,9 +5,11 @@
     {% if course is not None %}
 
     <h1>Course Details</h1>
-    <h1>{{ course.cname }}</h1>
+    <h2>{{ course.cname }}</h2>
 
-    <a href="/account/{{ course.owner }}" >by {{ course.owner }}</a>
+    <a href="/account/{{ course.owner }}" >by {{ course.owner }}</a><br><br>
+
+    <iframe src={{ course.course_img }} width="230" height="200" target="_self"></iframe>
 
     <h2>Rating: {{rating}}</h2>
         {% if is_owner != 0 %}
@@ -30,25 +32,16 @@
 
     <h3>Description</h3>
     <a>{{ course.description }}</a>
-
-    <h4>Contributors of the Course</h4>
-    {% for contributor in contributors %}
-      <a href = /account/{{contributor}}>{{contributor}} {{ contributor.username }} <br></a>
-    {% endfor %}
+    {% if contributor_cnt != 0 %}
+        <h4>Contributors of the Course</h4>
+        {% for contributor in contributors %}
+          <a href = /account/{{contributor}}>{{contributor}} {{ contributor.username }} <br></a>
+        {% endfor %}
+    {% endif %}
 
 
     <h3>Including</h3>
     <a>{{ lecture_count }} lecture is included.<br></a>
-
-    <iframe src={{ course.course_img }} width="230" height="200" target="_self"></iframe>
-
-
-    {% if advertisement is not None %}
-        <a><br>Advertisement<br></a>
-        <a>{{advertisement.startdate}} ad username: {{advertisement.ad_username_id}}<br></a>
-        <img src = {{ advertisement.advertisement }} width="290" height="180" ></img>
-    {% endif %}
-
 
     {% if user_type == 2 %} <!-- advertiser -->
         <br><a href="/offer_ad/{{ course.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
@@ -90,9 +83,14 @@
         <h3>Discounted Price {{discounted_price}}</h3>
     {% endif %}
 
-    {% if lecture_list is not None %}
-        <ol>
-            <h3><br>Lectures:<br></h3>
+    {% if advertisement is not None %}
+        <h3><br>Advertisement<br></h3>
+        <iframe src={{ advertisement.advertisement }} width="230" height="200" target="_self"></iframe>
+    {% endif %}
+
+    {% if lecture_count != 0 %}
+    <h3><br>Lectures:<br></h3>
+    <ol>
       {% for lecture in lecture_list %}
         {% if registered == 0 %}
             <li><p>{{ lecture.lecture_name }}</p></li>
@@ -121,5 +119,4 @@
         <h1>There is no such course in our database :/</h1>
 
     {% endif %}
-
 {% endblock %}
