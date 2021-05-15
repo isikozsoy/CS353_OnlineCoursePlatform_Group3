@@ -9,9 +9,22 @@
 
     <h1>Courses List</h1>
 
+    {% for topic in topic_based %}
+        {% for course in topic %}
+            {% if course.type == 0 %}
+                {% if course.cnt != 0 %}
+                    <h3>{{course.topic}}</h3>
+                {% endif %}
+            {% elif course.type == 1 %}
+                <iframe src={{ course.course_img }} width="120" height="100" target="_self"></iframe>
+                <br><a href="/{{ course.slug }}">{{ course.cname }}</a><br><br>
+            {% endif %}
+        {% endfor %}
+        <br>
+    {% endfor %}
+    <h3>All Courses</h3>
     {% for object in object_list %}
-        {% load static %}
-        <image src="{{ object.course_img.url }}" name="imgbox"></image>
+        <iframe src={{ object.course_img }} width="120" height="100" target="_self"></iframe>
         <br><a href="{{ object.get_url }}">{{ object }}</a><br><br>
     {% endfor %}
 

@@ -72,9 +72,6 @@
             </li>
         {% if user_type == 2 %} <!-- the user is an advertiser -->
             <li class="nav-item active">
-                <a href="/ad_offers" class="btn btn-primary">Ad Offers</a>
-            </li>
-            <li class="nav-item active">
                 <a class="nav-link" href="/wishlist">Favorites</a>
             </li>
             <li class="nav-item active">
@@ -97,10 +94,10 @@
                 <a href="/taught_courses" class="btn btn-primary">My Courses</a>
             </li>
             <li class="nav-item active">
-                <a href="/cart" class="btn btn-primary">Shopping Cart</a>
+                <a href="/ad_offers" class="btn btn-primary">Ad Offers</a>
             </li>
             <li class="nav-item active">
-                <a class="nav-link" href="#tought_courses">My Courses</a>
+                <a href="/cart" class="btn btn-primary">Shopping Cart</a>
             </li>
         {% elif user_type == 0 %} <!-- the user is an student -->
             <li class="nav-item active">

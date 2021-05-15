@@ -13,21 +13,9 @@ class Course(models.Model):
 
     slug = models.SlugField()
 
-    ######### WE CAN CHANGE THE BELOW ENUMERATION AS SMALLINTEGERFIELD
-    class Situation(models.TextChoices):
-        Pnd = 'Pending'
-        Dcl = 'Declined'
-        Appr = 'Approved'
-
-    situation = models.CharField(
-        max_length=8,
-        choices=Situation.choices,
-        default=Situation.Pnd,
-    )
-
     is_private = models.BooleanField(default=False)
 
-    course_img = models.ImageField(upload_to='thumbnails/')  ## varchar 512
+    course_img = models.CharField(max_length=200)
 
     description = models.TextField()
 
