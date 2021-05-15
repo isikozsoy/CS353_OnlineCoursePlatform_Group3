@@ -225,8 +225,15 @@ class CourseDetailView(View):
 
         comment_list = cursor.fetchall()
         comments = [None] * len(comment_list)
+        is_All_None = True
+
         for i in range(0, len(comment_list)):
-            comments[i] = comment_list[i][0]
+            if comment_list[i][0]:
+                comments[i] = comment_list[i][0]
+                is_All_None = False
+
+        if is_All_None:
+            comments = None
 
         cursor.execute('select type '
                        'from user_types '

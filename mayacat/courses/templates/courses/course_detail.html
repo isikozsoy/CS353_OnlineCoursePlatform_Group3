@@ -100,18 +100,20 @@
       {% endfor %}
     </ol>
     {% else %}
-        <h3><br>No lectures in this course :(<br></h3>
+        <h4><br>Lectures: No lectures in this course :(<br></h4>
     {% endif %}
 
     {% if comments is not None %}
         <h3><br>Comments:<br></h3>
         <ol>
         {% for comment in comments %}
-            <li>{{ comment }}</li>
+            {% if comment is not None %}
+                <li>{{ comment }}</li>
+            {% endif %}
         {% endfor %}
         </ol>
     {% else %}
-        <h3><br>No comments for this course :(<br></h3>
+        <h4><br>Comments: No comments for this course :(<br></h4>
     {% endif %}
 
     {% else %}
