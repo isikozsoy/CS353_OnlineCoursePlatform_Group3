@@ -13,7 +13,7 @@
 <br>
      <form action="/{{course_slug}}/edit" method="post">
        {% csrf_token %}
-        <label for="addcontributor">New Contributor for the lecture: </label>
+        <label for="addcontributor">New Contributor for the Course: </label>
         <input id="addcontributor" type="text" name="addcontributor" value="{{ addcontributor }}">
         <input type="submit" value="OK">
       </form>
@@ -23,7 +23,7 @@
         <form action="/{{course_slug}}/deletecontributor/{{c_username}}" method="post">
            {% csrf_token %}
             <a href="account/{{c_username}}">{{c_username}}</a>
-            <input type="submit" value="delete_contributor">
+            <input type="submit" value="Delete Contributor">
         </form>
 
         <br>

@@ -180,6 +180,16 @@ class CourseDetailView(View):
         registered = len(list(Enroll.objects.raw('SELECT * FROM main_enroll WHERE cno_id = %s AND user_id = %s;',
                                                  [cno, request.user.id])))
 
+        cursor.execute('''SELECT U.username 
+                                FROM main_contributor AS MC,auth_user AS U
+                                WHERE MC.cno_id = %s AND MC.user_id = U.id;''', [course.cno])
+
+        contributor_list = cursor.fetchall()
+        contributors = [None] * len(contributor_list)
+        for i in range(0, len(contributors)):
+            contributors[i] = contributor_list[i][0]
+            print(contributor_list[i][0])
+
         lectures = Lecture.objects.raw('''SELECT * FROM courses_lecture as CL WHERE CL.cno_id = %s;''', [cno])
         lecture_count = len(lectures)
 
@@ -307,7 +317,8 @@ class CourseDetailView(View):
             'is_enrolled': is_enrolled,
             'prog': prog,
             'lecture_slug': lecture_slug,
-            'finished': finished
+            'finished': finished,
+            'contributors' : contributors
         }
 
         cursor.close()
@@ -423,16 +434,19 @@ class LectureView(View):
                                     FROM main_contributor AS MC,auth_user AS U
                                     WHERE MC.cno_id = %s AND MC.user_id = U.id AND U.id = %s;''',
                        [course.cno, request.user.id])
-        isContributor = (course.owner_id == request.user.id)
+        isContributor = (course.owner_id == request.user.id) and (course.is_complete == 0)
         if cursor.fetchone():
-            isContributor = True
+            isContributor = True and (course.is_complete == 0)
 
-            cursor.execute( '''SELECT enroll_id FROM main_enroll WHERE cno_id = %s AND user_id = %s''',
+        cursor.execute( '''SELECT enroll_id FROM main_enroll WHERE cno_id = %s AND user_id = %s''',
                                 [course.cno, request.user.id])
-        if not isContributor and not cursor.fetchone():
+        tmp = cursor.fetchone()
+        print(tmp, not isContributor and not tmp)
+        if not isContributor and not tmp:
             return HttpResponseRedirect("/"+course_slug)
 
-
+        cursor.execute('''SELECT username FROM auth_user WHERE id = %s;''',[course.owner_id])
+        owner_username = cursor.fetchone()[0]
 
         lecture_q = Lecture.objects.raw('''SELECT * FROM courses_lecture as CL WHERE CL.lecture_slug = %s;''',
                                         [lecture_slug])
@@ -443,6 +457,7 @@ class LectureView(View):
             # error no such lecture
             print("error no lecture as the stated");
 
+        curuser_id = request.user.id
         print("=4", lecture_q)
         print("=5", lecture)
         isWatched = Progress.objects.raw('''SELECT * FROM main_progress as MP 
@@ -463,17 +478,19 @@ class LectureView(View):
                                                                         WHERE cno_id = %s );'''
                                         , [curuser_id, cno])
             print("prog : ", len(prog))  # raw must include primary key - cursor
-            if (len(prog) == len(lectures)):
-                print("course finished")
-                cursor.execute('''INSERT INTO main_finishes(comment,cno_id,user_id,score) VALUES (%s,%s, %s,%s);''',
-                               ["", cno, curuser_id, 0])
+
         prog = Progress.objects.raw('''SELECT MP.prog_id FROM main_progress as MP
                                                     WHERE MP.s_username_id = %s AND 
                                                           MP.lecture_no_id IN ( SELECT lecture_no
                                                                                 FROM courses_lecture 
                                                                                 WHERE cno_id = %s );'''
                                     , [curuser_id, cno])
-        if (len(prog) == len(lectures)):
+        if (len(prog) == len(lectures) and not isContributor and course.is_complete == 1):
+            cursor.execute( '''SELECT user_id FROM main_finishes WHERE cno_id = %s and user_id = %s;''',
+                                [cno, curuser_id])
+            if not cursor.fetchone():
+                cursor.execute('''INSERT INTO main_finishes(comment,cno_id,user_id,score) VALUES (%s,%s, %s,%s);''',
+                                ["", cno, curuser_id, 0])
             print("This course is finished")
             isFinished = 1
 
@@ -604,7 +621,8 @@ class LectureView(View):
             'isFinished' : isFinished,
             'teaches' : teaches,
             'avg_prog' : avg_prog,
-            'isContributor' : isContributor
+            'isContributor' : isContributor,
+            'owner_username' : owner_username
         }
         cursor.close()
 
@@ -648,7 +666,10 @@ class LectureView(View):
 
             t_id = t_id_list[0]
 
-            cursor.execute('INSERT INTO main_teaches(lecture_no_id,user_id) VALUES (%s,%s);', [lecture_no, t_id])
+            cursor.execute( '''SELECT user_id from main_teaches WHERE lecture_no_id = %s and user_id = %s''',
+                            [lecture_no, t_id])
+            if not cursor.fetchone():
+                cursor.execute('INSERT INTO main_teaches(lecture_no_id,user_id) VALUES (%s,%s);', [lecture_no, t_id])
 
         form_note = NewNoteForm(request.POST)
         if form_note.is_valid():
@@ -799,6 +820,9 @@ class CourseFinishView(View):
         curuser_id = request.user.id
         print(curuser_id)
 
+        cursor.execute( '''SELECT username FROM auth_user WHERE id = %s''',[curuser_id] )
+        username = cursor.fetchone()[0];
+
         if len(course_queue) > 0:
             course = course_queue[0]
         else:
@@ -836,9 +860,11 @@ class CourseFinishView(View):
             'url': '/' + course_slug + '/finish',
             'curcourse': course,
             'user': curuser_id,
+            'username' : username,
             'user_type': user_type,
             'topic_list': topic_list,
-            'form':rate
+            'form':rate,
+            'course_slug':course_slug
         }
         cursor.close()
         return render(request, 'courses/coursefinish.html', context)
