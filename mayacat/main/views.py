@@ -83,7 +83,10 @@ class OffersView(ListView):
         user_id = request.user.id
         offers_q = Advertisement.objects.raw('''SELECT *
                                             FROM main_advertisement
-                                            WHERE ad_username_id = %s''', [user_id])
+                                            WHERE ad_username_id = %s
+                                            ORDER BY startdate''', [user_id])
+
+
 
         cursor = connection.cursor()
         cursor.execute('select type from user_types where id = %s;', [request.user.id])
