@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b3ec7be4-c8ca-44a3-9c3a-8f2322070260" name="Default Changelist" comment="Images are visible now. Gift trigger was added.">
+    <list default="true" id="b3ec7be4-c8ca-44a3-9c3a-8f2322070260" name="Default Changelist" comment="topic_list was added into context.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/courses/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/templates/main/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/templates/main/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/courses/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/courses/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/courses/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/templates/main/ad_offers.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/templates/main/ad_offers.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,8 +15,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -69,6 +69,7 @@
       <workItem from="1620933426079" duration="2772000" />
       <workItem from="1621004486256" duration="6481000" />
       <workItem from="1621012545138" duration="5461000" />
+      <workItem from="1621064359435" duration="4463000" />
     </task>
     <task id="LOCAL-00001" summary="workspace deleted.">
       <created>1620453995894</created>
@@ -161,7 +162,14 @@
       <option name="project" value="LOCAL" />
       <updated>1621018731066</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="topic_list was added into context.">
+      <created>1621020398792</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1621020398792</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -206,6 +214,7 @@
     <MESSAGE value="my courses = taught courses part was fixed." />
     <MESSAGE value="In progress: gift trigger" />
     <MESSAGE value="Images are visible now. Gift trigger was added." />
-    <option name="LAST_COMMIT_MESSAGE" value="Images are visible now. Gift trigger was added." />
+    <MESSAGE value="topic_list was added into context." />
+    <option name="LAST_COMMIT_MESSAGE" value="topic_list was added into context." />
   </component>
 </project>

@@ -84,8 +84,8 @@ class EditTopicForm(forms.ModelForm):
 
 
 class OfferAdForm(forms.Form):
-    ad_img = forms.ImageField(label='Advertisement Image', widget=forms.FileInput(
-                               attrs={'class': 'form-control-file', 'enctype': 'multipart/form-data'}))
+    ad_img = forms.CharField(label='Embedded URL for Advertisement', max_length=100,
+                                  widget=forms.TextInput(attrs={'class': 'form-control'}))
     price = forms.DecimalField(label='Offered Price (TL)', max_digits=6, decimal_places=2,
                                widget=forms.NumberInput(attrs={'class': 'form-control'}))
     start_date = forms.DateField(label='Start Date', initial=date.today)

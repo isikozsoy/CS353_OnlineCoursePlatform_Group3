@@ -7,7 +7,7 @@
   <ol>
     {% for item in items %}
     <li>
-      <img src = {{ item.ad }} width="290" height="180" ></img>
+      <iframe src={{ item.ad }} width="230" height="200" target="_self"></iframe>
       <br />Course Name: {{ item.cname }} Payment: {{ item.payment }} TL Advertiser: {{item.ad_username.0}}<br>
       Start Date: {{item.startdate}} End Date: {{item.finishdate}}
       {% if item.status == 0 %}
@@ -21,7 +21,7 @@
           Status: Accepted <br>
         {% endif %}
       {% endif %}
-    </li>
+    </li><br><br>
     {% endfor %}
   </ol>
 
