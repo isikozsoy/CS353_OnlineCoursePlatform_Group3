@@ -176,7 +176,11 @@ class CourseDetailView(View):
         lecture_count = len(lectures)
 
         cursor.execute('SELECT AVG(score) FROM main_finishes WHERE cno_id = %s AND score !=0', [cno])
-        rating = cursor.fetchone()[0]
+        rating = cursor.fetchone()
+        if rating:
+            rating = rating[0]
+            rating = round(rating)
+
         print("Rating:", rating)
 
         cursor.execute('SELECT * '
