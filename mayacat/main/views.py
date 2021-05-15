@@ -528,7 +528,22 @@ class ShoppingCartView(View):
 
 class ShoppingCheckoutView(View):
     def get(self, request):
+
         cursor = connection.cursor()
+
+        cursor.execute('''SELECT mic.receiver_username_id, cc.cname
+                            FROM main_inside_cart AS mic, courses_course AS cc
+                            WHERE mic.username_id = %s 
+                            AND mic.cno_id = cc.cno''', [request.user.id])
+        items = cursor.fetchall()
+
+        for item in items:
+            if item[0] is None:
+                html = "ERROR: The username of the gift's receiver cannot be left blank<p> <a href='/cart'>Go back to cart</a>"
+                return HttpResponse(html)
+
+
+        print('items: ', items)
 
         cursor.execute('select type '
                        'from auth_user '
