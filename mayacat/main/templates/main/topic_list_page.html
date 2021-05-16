@@ -8,17 +8,13 @@
       <a href="/{{ course.slug }}" class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
           <h5 class="mb-1">{{ course.cname }}</h5>
-          <small>Rating: </small>
-            <div class="image-parent">
-                <img src="media_root/{{ course.course_img }}" class="img-fluid" alt="">
-            </div>
         </div>
         <p class="mb-1">{{ course.description }}</p>
           {% if course.new_price %}
               <small>Price: <s>{{ course.price }}</s>{{ course.new_price }}</small>
-      {% else %}
+          {% else %}
               <small>Price: {{ course.price }}</small>
-      {% endif %}
+          {% endif %}
       </a>
     {% endfor %}
     </div>
