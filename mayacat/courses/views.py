@@ -568,6 +568,11 @@ class LectureView(View):
                                         WHERE postno NOT IN (SELECT answer_no_id AS postno FROM main_quest_answ ) 
                                             AND lecture_no_id = %s; ''', [lecture.lecture_no])
 
+        cursor.execute('''SELECT postno,post,date,username,username_id
+                            FROM main_post, auth_user
+                            WHERE postno NOT IN (SELECT answer_no_id AS postno FROM main_quest_answ ) 
+                            AND lecture_no_id = %s AND username_id = id; ''', [lecture.lecture_no])
+        questions = cursor.fetchall()
         qanda = [None] * len(questions)
 
         answers = [None] * len(questions)
@@ -575,7 +580,12 @@ class LectureView(View):
             answers[i] = Quest_answ.objects.raw('''SELECT *
                                                  FROM main_quest_answ, main_post
                                                  WHERE question_no_id = %s AND answer_no_id = postno;''',
-                                                [questions[i].postno])
+                                                [questions[i][0]])
+            cursor.execute( '''SELECT postno,post,date,username,username_id
+                                                 FROM main_quest_answ, main_post,auth_user
+                                                 WHERE question_no_id = %s AND answer_no_id = postno AND username_id = id;''',
+                                                [questions[i][0]] )
+            answers[i] = cursor.fetchall()
             qanda[i] = (questions[i], answers[i])
         print(qanda)
 
@@ -1018,7 +1028,7 @@ class CourseFinishView(View):
                 rate = 5
             cursor.execute('UPDATE main_finishes SET score = %s where cno_id = %s AND user_id = %s;',
                            [int(rate), course.cno, curuser_id])
-        cursor.close()
+
 
         first_last_name = FirstLastName(request.POST)
         if first_last_name.is_valid():
@@ -1027,6 +1037,7 @@ class CourseFinishView(View):
 
             cursor.execute('update auth_user set first_name = %s, last_name = %s where id = %s;',
                            [first_name, last_name, request.user.id])
+        cursor.close()
         return HttpResponseRedirect(request.path)
 
 
