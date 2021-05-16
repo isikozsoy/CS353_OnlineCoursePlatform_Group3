@@ -84,3 +84,18 @@ def create_view():
         print(sys.exc_info())
     finally:
         cursor.close()
+
+def create_enroll_wishlist_delete_trigger():
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute('drop trigger if exists wishlist_delete_trigger;')
+        cursor.execute('create trigger wishlist_delete_trigger after insert on main_enroll '
+                       'for each row '
+                       'begin '
+                            'delete from main_wishes where cno_id = new.cno_id and user_id = new.user_id;'
+                       'end;')
+    except Error:
+        print(sys.exc_info())
+    finally:
+        cursor.close()

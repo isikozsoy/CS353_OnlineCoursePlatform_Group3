@@ -124,8 +124,8 @@
             <a href="{% url 'courses:course_edit' course.slug %}" class="btn btn-secondary">Edit Course</a>
             {% if course.is_complete == 0 %}
                 <a href="{% url 'courses:mark_as_complete' course.slug %}" class="btn btn-secondary">Mark as complete</a>
+                <a href="{% url 'courses:add_lecture' course.slug %}" class="btn btn-primary">Add Lecture</a>
             {% endif %}
-            <a href="{% url 'courses:add_lecture' course.slug %}" class="btn btn-primary">Add Lecture</a>
         {% endif %}
 
     <h3>Description</h3>

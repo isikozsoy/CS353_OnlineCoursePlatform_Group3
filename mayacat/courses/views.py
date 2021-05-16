@@ -675,7 +675,10 @@ class LectureView(View):
             cursor.execute('SELECT id from auth_user where username = %s', [t_username])
             t_id_list = cursor.fetchone()
             if not t_id_list:
-                return HttpResponseRedirect(request.path)
+                response_str = 'There is no teacher with this username. <a href="/'
+                response_str += request.path
+                response_str += '">Return to lecture page...</a>'
+                return HttpResponse(response_str)
 
             t_id = t_id_list[0]
 
@@ -694,7 +697,7 @@ class LectureView(View):
         if form_question.is_valid():
             question = form_question.cleaned_data['question']
             print("Question : ", question)
-            cursor.execute('insert into main_post (post, lecture_no_id, username_id) values (%s, %s, %s);',
+            cursor.execute('insert into main_post (post, date, lecture_no_id, username_id) values (%s, curdate(), %s, %s);',
                            [question, lecture_no, request.user.id])
 
         course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
@@ -705,7 +708,7 @@ class LectureView(View):
         if add_announcement.is_valid():
             newannouncement = add_announcement.cleaned_data['addannouncement']
             cursor.execute( '''insert into main_announcement (ann_date, ann_text, cno_id,i_user_id)
-                                values (CURRENT_TIMESTAMP,%s, %s, %s);''',
+                                values (curdate(),%s, %s, %s);''',
                             [newannouncement, course.cno, request.user.id])
 
         cursor.close()
@@ -719,19 +722,24 @@ class DeleteTeacherView( View ):
         cursor.execute( 'SELECT id FROM auth_user WHERE username = %s;',[t_username] )
         t_id_list = cursor.fetchone()
         if(t_id_list == None):
-            return HttpResponseRedirect("/",course_slug,"/",lecture_slug)
+            response_str = 'There is no teacher with this username. <a href="'
+            response_str += '/' + course_slug + '/' + lecture_slug
+            response_str += '">Return to lecture page...</a>'
+            return HttpResponse(response_str)
         t_id = t_id_list[0];
         print(t_id)
         cursor.execute('select lecture_no from courses_lecture where lecture_slug = %s;', [lecture_slug])
         lecture_no_row = cursor.fetchone()
         if not lecture_no_row:
-            return HttpResponseRedirect('/')
+            response_str = 'There is no lecture with this name. <a href="/">Return to main page...</a>'
+            return HttpResponse(response_str)
 
         lecture_no = lecture_no_row[0]
 
         cursor.execute('DELETE FROM main_teaches WHERE user_id = %s and lecture_no_id = %s;', [t_id, lecture_no])
         cursor.close()
-        return HttpResponseRedirect("/"+course_slug+"/"+lecture_slug)
+        response_str = 'Teacher successfully deleted. <a href="/' + course_slug + '/' + lecture_slug + '">Return to lecture page...</a>'
+        return HttpResponse(response_str)
 
 class DeleteAssignmentView( View ):
     def post(self, request, course_slug, lecture_slug, a_id, *args, **kwarg):
@@ -1142,17 +1150,26 @@ class AddLectureToCourseView(View):
 
     def get(self, request, course_slug):
         cursor = connection.cursor()
-        cursor.execute('select owner_id, cname from courses_course where slug = %s;', [course_slug])
+        cursor.execute('select owner_id, cname, cno from courses_course where slug = %s;', [course_slug])
         cno_row = cursor.fetchone()
         cursor.close()
         if not cno_row:  # no course with this course slug (i.e. URL)
-            return HttpResponseRedirect('/')  # return to main page
+            return HttpResponse('No course with this name. <a href="/">Returning to the main page...</a>')  # return to main page
 
         owner_id = cno_row[0]
         cname = cno_row[1]
+        cno = cno_row[2]
         # if the owner is not the user logging in, return to main page
         if request.user.id != owner_id:
-            return HttpResponseRedirect('/')
+            return HttpResponse('You cannot access this page. <a href="/login">Returning to the main page...</a>')
+
+        cursor = connection.cursor()
+        cursor.execute('select is_complete from courses_course where cno = %s;', [cno])
+        is_complete = cursor.fetchone()[0]
+        if is_complete == 1:
+            response_str = 'You cannot add any more lectures to this course. The course is marked as complete. ' \
+                           '<a href="/' + course_slug + '">Return to the course page...</a>'
+            return HttpResponse(response_str)
 
         message = 'Add a lecture to ' + cname
 
@@ -1414,7 +1431,8 @@ def mark_as_complete(request, course_slug):
 
             # now we can finally mark the course as complete
             cursor.execute('update courses_course set is_complete = 1 where cno = %s;', [cno])
-            return redirect('courses:desc')
+            response_str = '/' + course_slug
+            return redirect(response_str)
         except Error:
             return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
         finally:
