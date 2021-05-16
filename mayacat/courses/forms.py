@@ -104,8 +104,11 @@ class OfferAdForm(forms.Form):
                                   widget=forms.TextInput(attrs={'class': 'form-control'}))
     price = forms.DecimalField(label='Offered Price (TL)', max_digits=6, decimal_places=2,
                                widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    start_date = forms.DateField(label='Start Date', initial=date.today)
-    end_date = forms.CharField(label='End Date', initial=date.today)
+    start_date = forms.DateField(label='Start Date', initial=date.today, widget=forms.DateInput(
+        attrs={'class': 'form-control datepicker-input', 'type': 'date'})
+)
+    end_date = forms.CharField(label='End Date', initial=date.today, widget=forms.DateInput(
+        attrs={'class': 'form-control datepicker-input', 'type': 'date'}))
 
 
 class CreateLectureForm(forms.Form):
