@@ -457,7 +457,7 @@ class LectureView(View):
             course = course_queue[0]
             print("=2", course, course.cno)
         else:
-            return HttpResponseRedirect("/")
+            return HttpResponse("No course with this name. <a href='/'>Return to main page...</a>")
 
         cursor.execute('''SELECT U.username 
                                     FROM main_contributor AS MC,auth_user AS U
@@ -920,7 +920,7 @@ class CourseCertificateView(View):
         }
         cursor.close()
 
-        return render(request, 'courses/coursecertificate.html', context)
+        return render(request, 'certificate.html', context)
 
 
 class CourseFinishView(View):
@@ -1028,13 +1028,14 @@ class CourseFinishView(View):
                 rate = 5
             cursor.execute('UPDATE main_finishes SET score = %s where cno_id = %s AND user_id = %s;',
                            [int(rate), course.cno, curuser_id])
-
+        cursor.close()
 
         first_last_name = FirstLastName(request.POST)
         if first_last_name.is_valid():
             first_name = first_last_name.cleaned_data['first_name']
             last_name = first_last_name.cleaned_data['last_name']
 
+            cursor = connection.cursor()
             cursor.execute('update auth_user set first_name = %s, last_name = %s where id = %s;',
                            [first_name, last_name, request.user.id])
         cursor.close()

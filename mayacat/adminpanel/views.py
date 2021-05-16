@@ -17,11 +17,12 @@ class AdminMainView(View):
     template_name = "adminpanel/admin_main.html"
 
     def get(self, request):
+        print(request.user.id)
         if request.method == 'GET' and request.user.is_authenticated and request.user.is_superuser:
             discount_form = DiscountForm()
 
             return render(request, self.template_name, {'discount_form': discount_form})
-        return HttpResponseRedirect('/')
+        return HttpResponse('Not authenticated or not a superuser. <a href="/">Return to the main page...</a>')
 
 
 def create_discount(request):
@@ -113,23 +114,7 @@ class AdminFirstRegisterView(View):
     def get(self, request):
         if not request.user.is_authenticated or not request.user.is_superuser:
             return HttpResponseRedirect('/')
-        # also check if the user needs to refresh their ssn and address
-        cursor = connection.cursor()
-        try:
-            cursor.execute('select * from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
-            result_user = cursor.fetchall()
-            if result_user:  # meaning the user has previously been saved as an admin
-                return redirect('adminpanel:admin_main')
-        finally:
-            cursor.close()
-        # ask for ssn and address
-        admin_save_form = SiteAdminSaveForm()
-
-        topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
-
-        return render(request, self.template_name, {'admin_save_form': admin_save_form,
-                                                    'user_type': 3,
-                                                    'topic_list': topic_list})
+        return redirect('adminpanel:admin_main')
 
     def post(self, request):
         admin_save_form = SiteAdminSaveForm(request.POST)
@@ -192,15 +177,10 @@ class AdminCreateView(View):  # this page is '/admin'
             return HttpResponseRedirect('/admin')
 
         if "student_create" in request.POST:
-            cursor.execute('insert into accounts_defaultuser (user_ptr_id, password_orig, type) VALUES (%s, %s, %s);',
-                           [new_user_id, password, 0])
             cursor.execute('insert into accounts_student (user_ptr_id, phone) VALUES (%s, %s);',
                            [new_user_id, phone])
         elif "instructor_create" in request.POST:
             if form_instructor.is_valid():
-                cursor.execute(
-                    'insert into accounts_defaultuser (user_ptr_id, password_orig, type) VALUES (%s, %s, %s);',
-                    [new_user_id, password, 1])
                 cursor.execute('insert into accounts_student (user_ptr_id, phone) VALUES (%s, %s);',
                                [new_user_id, phone])
                 description = form_instructor.cleaned_data['description']
@@ -212,9 +192,6 @@ class AdminCreateView(View):  # this page is '/admin'
             if form_advertiser.is_valid():
                 name = form_advertiser.cleaned_data['name']
                 company_name = form_advertiser.cleaned_data['company_name']
-                cursor.execute(
-                    'insert into accounts_defaultuser (user_ptr_id, password_orig, type) VALUES (%s, %s, %s);',
-                    [new_user_id, password, 2])
                 cursor.execute('insert into accounts_advertiser (user_ptr_id, name, company_name, '
                                'phone) VALUES (%s, %s, %s, %s);',
                                [new_user_id, name, company_name, phone])
@@ -230,9 +207,6 @@ class AdminCreateView(View):  # this page is '/admin'
                 admin_user.save()
 
                 cursor.execute('update auth_user set is_superuser = 1 where username = %s;', [username])
-                cursor.execute(
-                    'insert into accounts_defaultuser (user_ptr_id, password_orig, type) VALUES (%s, %s, %s);',
-                    [new_user_id, password, 3])
                 cursor.execute('insert into accounts_siteadmin (user_ptr_id, ssn, address) VALUES (%s, %s, %s);',
                                [new_user_id, ssn, address])
             else:
@@ -243,12 +217,7 @@ class AdminCreateView(View):  # this page is '/admin'
         return redirect('adminpanel:admin_create')
 
     def save_as_siteadmin(self, user_id):
-        cursor = connection.cursor()
-        cursor.execute('select user_ptr_id from accounts_defaultuser where user_ptr_id = %s;', [user_id])
-        selected = cursor.fetchall()
-        cursor.close()
-        if not selected:  # if the user is not officially saved
-            return HttpResponseRedirect('/admin/register')
+        return HttpResponseRedirect('/')
 
 
 def create_lecture(request):
@@ -302,9 +271,9 @@ def save_courses(request):
 
             cursor = connection.cursor()
             try:
-                cursor.execute('insert into courses_course (cname, price, slug, situation, is_private, course_img, '
-                               'description, owner_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);',
-                               [cname, price, slug, 0, private, course_img, description, owner_id])
+                cursor.execute('insert into courses_course (cname, price, slug, is_private, course_img, '
+                               'description, owner_id) VALUES (%s, %s, %s, %s, %s, %s, %s);',
+                               [cname, price, slug, private, course_img, description, owner_id])
             finally:
                 cursor.close()
 
