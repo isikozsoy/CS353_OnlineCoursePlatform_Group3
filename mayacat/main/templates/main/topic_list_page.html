@@ -15,7 +15,7 @@
         </div>
         <p class="mb-1">{{ course.description }}</p>
           {% if course.new_price %}
-              <small><s>Price: {{ course.price }}</s>{{ course.new_price }}</small>
+              <small>Price: <s>{{ course.price }}</s>{{ course.new_price }}</small>
       {% else %}
               <small>Price: {{ course.price }}</small>
       {% endif %}
