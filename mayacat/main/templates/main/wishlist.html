@@ -46,7 +46,7 @@ img {
     clear: both;
 }
 
-.Mycourses {
+.header {
     text-align: center;
     background-color: black;
     padding-top: 5px;
@@ -54,28 +54,37 @@ img {
     min-height: 70px;
 }
 
+.EmptyError{
+    text-align: center;
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+
 </style>
 
 {% endblock %}
 
 {% block main_content %}
-
-<div class = "Mycourses">
-    <h1>Wishlist</h1>
+    <div class = "header">
+        <h1>Wishlist</h1>
     </div>
+    {% if wishlist_q %}
 
-    <div class="row">
-    {% for wish in wishlist_q %}
-        <div class="column">
-            <div class="card" >
-                <iframe src={{ wish.course_img }} width="250" height="130" target="_self"></iframe>
+            <div class="row">
+            {% for wish in wishlist_q %}
+                <div class="column">
+                    <div class="card" >
+                        <iframe src={{ wish.course_img }} width="250" height="130" target="_self"></iframe>
 
-                <div class="container">
-        <a href = "/{{wish.slug}}">{{ wish.cname }}</a>
+                        <div class="container">
+                <a href = "/{{wish.slug}}">{{ wish.cname }}</a>
+                            </div>
                     </div>
-            </div>
-        </div>
-    {% endfor %}
+                </div>
+            {% endfor %}
 
-</div>
+        </div>
+    {% else %}
+        <div class = "EmptyError" ><h2>Your wishlist is empty!</h2></div>
+    {% endif %}
 {% endblock %}

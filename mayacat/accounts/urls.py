@@ -12,5 +12,6 @@ urlpatterns = [
     path('account', AccountView.as_view(), name='account'),
     path('account/<username>', UserView.as_view(), name='user_account'),
     path('interested_in/add/<topic>', add_interested_topic, name='add_interested_in'),
-    path('interested_in/remove/<topic>', remove_interested_topic, name='remove_interested_in')
+    path('interested_in/remove/<topic>', remove_interested_topic, name='remove_interested_in'),
+    path('update_to_instructor', update_to_instructor, name='update_to_instructor')
 ]

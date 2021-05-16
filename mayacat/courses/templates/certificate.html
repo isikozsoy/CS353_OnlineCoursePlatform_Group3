@@ -11,7 +11,7 @@
 		   <br><br>
 		   <span style="font-size:30px"><b>{{ first_name }} {{ last_name }}</b></span><br/><br/>
 		   <span style="font-size:25px"><i>has completed the course</i></span> <br/><br/>
-		   <span style="font-size:30px">{{ course.cname }}</span> <br/><br/>
+		   <span style="font-size:30px">{{ curcourse.cname }}</span> <br/><br/>
 		   <span style="font-size:15px"><i>This document is dated</i></span><br>
 		  <span style="font-size:30px"><p id="date"></p></span>
 		  <span style="font-size:25px"><i>at MayaCat</i></span><br>
@@ -19,7 +19,7 @@
 	</div>
 	
 	<script>
-		document.getElementById("date").innerHTML = DateFormatter.getFormattedDate( Date(), "yyyy-mm-dd");
+		document.getElementById("date").innerHTML = Date();
 	</script>
 </body>
 </html>

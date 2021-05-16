@@ -112,6 +112,8 @@ class RegisterView(View):
             password = form.cleaned_data['password']
             email = form.cleaned_data['email']
             phone = form.cleaned_data['phone']
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
 
             # if the user already exists, return to the original registration page
             if self.exists(username):
@@ -136,13 +138,15 @@ class RegisterView(View):
             print("Here1")
             user_id = cursor.fetchone()[0]
 
+            cursor.execute('update auth_user set first_name = %s, last_name = %s where id = %s;',
+                           [first_name, last_name, user_id])
+
             # Then we go on to add this model to the corresponding submodels, i.e. DefaultUser where password_orig
             #  will be saved, Student, Instructor, Advertiser, etc. For this, we need the id of the user that we added
             #  previously.
 
             # The registration type is determined from the path the user takes for the account
             if "advertiser" in request.path:
-                name = form.cleaned_data['name']
                 company_name = form.cleaned_data['company_name']
 
                 cursor.close()
@@ -150,7 +154,7 @@ class RegisterView(View):
                 cursor.execute(
                     "insert into accounts_advertiser(user_ptr_id, name, company_name, phone) "
                     "values ( %s, %s, %s, %s)",
-                    [user_id, name, company_name, phone])
+                    [user_id, "", company_name, phone])
             elif "instructor" in request.path:
                 description = form.cleaned_data['description']
 
@@ -425,4 +429,11 @@ def remove_interested_topic(request, topic):
     cursor.execute("DELETE FROM main_interested_in WHERE topic_id = %s AND s_username_id = %s",
                    [topic, request.user.id])
     cursor.close()
+    return HttpResponseRedirect('/account')
+
+def update_to_instructor(request):
+    cursor = connection.cursor()
+    cursor.execute('INSERT INTO accounts_instructor(student_ptr_id, description) values (%s, %s)',
+                   [request.user.id, ""])
+    cursor.execute('UPDATE auth_user SET user_type = 1 WHERE id = %s', request.user.id)
     return HttpResponseRedirect('/account')

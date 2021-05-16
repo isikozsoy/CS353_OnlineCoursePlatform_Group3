@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b3ec7be4-c8ca-44a3-9c3a-8f2322070260" name="Default Changelist" comment="Course detailed for contributor.">
+    <list default="true" id="b3ec7be4-c8ca-44a3-9c3a-8f2322070260" name="Default Changelist" comment="Advertiser register was fixed.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mayacat/main/templates/main/wishlist.html" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/templates/main/wishlist.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mayacat/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mayacat/main/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,6 +71,7 @@
       <workItem from="1621086554786" duration="25000" />
       <workItem from="1621096821399" duration="727000" />
       <workItem from="1621149278792" duration="2211000" />
+      <workItem from="1621166660998" duration="12658000" />
     </task>
     <task id="LOCAL-00001" summary="workspace deleted.">
       <created>1620453995894</created>
@@ -184,7 +185,28 @@
       <option name="project" value="LOCAL" />
       <updated>1621113361521</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="wishlist is modified.">
+      <created>1621155847193</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1621155847193</updated>
+    </task>
+    <task id="LOCAL-00018" summary="remove from wishlist button was added into shopping cart. become an instructor button was added into account page for student. buttons were moved top for not authenticated user.">
+      <created>1621185221109</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1621185221110</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Advertiser register was fixed.">
+      <created>1621193586388</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1621193586388</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -233,6 +255,9 @@
     <MESSAGE value="Course image is added into my courses." />
     <MESSAGE value="Course detailed view was modified." />
     <MESSAGE value="Course detailed for contributor." />
-    <option name="LAST_COMMIT_MESSAGE" value="Course detailed for contributor." />
+    <MESSAGE value="wishlist is modified." />
+    <MESSAGE value="remove from wishlist button was added into shopping cart. become an instructor button was added into account page for student. buttons were moved top for not authenticated user." />
+    <MESSAGE value="Advertiser register was fixed." />
+    <option name="LAST_COMMIT_MESSAGE" value="Advertiser register was fixed." />
   </component>
 </project>

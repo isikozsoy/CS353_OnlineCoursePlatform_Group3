@@ -123,6 +123,9 @@ def add_to_wishlist(request, course_slug):
     else:
         cursor.execute('DELETE FROM main_wishes WHERE cno_id = %s AND user_id = %s', [cno, user_id])
 
+    if str(request.path).find("/to_cart") != -1:
+        return redirect("main:cart")
+
     return redirect("main:wishlist_items")
 
 
@@ -418,7 +421,7 @@ class ShoppingCartView(View):
         total_price = cursor.fetchone()[0]
 
         cursor.execute(
-            'SELECT inside_cart_id, cname, price, slug, course_img, receiver_username_id, inside_cart_id '
+            'SELECT inside_cart_id, cname, price, slug, course_img, receiver_username_id, inside_cart_id, cno '
             'FROM courses_course AS cc, main_inside_cart AS mic '
             'WHERE cc.cno = mic.cno_id AND mic.username_id = %s;', [request.user.id])
         items_on_cart = cursor.fetchall()
@@ -427,6 +430,10 @@ class ShoppingCartView(View):
                        ' on receiver_username_id = id'
                        ' WHERE username_id = %s', [request.user.id])
         receivers = cursor.fetchall()
+
+        cursor.execute('SELECT cno_id FROM main_wishes WHERE user_id = %s;',
+                        [request.user.id])
+        wishes = cursor.fetchall()
 
         if count > 0:
             items = [None] * count
@@ -439,8 +446,12 @@ class ShoppingCartView(View):
                     'course_img': items_on_cart[i][4],
                     'isGift': items_on_cart[i][5],
                     'inside_cart_id': items_on_cart[i][6],
-                    'receiver_username': receivers[i]
+                    'receiver_username': receivers[i],
+                    'is_wish': False
                 }
+                for wish in wishes:
+                    if items_on_cart[i][7] == wish[0]:
+                        items[i]["is_wish"] = True
         else:
             items = None
             count = 0
@@ -599,7 +610,7 @@ class AdOffersView(View):
         # Date is passed. Mark as refused.
         today = datetime.today().strftime('%Y-%m-%d')
         cursor.execute('SELECT advertisementno FROM main_advertisement INNER JOIN courses_course on cno_id = cno '
-                       'WHERE owner_id = %s AND startdate <= %s', [request.user.id, today])
+                       'WHERE status = 0 AND owner_id = %s AND startdate < %s', [request.user.id, today])
         ad_passed = cursor.fetchall()
         for ad_no in ad_passed:
             cursor.execute('UPDATE main_advertisement '
@@ -632,7 +643,7 @@ class AdOffersView(View):
                     'cname': offers[i][6],
                     'ad_username': advertiser_usernames[i]
                 }
-            context = context + {'items': items}
+            context = {'user_type': user_type, "topic_list": topic_list, 'items': items}
 
         return render(request, 'main/ad_offers.html', context)
 
