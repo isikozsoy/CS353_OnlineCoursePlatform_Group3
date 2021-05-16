@@ -112,6 +112,8 @@ class RegisterView(View):
             password = form.cleaned_data['password']
             email = form.cleaned_data['email']
             phone = form.cleaned_data['phone']
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
 
             # if the user already exists, return to the original registration page
             if self.exists(username):
@@ -135,6 +137,9 @@ class RegisterView(View):
             cursor.execute('select id from auth_user where username = %s;', [username])
             print("Here1")
             user_id = cursor.fetchone()[0]
+
+            cursor.execute('update auth_user set first_name = %s, last_name = %s where id = %s;',
+                           [first_name, last_name, user_id])
 
             # Then we go on to add this model to the corresponding submodels, i.e. DefaultUser where password_orig
             #  will be saved, Student, Instructor, Advertiser, etc. For this, we need the id of the user that we added
