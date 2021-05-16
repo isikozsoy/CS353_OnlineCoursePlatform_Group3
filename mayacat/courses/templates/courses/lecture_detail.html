@@ -36,11 +36,16 @@
     <h4>Contributors of the Course</h4>
     {% for contributor in contributors %}
       <a href = /account/{{contributor}}>{{contributor}} {{ contributor.username }} <br></a>
+
+    {%empty%}
+    <a>None</a>
     {% endfor %}
 
     <h4>Teachers of the Lecture</h4>
     {% for teacher in teaches %}
         <a href = /account/{{teacher}}>{{teacher}} {{ teacher.username }} <br></a>
+    {%empty%}
+    <a>None</a>
     {% endfor %}
 
   <h3>This Course Includes</h3>
@@ -127,7 +132,7 @@
   <br>
 
   {% for question,answers in qanda %}
-  <a>Question : {{ question.postno }} {{ question.post }}</a>
+  <a>Question : {{ question.post }}</a>
     {% if question.username_id == request.user.id %}
         <form action="{{url}}/deletequestion/{{question.postno}}" method="post">
            {% csrf_token %}
@@ -136,7 +141,7 @@
     {% endif %}
 <br>
   {% for a in answers %}
-  <a>Answer : {{ a.postno }} {{ a.post }}</a>
+  <a>Answer : {{ a.post }}</a>
     {% if a.username_id == request.user.id %}
         <form action="{{url}}/deleteanswer/{{a.postno}}" method="post">
            {% csrf_token %}
