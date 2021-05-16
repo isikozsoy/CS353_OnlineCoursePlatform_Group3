@@ -144,6 +144,7 @@ class AdminCreateView(View):  # this page is '/admin'
         form_instructor = InstructorCreate()
         form_advertiser = AdvertiserCreate()
         form_siteadmin = SiteAdminCreate()
+        form_student = StudentCreate()
         form_course = CourseCreate()
         form_lecture = LectureCreate()
 
@@ -153,10 +154,12 @@ class AdminCreateView(View):  # this page is '/admin'
                                                     'form_siteadmin': form_siteadmin,
                                                     'form_course': form_course,
                                                     'form_lecture': form_lecture,
-                                                    'user_type': 3, })
+                                                    'user_type': 3,
+                                                    'form_student': form_student, })
 
     def post(self, request):
         form_user = UserCreate(request.POST)
+        form_student = StudentCreate(request.POST)
         form_instructor = InstructorCreate(request.POST)
         form_advertiser = AdvertiserCreate(request.POST)
         form_siteadmin = SiteAdminCreate(request.POST)
@@ -164,7 +167,8 @@ class AdminCreateView(View):  # this page is '/admin'
         if form_user.is_valid():
             username = form_user.cleaned_data['username']
             email = form_user.cleaned_data['email']
-            phone = form_user.cleaned_data['phone']
+            first_name = form_user.cleaned_data['first_name']
+            last_name = form_user.cleaned_data['last_name']
             password = form_user.cleaned_data['password']
 
             new_user = User(username=username, email=email, password=password)
@@ -173,14 +177,18 @@ class AdminCreateView(View):  # this page is '/admin'
 
             cursor.execute('select id from auth_user where username = %s;', [username])
             new_user_id = cursor.fetchone()[0]
+            cursor.execute('update auth_user set first_name = %s, last_name = %s where id = %s;',
+                           [first_name, last_name, new_user_id])
         else:
-            return HttpResponseRedirect('/admin')
+            return HttpResponse('Form is not valid. <a href="/admin/create">Return here...</a>')
 
         if "student_create" in request.POST:
+            phone = form_student.cleaned_data['phone']
             cursor.execute('insert into accounts_student (user_ptr_id, phone) VALUES (%s, %s);',
                            [new_user_id, phone])
         elif "instructor_create" in request.POST:
             if form_instructor.is_valid():
+                phone = form_instructor.cleaned_data['phone']
                 cursor.execute('insert into accounts_student (user_ptr_id, phone) VALUES (%s, %s);',
                                [new_user_id, phone])
                 description = form_instructor.cleaned_data['description']
@@ -190,11 +198,11 @@ class AdminCreateView(View):  # this page is '/admin'
                 return HttpResponseRedirect('/admin')
         elif "advertiser_create" in request.POST:
             if form_advertiser.is_valid():
-                name = form_advertiser.cleaned_data['name']
+                phone = form_advertiser.cleaned_data['phone']
                 company_name = form_advertiser.cleaned_data['company_name']
-                cursor.execute('insert into accounts_advertiser (user_ptr_id, name, company_name, '
-                               'phone) VALUES (%s, %s, %s, %s);',
-                               [new_user_id, name, company_name, phone])
+                cursor.execute('insert into accounts_advertiser (user_ptr_id, company_name, '
+                               'phone) VALUES (%s, %s, %s);',
+                               [new_user_id, company_name, phone])
             else:
                 return HttpResponseRedirect('/admin')
         elif "siteadmin_create" in request.POST:

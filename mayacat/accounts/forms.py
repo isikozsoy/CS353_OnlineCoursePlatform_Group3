@@ -34,7 +34,6 @@ class AccountViewForm(forms.Form):
             self.fields['company_name'] = forms.CharField(label='Company Name', max_length=100, required=False,
                                                           widget=forms.TextInput(attrs={'class': 'form-control',
                                                                                         'placeholder': self.user.company_name}))
-            self.fields['name'].widget.attrs['readonly'] = self.readonly
             self.fields['company_name'].widget.attrs['readonly'] = self.readonly
         elif self.user_type == 1:  # instructor
             self.fields['description'] = forms.CharField(label='Description', max_length=1000, required=False,
