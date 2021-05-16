@@ -133,6 +133,7 @@ class RegisterView(View):
             new_user.save()
             cursor = connection.cursor()
             cursor.execute('select id from auth_user where username = %s;', [username])
+            print("Here1")
             user_id = cursor.fetchone()[0]
 
             # Then we go on to add this model to the corresponding submodels, i.e. DefaultUser where password_orig
@@ -163,6 +164,7 @@ class RegisterView(View):
                 cursor.execute(
                     "insert into accounts_instructor(student_ptr_id, description) values ( %s, %s)",
                     [new_user.id, description])
+            else:
                 cursor.close()
                 cursor = connection.cursor()
                 cursor.execute(
