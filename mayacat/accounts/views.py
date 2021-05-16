@@ -147,7 +147,6 @@ class RegisterView(View):
 
             # The registration type is determined from the path the user takes for the account
             if "advertiser" in request.path:
-                name = form.cleaned_data['name']
                 company_name = form.cleaned_data['company_name']
 
                 cursor.close()
@@ -155,7 +154,7 @@ class RegisterView(View):
                 cursor.execute(
                     "insert into accounts_advertiser(user_ptr_id, name, company_name, phone) "
                     "values ( %s, %s, %s, %s)",
-                    [user_id, name, company_name, phone])
+                    [user_id, "", company_name, phone])
             elif "instructor" in request.path:
                 description = form.cleaned_data['description']
 
