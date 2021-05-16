@@ -46,10 +46,12 @@
       E-mail: {{ form.email }}<br>
       Phone: {{ form.phone }}<br>
 
+      First name: {{ form.first_name }}<br>
+      Last name: {{ form.last_name }}<br>
+
       {% if "instructor" in path|lower %}
         Your instructor description: {{ form.description }}<br>
       {% elif "advertiser" in path|lower %}
-        Name & Surname: {{ form.name }}<br>
         Company Name: {{ form.company_name }}<br>
       {% endif %}
 
