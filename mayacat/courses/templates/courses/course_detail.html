@@ -145,7 +145,7 @@
     <h3><br>Lectures:<br></h3>
     <ol>
       {% for lecture in lecture_list %}
-        {% if registered == 0 %}
+        {% if registered == 0 and is_owner == 0 and request.user not in contributors %}
             <li><p>{{ lecture.lecture_name }}</p></li>
         {% else %}
             <li><a href="/{{ course.slug }}/{{ lecture.lecture_slug }}">{{ lecture.lecture_name }}</a></li>
