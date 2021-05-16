@@ -1072,8 +1072,8 @@ class AddComplainView(View):
         if form.is_valid():
             description = form.cleaned_data['description']
             cursor.execute('insert into main_complaint (creation_date, description, course_id, s_user_id) '
-                           'values (%s, %s, %s, %s);',
-                           [get_today(), description, course_cno, request.user.id])
+                           'values (curdate(), %s, %s, %s);',
+                           [description, course_cno, request.user.id])
             cursor.close()
             return render(request, "trivial/success_message_after_submitting.html",
                           {'success_message': 'Your refund request has been sent to the administrators. '
