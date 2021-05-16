@@ -163,8 +163,8 @@ class RegisterView(View):
                 cursor.close()
                 cursor = connection.cursor()
                 cursor.execute(
-                    "insert into accounts_student(defaultuser_ptr_id, phone, description) values ( %s, %s, %s)",
-                    [new_user.id, phone, ""])
+                    "insert into accounts_student(defaultuser_ptr_id, phone) values ( %s, %s)",
+                    [new_user.id, phone])
 
             cursor.close()
 

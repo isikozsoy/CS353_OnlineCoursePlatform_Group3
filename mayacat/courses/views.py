@@ -1113,7 +1113,7 @@ class AddCourseView(View):
             cursor = connection.cursor()
             try:
                 cursor.execute('insert into courses_course (cname, price, slug, is_private, course_img, '
-                               'description, owner_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);',
+                               'description, owner_id) VALUES (%s, %s, %s, %s, %s, %s, %s);',
                                [cname, price, orig_slug, private, thumbnail, description, request.user.id])
             finally:
                 cursor.close()
@@ -1134,8 +1134,7 @@ class AddCourseView(View):
             finally:
                 cursor.close()
 
-            messages.success(request, 'Course submission successful')
-        return HttpResponseRedirect(request.path)
+        return HttpResponse("Course submission is successful. <a href='/'>Return to main page...</a>")
 
 
 class AddLectureToCourseView(View):
