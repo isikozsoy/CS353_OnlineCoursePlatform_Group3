@@ -14,7 +14,11 @@
             </div>
         </div>
         <p class="mb-1">{{ course.description }}</p>
-        <small>Price: {{ course.price }}</small>
+          {% if course.new_price %}
+              <small>Price: <s>{{ course.price }}</s>{{ course.new_price }}</small>
+      {% else %}
+              <small>Price: {{ course.price }}</small>
+      {% endif %}
       </a>
     {% endfor %}
     </div>

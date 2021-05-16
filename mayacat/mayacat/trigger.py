@@ -62,9 +62,9 @@ def create_gift_trigger():
     try:
         cursor.execute('drop trigger if exists insert_gift_enroll;')
         cursor.execute('create trigger insert_gift_enroll after insert on main_gift for each row '
-                        'begin '
-                        'insert into main_enroll (cno_id, user_id) values (new.course_id, new.receiver_id); '
-                        'end;')
+                       'begin '
+                       'insert into main_enroll (cno_id, user_id) values (new.course_id, new.receiver_id); '
+                       'end;')
     except Error:
         print(sys.exc_info())
     finally:

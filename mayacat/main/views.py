@@ -22,7 +22,7 @@ def topic_course_listing_page(request, topicname):
         course_list = Course.objects.raw('select cno '
                                          'from courses_course '
                                          'inner join main_course_topic mct on courses_course.cno = mct.cno_id '
-                                         'where topicname_id = %s;', [topicname])
+                                         'where topicname_id = %s and is_private != 1;', [topicname])
 
         # obligatory user type check for base.html
         user_type = -1
@@ -572,7 +572,7 @@ class ShoppingCheckoutView(View):
     def post(self, request):
         cursor = connection.cursor()
 
-        cursor.execute('SELECT slug, receiver_username_id, cno, owner_id '
+        cursor.execute('SELECT slug, receiver_username_id, cno, owner_id, inside_cart_id '
                        'FROM courses_course '
                        'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
                        'WHERE mic.username_id = %s;', [request.user.id])
@@ -586,6 +586,7 @@ class ShoppingCheckoutView(View):
                     'slug': items_on_cart[i][0],
                     'isGift': items_on_cart[i][1], # receiver_id
                     'cno': items_on_cart[i][2],
+                    'item_id': items_on_cart[i][4]
                 }
         else:
             items = None
@@ -717,6 +718,7 @@ def add_to_my_courses(request, item):
     cursor = connection.cursor()
     course_slug = item.get('slug')
     receiver_id = item.get('isGift')
+    item_id = item.get('item_id')
 
     course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
     cno = course.cno
@@ -728,13 +730,13 @@ def add_to_my_courses(request, item):
         cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
                        [cno, user_id])
 
+    else:
         today = datetime.today().strftime('%Y-%m-%d')
-
         cursor.execute('INSERT INTO main_gift (date, course_id, receiver_id, sender_id) '
                            'VALUES (%s, %s, %s, %s);',[today, cno, receiver_id, user_id])
 
     cursor.execute('''DELETE FROM main_inside_cart 
-                    WHERE username_id = %s AND cno_id = %s''', [request.user.id, cno])
+                    WHERE inside_cart_id = %s''', [item_id])
 
     cursor.close()
 
