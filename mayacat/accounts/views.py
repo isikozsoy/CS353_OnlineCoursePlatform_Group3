@@ -8,6 +8,7 @@ from django.contrib.auth import login, logout, authenticate
 from .forms import *
 from .models import DefaultUser, Student, Instructor, SiteAdmin, Advertiser
 from main.models import *
+from main.views import MainView
 
 
 class LogoutView(View):
@@ -19,7 +20,7 @@ class LogoutView(View):
 class LoginView(View):
     template_name = "login.html"
 
-    def get(self, request):
+    def get(self, request, warning_message = None):
         if request.user.is_authenticated:
             return HttpResponseRedirect('/')
 
@@ -27,7 +28,8 @@ class LoginView(View):
         topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
         return render(request, self.template_name, {'form': form,
                                                     'user_type': -1,
-                                                    'topic_list': topic_list})
+                                                    'topic_list': topic_list,
+                                                    'warning_message': warning_message})
 
     def authenticate(self, request, username, password):
         user_q = User.objects.raw('select * from auth_user where username = %s and password = %s;',
@@ -60,14 +62,15 @@ class LoginView(View):
                 login(request, user)
                 return HttpResponseRedirect('/')
             else:  # no user by this username
-                return HttpResponse("Either your username or your password is wrong.<p> "
-                                    "<a href='/login'>Return to login</a>")
+                warning_message = "Either your username or your password is wrong."
+                return LoginView.get(self, request, warning_message)
+
 
 
 class RegisterView(View):
     template_name = "register.html"
 
-    def get(self, request):
+    def get(self, request, warning_message = None):
         if request.user.is_authenticated:
             return HttpResponseRedirect('/')
         form = Register()
@@ -87,7 +90,8 @@ class RegisterView(View):
         return render(request, self.template_name, {'form': form,
                                                     'path': request.path,
                                                     'user_type': user_type,
-                                                    'topic_list': topic_list})
+                                                    'topic_list': topic_list,
+                                                    'warning_message': warning_message})
 
     def exists(self, username):
         query = 'select * from auth_user where username = "' + username + '";'
@@ -110,13 +114,17 @@ class RegisterView(View):
             # if the user already exists, return to the original registration page
             if self.exists(username):
                 if "instructor" in request.path:
-                    return HttpResponse("The username is taken.<p> <a href='/register/instructor'>Return to register "
-                                        "page.</a>")
+
+                    warning_message = "The username is taken"
+                    return RegisterView.get(self, request, warning_message)
+
                 elif "advertiser" in request.path:
-                    return HttpResponse("The username is taken.<p> <a href='/register/advertiser'>Return to register "
-                                        "page.</a>")
+                    warning_message = "The username is taken"
+                    return RegisterView.get(self, request, warning_message)
+
                 else:
-                    return HttpResponse("The username is taken.<p> <a href='/register'>Return to register page.</a>")
+                    warning_message = "The username is taken"
+                    return RegisterView.get(self, request, warning_message)
 
             # we first create a new User object inside the auth.models.User model
             new_user = User(username=username, email=email, password=password)
@@ -170,7 +178,8 @@ class RegisterView(View):
 
             new_user.save()
             return HttpResponseRedirect('/login')  # /login
-        return HttpResponse("The form values were not valid. <a href='/register'>Go back to register...</a>")
+        warning_message = "The form values were not valid."
+        return RegisterView.get(self, request, warning_message)
 
 
 class UserView(View):
@@ -183,7 +192,8 @@ class UserView(View):
         cursor.close()
 
         if not user_id_row:  # this means that the user with the username does not exist
-            return HttpResponse('There is no user by this username. <a href="/">Return to main page...</a>')
+            warning_message = "Error: There is no user by this username."
+            return MainView.get(self, request, warning_message)
 
         user_id = user_id_row[0]
 

@@ -15,6 +15,8 @@ from PIL import Image, ImageDraw
 
 from .forms import *
 from main.views import get_user_type
+from main.views import MainView
+from accounts.views import LoginView
 
 #from reportlab.pdfgen.canvas import Canvas
 
@@ -131,7 +133,7 @@ class CourseListView(ListView):
 
 
 class CourseDetailView(View):
-    def get(self, request, course_slug):
+    def get(self, request, course_slug, warning_message = None):
         form = GiftInfo()
         cursor = connection.cursor()
 
@@ -335,7 +337,8 @@ class CourseDetailView(View):
             'lecture_slug': lecture_slug,
             'finished': finished,
             'contributors' : contributors,
-            'contributor_cnt': len(contributors)
+            'contributor_cnt': len(contributors),
+            'warning_message': warning_message,
         }
 
         cursor.close()
@@ -411,7 +414,9 @@ class AddAnswerView(View):
         lecture_no_row = cursor.fetchone()
         cursor.close()
         if not lecture_no_row:
-            return HttpResponse('There is no lecture with this name. <a href="/">Return to main page...</a>')
+            warning_message = "Error: There is no lecture with this name."
+            return MainView.get(self, request, warning_message)
+
         cursor = connection.cursor()
 
         lecture_no = lecture_no_row[0]
@@ -432,7 +437,7 @@ class AddAnswerView(View):
 class LectureView(View):
     # model = Lecture
 
-    def get(self, request, course_slug, lecture_slug, *args, **kwargs):
+    def get(self, request, course_slug, lecture_slug,warning_message = None, *args, **kwargs):
         cursor = connection.cursor()
         if not request.user.id:
             return HttpResponseRedirect("/login")
@@ -637,7 +642,8 @@ class LectureView(View):
             'teaches' : teaches,
             'avg_prog' : avg_prog,
             'isContributor' : isContributor and (course.is_complete == 0),
-            'owner_username' : owner_username
+            'owner_username' : owner_username,
+            'warning_message': warning_message
         }
         cursor.close()
 
@@ -652,7 +658,8 @@ class LectureView(View):
         lecture_no_row = cursor.fetchone()
         cursor.close()
         if not lecture_no_row:
-            return HttpResponse('There is no lecture with this name. <a href="/">Return to main page...</a>')
+            warning_message = "Error: There is no lecture with this name."
+            return MainView.get(self, request, warning_message)
 
         lecture_no = lecture_no_row[0]
         cursor = connection.cursor()
@@ -724,24 +731,25 @@ class DeleteTeacherView( View ):
         cursor.execute( 'SELECT id FROM auth_user WHERE username = %s;',[t_username] )
         t_id_list = cursor.fetchone()
         if(t_id_list == None):
-            response_str = 'There is no teacher with this username. <a href="'
-            response_str += '/' + course_slug + '/' + lecture_slug
-            response_str += '">Return to lecture page...</a>'
-            return HttpResponse(response_str)
+
+            warning_message = "Error: There is no teacher with this username"
+            return LectureView.get(self, request, course_slug, lecture_slug, warning_message)
+
         t_id = t_id_list[0];
         print(t_id)
         cursor.execute('select lecture_no from courses_lecture where lecture_slug = %s;', [lecture_slug])
         lecture_no_row = cursor.fetchone()
         if not lecture_no_row:
-            response_str = 'There is no lecture with this name. <a href="/">Return to main page...</a>'
-            return HttpResponse(response_str)
+            warning_message = "Error: There is no lecture with this name."
+            return MainView.get(self, request, warning_message)
 
         lecture_no = lecture_no_row[0]
 
         cursor.execute('DELETE FROM main_teaches WHERE user_id = %s and lecture_no_id = %s;', [t_id, lecture_no])
         cursor.close()
-        response_str = 'Teacher successfully deleted. <a href="/' + course_slug + '/' + lecture_slug + '">Return to lecture page...</a>'
-        return HttpResponse(response_str)
+        warning_message = "Success: Teacher successfully deleted"
+        return LectureView.get(self, request, course_slug, lecture_slug, warning_message)
+
 
 class DeleteAssignmentView( View ):
     def post(self, request, course_slug, lecture_slug, a_id, *args, **kwarg):
@@ -1027,7 +1035,8 @@ class AddComplainView(View):
             return render(request, self.template_name, {'form': form,
                                                         'user_type': user_type,
                                                         'topic_list': topic_list, })
-        return HttpResponse('You need to log in. <a href="/login">Return to login page</a>')
+        warning_message = "You need to log in"
+        return LoginView.get(self, request, warning_message)
 
     def post(self, request, course_slug):
         cursor = connection.cursor()
@@ -1212,7 +1221,8 @@ class AddCourseView(View):
             finally:
                 cursor.close()
 
-        return HttpResponse("Course submission is successful. <a href='/'>Return to main page...</a>")
+        warning_message = "Success: Course submission is successful."
+        return MainView.get(self, request, warning_message)
 
 
 class AddLectureToCourseView(View):
@@ -1224,22 +1234,23 @@ class AddLectureToCourseView(View):
         cno_row = cursor.fetchone()
         cursor.close()
         if not cno_row:  # no course with this course slug (i.e. URL)
-            return HttpResponse('No course with this name. <a href="/">Returning to the main page...</a>')  # return to main page
+            warning_message = "No course with this name"
+            return MainView.get(self, request, warning_message)
 
         owner_id = cno_row[0]
         cname = cno_row[1]
         cno = cno_row[2]
         # if the owner is not the user logging in, return to main page
         if request.user.id != owner_id:
-            return HttpResponse('You cannot access this page. <a href="/login">Returning to the main page...</a>')
+            warning_message = "You cannot access this page"
+            return MainView.get(self, request, warning_message)
 
         cursor = connection.cursor()
         cursor.execute('select is_complete from courses_course where cno = %s;', [cno])
         is_complete = cursor.fetchone()[0]
         if is_complete == 1:
-            response_str = 'You cannot add any more lectures to this course. The course is marked as complete. ' \
-                           '<a href="/' + course_slug + '">Return to the course page...</a>'
-            return HttpResponse(response_str)
+            warning_message = "Error: You cannot add any more lectures to this course. The course is marked as complete."
+            return CourseDetailView.get(self, request, warning_message)
 
         message = 'Add a lecture to ' + cname
 
@@ -1282,11 +1293,9 @@ class AddLectureToCourseView(View):
             cursor.execute('INSERT INTO courses_lecture (lecture_name, lecture_slug, video_url, cno_id) VALUES '
                            '(%s, %s, %s, %s);', [lecture_name, lecture_slug, lecture_url, cno])
 
-        response_str = "Lecture submission is successful. <a href='/"
-        response_str += course_slug
-        response_str += "'>Return to course page...</a>"
 
-        return HttpResponse( response_str)
+        warning_message = "Success: Lecture submission is successful."
+        return CourseDetailView.get(self, request, warning_message)
 
 
 class ChangeCourseSettingsView(View):
