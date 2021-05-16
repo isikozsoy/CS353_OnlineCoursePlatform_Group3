@@ -75,7 +75,6 @@ def create_view():
     cursor = connection.cursor()
 
     try:
-        cursor.execute('drop view if exists user_types;')
         cursor.execute('create view user_types as '
                        'select id, user_type as type '
                        'from auth_user '
