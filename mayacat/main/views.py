@@ -159,13 +159,11 @@ class MainView(View):
 
         topic_based_courses = [None] * interested_topics_count
         for i, topic in enumerate(interested_topics):
-            cursor.execute('SELECT count(*) FROM main_course_topic CT, courses_course C '
-                           'WHERE C.is_private = 0 AND CT.topicname_id = %s AND C.cno = CT.cno_id LIMIT 5', [topic[0]])
-            cnt = cursor.fetchone()[0]
 
             cursor.execute('SELECT slug, course_img, cname FROM main_course_topic CT, courses_course C '
                            'WHERE C.is_private = 0 AND CT.topicname_id = %s AND C.cno = CT.cno_id LIMIT 5', [topic[0]])
             interested_courses = cursor.fetchall()
+            cnt = len(interested_courses)
 
             topic_based_courses[i] = [None] * (cnt+1)
 
@@ -269,7 +267,7 @@ class NotificationView(View):
 
         if user_type == 0:  # student
             cursor = connection.cursor()
-            cursor.execute('SELECT date, cname, username FROM main_gift as G, auth_user as A, courses_course as C'
+            cursor.execute('SELECT date, cname, username, slug FROM main_gift as G, auth_user as A, courses_course as C'
                            ' WHERE C.cno = G.course_id AND G.sender_id = A.id AND G.receiver_id = %s ORDER BY date DESC'
                            , [request.user.id])
             temp_gift = cursor.fetchall()
@@ -283,7 +281,7 @@ class NotificationView(View):
 
             cursor = connection.cursor()
             cursor.execute(
-                'SELECT ann_date, cname, ann_text FROM main_enroll as E, main_announcement A, courses_course C'
+                'SELECT ann_date, cname, ann_text, slug FROM main_enroll as E, main_announcement A, courses_course C'
                 ' WHERE E.cno_id = A.cno_id AND E.user_id = %s'
                 ' AND E.cno_id = C.cno ORDER BY ann_date DESC', [request.user.id])
             temp_anns = cursor.fetchall()
@@ -317,7 +315,7 @@ class NotificationView(View):
 
         elif user_type == 1:  # instructor
             cursor = connection.cursor()
-            cursor.execute('SELECT date, cname, username FROM main_gift as G, auth_user as A, courses_course as C'
+            cursor.execute('SELECT date, cname, username, slug FROM main_gift as G, auth_user as A, courses_course as C'
                            ' WHERE C.cno = G.course_id AND G.sender_id = A.id AND G.receiver_id = %s ORDER BY date DESC'
                            , [request.user.id])
             temp_gift = cursor.fetchall()
@@ -331,7 +329,7 @@ class NotificationView(View):
 
             cursor = connection.cursor()
             cursor.execute(
-                'SELECT ann_date, cname, ann_text FROM main_enroll as E, main_announcement A, courses_course C'
+                'SELECT ann_date, cname, ann_text, slug FROM main_enroll as E, main_announcement A, courses_course C'
                 ' WHERE E.cno_id = A.cno_id AND E.user_id = %s'
                 ' AND E.cno_id = C.cno ORDER BY ann_date DESC', [request.user.id])
             temp_anns = cursor.fetchall()
@@ -365,8 +363,8 @@ class NotificationView(View):
 
             cursor = connection.cursor()
             cursor.execute(
-                'SELECT date, cname, lecture_name, username FROM main_post P, courses_lecture L, courses_course C, auth_user U'
-                ' WHERE P.lecture_no_id = L.lecture_no AND L.cno_id = C.cno AND owner_id = %s'
+                'SELECT date, cname, lecture_name, username, slug FROM main_post P, courses_lecture L, courses_course C,'
+                'auth_user U WHERE P.lecture_no_id = L.lecture_no AND L.cno_id = C.cno AND owner_id = %s'
                 ' AND P.username_id = U.id'
                 , [request.user.id])
             temp_posts = cursor.fetchall()
