@@ -949,7 +949,6 @@ class CourseFinishView(View):
 
         comment = FinishCourseCommentForm()
         rate = FinishCourseRateForm()
-        first_last_name = FirstLastName()
 
         cursor.execute('select type '
                        'from user_types '
@@ -973,7 +972,6 @@ class CourseFinishView(View):
             'topic_list': topic_list,
             'form': rate,
             'course_slug': course_slug,
-            'first_last_name': first_last_name,
         }
         cursor.close()
         return render(request, 'courses/coursefinish.html', context)
@@ -1020,15 +1018,6 @@ class CourseFinishView(View):
                            [int(rate), course.cno, curuser_id])
         cursor.close()
 
-        first_last_name = FirstLastName(request.POST)
-        if first_last_name.is_valid():
-            first_name = first_last_name.cleaned_data['first_name']
-            last_name = first_last_name.cleaned_data['last_name']
-
-            cursor = connection.cursor()
-            cursor.execute('update auth_user set first_name = %s, last_name = %s where id = %s;',
-                           [first_name, last_name, request.user.id])
-            cursor.close()
         return HttpResponseRedirect(request.path)
 
 
