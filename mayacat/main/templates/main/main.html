@@ -50,7 +50,7 @@
                     <h3>{{course.topic}}</h3>
                 {% endif %}
             {% elif course.type == 1 %}
-                <iframe src={{ course.course_img }} width="120" height="100" target="_self"></iframe>
+                <iframe src={{ course.course_img }} width="250" height="130" target="_self"></iframe>
                 <br><a href="/{{ course.slug }}">{{ course.cname }}</a><br><br>
             {% endif %}
         {% endfor %}
@@ -58,7 +58,7 @@
     {% endfor %}
     <h3>All Courses</h3>
     {% for object in object_list %}
-        <iframe src={{ object.course_img }} width="120" height="100" target="_self"></iframe>
+        <iframe src={{ object.course_img }} width="250" height="130" target="_self"></iframe>
         <br><a href="{{ object.get_url }}">{{ object }}</a><br><br>
     {% endfor %}
 

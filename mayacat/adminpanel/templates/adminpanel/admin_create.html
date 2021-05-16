@@ -16,6 +16,7 @@
             <form action="" method="post">
                 {% csrf_token %}
                 {{ form_user.as_table }}
+                {{ form_student.as_table }}
                 <input type="submit" name="student_create" value="Create a student!" />
             </form>
           </div>
