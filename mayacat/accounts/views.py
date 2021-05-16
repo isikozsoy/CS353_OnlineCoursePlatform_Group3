@@ -337,7 +337,32 @@ class AccountView(View):
         form = AccountViewForm(request.POST, user_type=user_type, user=user, readonly=False)
         if form.is_valid():
             email = form.cleaned_data['email']
-            phone = form.cleaned_data['phone']
+            if user_type != 3:
+                phone = form.cleaned_data['phone']
+
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+
+            if first_name:
+                cursor = connection.cursor()
+                try:
+                    cursor.execute('update auth_user '
+                                   'set first_name = %s '
+                                   'where id = %s;',
+                                   [first_name, user_id])
+                finally:
+                    cursor.close()
+
+            if last_name:
+                cursor = connection.cursor()
+                try:
+                    cursor.execute('update auth_user '
+                                   'set last_name = %s '
+                                   'where id = %s;',
+                                   [last_name, user_id])
+                finally:
+                    cursor.close()
+
             if email:
                 cursor = connection.cursor()
                 try:

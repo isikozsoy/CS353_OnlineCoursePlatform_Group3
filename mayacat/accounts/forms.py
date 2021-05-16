@@ -14,6 +14,16 @@ class AccountViewForm(forms.Form):
                                                                              'placeholder': self.user.email}))
         self.fields['email'].widget.attrs['readonly'] = self.readonly
 
+        self.fields['first_name'] = forms.CharField(label='First name', max_length=50, required=False,
+                                                    widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                                  'placeholder': self.user.first_name}))
+        self.fields['first_name'].widget.attrs['readonly'] = self.readonly
+
+        self.fields['last_name'] = forms.CharField(label='Last name', max_length=50, required=False,
+                                                   widget=forms.TextInput(attrs={'class': 'form-control',
+                                                                                 'placeholder': self.user.last_name}))
+        self.fields['last_name'].widget.attrs['readonly'] = self.readonly
+
         if self.user_type != 3:  # only admins do not have a phone recorded
             self.fields['phone'] = forms.CharField(label='Phone number', max_length=50, required=False,
                                                    widget=forms.TextInput(attrs={'class': 'form-control',
@@ -21,9 +31,6 @@ class AccountViewForm(forms.Form):
             self.fields['phone'].widget.attrs['readonly'] = self.readonly
 
         if self.user_type == 2:  # advertiser
-            self.fields['name'] = forms.CharField(label='Phone number', max_length=50, required=False,
-                                                  widget=forms.TextInput(attrs={'class': 'form-control',
-                                                                                'placeholder': self.user.name}))
             self.fields['company_name'] = forms.CharField(label='Company Name', max_length=100, required=False,
                                                           widget=forms.TextInput(attrs={'class': 'form-control',
                                                                                         'placeholder': self.user.company_name}))

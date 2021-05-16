@@ -4,6 +4,8 @@
     <form>
     {% csrf_token %}
         Username: {{ user.username }}<br>
+        First name: {{ form.first_name }}<br>
+        Last name: {{ form.last_name }}<br>
         Email: {{ form.email }}<br>
 
         {% if user_type == 2 %}
