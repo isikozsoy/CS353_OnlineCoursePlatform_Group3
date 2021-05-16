@@ -1,6 +1,8 @@
 from django import forms
+from django.db import connection
+
 from .models import Course
-from main.models import Course_Topic
+from main.models import Course_Topic, Topic
 from datetime import datetime, date, timedelta
 from main.models import Post
 
@@ -42,17 +44,9 @@ class GiftInfo(forms.Form):
 class AddAsGift(forms.Form):
     course_slug = forms.CharField(label='Course Slug', max_length = 50)
 
-
-TOPIC_CHOICES = (
-    ("Design", "Design"),
-    ("Development", "Development"),
-    ("Marketing", "Marketing"),
-    ("IT and Software", "IT and Software"),
-    ("Personal Development", "Personal Development"),
-    ("Business", "Business"),
-    ("Music", "Music"),
-    ("Other", "Other"),
-)
+class FirstLastName(forms.Form):
+    first_name = forms.CharField(label='First Name', max_length=150)
+    last_name = forms.CharField(label='Last Name', max_length=150)
 
 
 class CreateCourseForm(forms.Form):
@@ -62,7 +56,12 @@ class CreateCourseForm(forms.Form):
                             widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A Course Name'}))
     price = forms.DecimalField(label='Price (up to $9999.99)', max_digits=6, decimal_places=2,
                                widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    topic = forms.MultipleChoiceField(label='Topic', choices=TOPIC_CHOICES, widget=forms.CheckboxSelectMultiple(
+
+    cursor = connection.cursor()
+    cursor.execute('select topicname from main_topic;')
+
+    topic = forms.ModelMultipleChoiceField(Topic.objects.filter(topicname__in=(x[0] for x in cursor)),
+                                           label='Topic', widget=forms.CheckboxSelectMultiple(
         attrs={'class': 'select'}))
 
     description = forms.CharField(label='Description', max_length=4000,
@@ -88,7 +87,11 @@ class EditCourseForm(forms.ModelForm):
 
 
 class EditTopicForm(forms.ModelForm):
-    topic = forms.MultipleChoiceField(label='Topic', choices=TOPIC_CHOICES, widget=forms.CheckboxSelectMultiple(
+    cursor = connection.cursor()
+    cursor.execute('select topicname from main_topic;')
+
+    topic = forms.ModelMultipleChoiceField(Topic.objects.filter(topicname__in=(x[0] for x in cursor)),
+                                           label='Topic', widget=forms.CheckboxSelectMultiple(
         attrs={'class': "select"}))
 
     class Meta:

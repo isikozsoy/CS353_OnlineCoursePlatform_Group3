@@ -77,9 +77,9 @@ def create_view():
     try:
         cursor.execute('drop view if exists user_types;')
         cursor.execute('create view user_types as '
-                       'select id, type '
-                       'from accounts_defaultuser '
-                       'inner join auth_user au on accounts_defaultuser.user_ptr_id = au.id;')
+                       'select id, user_type as type '
+                       'from auth_user '
+                       ';')
     except Error:
         print(sys.exc_info())
     finally:

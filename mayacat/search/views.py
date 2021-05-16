@@ -24,7 +24,7 @@ class SearchView(View):
         if request.user.is_authenticated:
             cursor = connection.cursor()
             try:
-                cursor.execute('select type from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
+                cursor.execute('select type from user_types where id = %s;', [request.user.id])
                 user_type = cursor.fetchone()[0]
             finally:
                 cursor.close()

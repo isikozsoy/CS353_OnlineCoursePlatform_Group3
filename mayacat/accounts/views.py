@@ -139,9 +139,6 @@ class RegisterView(View):
                 name = form.cleaned_data['name']
                 company_name = form.cleaned_data['company_name']
 
-                cursor.execute(
-                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
-                    [new_user.id, password, 2])
                 cursor.close()
                 cursor = connection.cursor()
                 cursor.execute(
@@ -151,9 +148,6 @@ class RegisterView(View):
             elif "instructor" in request.path:
                 description = form.cleaned_data['description']
 
-                cursor.execute(
-                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
-                    [new_user.id, password, 1])
                 cursor.close()
                 cursor = connection.cursor()
                 cursor.execute(
@@ -164,10 +158,6 @@ class RegisterView(View):
                 cursor.execute(
                     "insert into accounts_instructor(student_ptr_id, description) values ( %s, %s)",
                     [new_user.id, description])
-            else:
-                cursor.execute(
-                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
-                    [new_user.id, password, 0])
                 cursor.close()
                 cursor = connection.cursor()
                 cursor.execute(
@@ -205,8 +195,8 @@ class UserView(View):
 
         # find the type of the user
         cursor.execute('select type '
-                       'from accounts_defaultuser '
-                       'where user_ptr_id = %s;', [user_id])
+                       'from user_types '
+                       'where id = %s;', [user_id])
         user_type = cursor.fetchone()[0]
         cursor.close()
 

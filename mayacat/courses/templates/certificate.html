@@ -1,0 +1,25 @@
+<html>
+<head>
+    <title>MAYACAT CERTIFICATE</title>
+</head>
+<body>
+	<div style="width:800px; height:600px; padding:20px; text-align:center; border: 10px solid #787878">
+	<div style="width:750px; height:550px; padding:20px; text-align:center; border: 5px solid #787878">
+		   <span style="font-size:50px; font-weight:bold">Certificate of Completion</span>
+		   <br><br>
+		   <span style="font-size:25px"><i>This is to certify that</i></span>
+		   <br><br>
+		   <span style="font-size:30px"><b>{{ first_name }} {{ last_name }}</b></span><br/><br/>
+		   <span style="font-size:25px"><i>has completed the course</i></span> <br/><br/>
+		   <span style="font-size:30px">{{ course.cname }}</span> <br/><br/>
+		   <span style="font-size:15px"><i>This document is dated</i></span><br>
+		  <span style="font-size:30px"><p id="date"></p></span>
+		  <span style="font-size:25px"><i>at MayaCat</i></span><br>
+	</div>
+	</div>
+	
+	<script>
+		document.getElementById("date").innerHTML = DateFormatter.getFormattedDate( Date(), "yyyy-mm-dd");
+	</script>
+</body>
+</html>
