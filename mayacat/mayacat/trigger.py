@@ -71,7 +71,7 @@ def create_gift_trigger():
         cursor.close()
 
 
-def create_view():
+def create_view_():
     cursor = connection.cursor()
 
     try:
@@ -93,6 +93,50 @@ def create_enroll_wishlist_delete_trigger():
                        'for each row '
                        'begin '
                             'delete from main_wishes where cno_id = new.cno_id and user_id = new.user_id;'
+                       'end;')
+    except Error:
+        print(sys.exc_info())
+    finally:
+        cursor.close()
+
+def create_enroll_wishlist_delete_trigger():
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute('drop trigger if exists wishlist_delete_trigger;')
+        cursor.execute('create trigger wishlist_delete_trigger after insert on main_enroll '
+                       'for each row '
+                       'begin '
+                            'delete from main_wishes where cno_id = new.cno_id and user_id = new.user_id;'
+                       'end;')
+    except Error:
+        print(sys.exc_info())
+    finally:
+        cursor.close()
+
+def trigger_save_user_type():
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute('drop trigger if exists save_inst;')
+        cursor.execute('create trigger save_inst after insert on accounts_instructor '
+                       'for each row '
+                       'begin '
+                       'update auth_user set user_type = 1 where id = new.student_ptr_id;'
+                       'end;')
+
+        cursor.execute('drop trigger if exists save_adv;')
+        cursor.execute('create trigger save_adv after insert on accounts_advertiser '
+                       'for each row '
+                       'begin '
+                       'update auth_user set user_type = 2 where id = new.user_ptr_id;'
+                       'end;')
+
+        cursor.execute('drop trigger if exists save_admin;')
+        cursor.execute('create trigger save_admin after insert on accounts_siteadmin '
+                       'for each row '
+                       'begin '
+                       'update auth_user set user_type = 3 where id = new.user_ptr_id;'
                        'end;')
     except Error:
         print(sys.exc_info())

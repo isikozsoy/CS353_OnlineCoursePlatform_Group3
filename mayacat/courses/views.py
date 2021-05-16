@@ -34,8 +34,8 @@ class MyCoursesView(ListView):
 
             my_courses_q = cursor.fetchall()
 
-            cursor.execute('select type '
-                           'from user_types '
+            cursor.execute('select user_type '
+                           'from auth_user '
                            'where id = %s;', [user_id])
 
             row = cursor.fetchone()

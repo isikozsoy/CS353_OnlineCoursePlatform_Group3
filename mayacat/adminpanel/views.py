@@ -138,11 +138,7 @@ class AdminFirstRegisterView(View):
             print("Valid form for admin register")
             ssn = admin_save_form.cleaned_data['ssn']
             address = admin_save_form.cleaned_data['address']
-            cursor.execute(
-                'insert into accounts_defaultuser (user_ptr_id, password_orig, type) '  # password orig will be  
-                # stored as empty for admins
-                'values (%s, %s, %s);', [request.user.id, "0", 3])
-            cursor.execute('insert into accounts_siteadmin (defaultuser_ptr_id, ssn, address) '
+            cursor.execute('insert into accounts_siteadmin (user_ptr_id, ssn, address) '
                            'values (%s, %s, %s);', [request.user.id, ssn, address])
             cursor.close()
         print(admin_save_form.errors)
@@ -198,14 +194,14 @@ class AdminCreateView(View):  # this page is '/admin'
         if "student_create" in request.POST:
             cursor.execute('insert into accounts_defaultuser (user_ptr_id, password_orig, type) VALUES (%s, %s, %s);',
                            [new_user_id, password, 0])
-            cursor.execute('insert into accounts_student (defaultuser_ptr_id, phone) VALUES (%s, %s);',
+            cursor.execute('insert into accounts_student (user_ptr_id, phone) VALUES (%s, %s);',
                            [new_user_id, phone])
         elif "instructor_create" in request.POST:
             if form_instructor.is_valid():
                 cursor.execute(
                     'insert into accounts_defaultuser (user_ptr_id, password_orig, type) VALUES (%s, %s, %s);',
                     [new_user_id, password, 1])
-                cursor.execute('insert into accounts_student (defaultuser_ptr_id, phone) VALUES (%s, %s);',
+                cursor.execute('insert into accounts_student (user_ptr_id, phone) VALUES (%s, %s);',
                                [new_user_id, phone])
                 description = form_instructor.cleaned_data['description']
                 cursor.execute('insert into accounts_instructor (student_ptr_id, description) VALUES (%s, %s);',
@@ -219,7 +215,7 @@ class AdminCreateView(View):  # this page is '/admin'
                 cursor.execute(
                     'insert into accounts_defaultuser (user_ptr_id, password_orig, type) VALUES (%s, %s, %s);',
                     [new_user_id, password, 2])
-                cursor.execute('insert into accounts_advertiser (defaultuser_ptr_id, name, company_name, '
+                cursor.execute('insert into accounts_advertiser (user_ptr_id, name, company_name, '
                                'phone) VALUES (%s, %s, %s, %s);',
                                [new_user_id, name, company_name, phone])
             else:
@@ -237,7 +233,7 @@ class AdminCreateView(View):  # this page is '/admin'
                 cursor.execute(
                     'insert into accounts_defaultuser (user_ptr_id, password_orig, type) VALUES (%s, %s, %s);',
                     [new_user_id, password, 3])
-                cursor.execute('insert into accounts_siteadmin (defaultuser_ptr_id, ssn, address) VALUES (%s, %s, %s);',
+                cursor.execute('insert into accounts_siteadmin (user_ptr_id, ssn, address) VALUES (%s, %s, %s);',
                                [new_user_id, ssn, address])
             else:
                 return redirect('adminpanel:admin_main')
