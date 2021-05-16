@@ -69,6 +69,12 @@
                 <a class="nav-link" href="/login">Log in!</a>
             </li>
             <li class="nav-item active">
+                <a href="/register">Become a student!</a>
+            </li>
+            <li class="nav-item active">
+                <a href="/register/instructor" class="btn btn-primary">Teach at MayaCat!</a>
+            </li>
+            <li class="nav-item active">
                 <a class="nav-link" href="/register/advertiser">Publish your ads on MayaCat today!</a>
             </li>
         {% else %}
@@ -163,10 +169,6 @@
         <p class="float-right">
           <a href="#">Back to top</a>
         </p>
-            {% if not request.user.is_authenticated %}
-                <a href="/register" class="btn btn-primary">Become a student!</a>
-                <a href="/register/instructor" class="btn btn-primary">Teach at MayaCat!</a>
-            {% endif %}
       </div>
     <div class="footer-copyright text-center py-3">© 2020 Copyright:
         <a href="#"> MAYACAT </a>

@@ -421,3 +421,10 @@ def remove_interested_topic(request, topic):
                    [topic, request.user.id])
     cursor.close()
     return HttpResponseRedirect('/account')
+
+def update_to_instructor(request):
+    cursor = connection.cursor()
+    cursor.execute('INSERT INTO accounts_instructor(student_ptr_id, description) values (%s, %s)',
+                   request.user.id, "")
+    cursor.execute('UPDATE accounts_user SET user_type = 1 WHERE user_ptr_id = %s', request.user.id)
+    return HttpResponseRedirect('/account')

@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw
 from .forms import *
 from main.views import get_user_type
 
-from reportlab.pdfgen.canvas import Canvas
+#from reportlab.pdfgen.canvas import Canvas
 
 
 class MyCoursesView(ListView):
