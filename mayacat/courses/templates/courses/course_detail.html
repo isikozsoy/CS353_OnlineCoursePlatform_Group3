@@ -261,7 +261,7 @@
         <iframe src={{ advertisement.advertisement }} width="230" height="200" target="_self"></iframe>
     {% endif %}
 
-    {% if registered != 0 %}
+    {% if registered != 0 and not is_contributor and is_owner == 0 %}
         <a href="{% url 'courses:refund' course.slug %}" class="btn btn-secondary">Request refund</a>
         <a href="{% url 'courses:complaint' course.slug %}" class="btn btn-secondary">Form Complaint</a>
     {% endif %}

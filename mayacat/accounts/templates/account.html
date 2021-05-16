@@ -35,7 +35,7 @@
     {% endif %}
     </form>
 
-    {% if user_type != 2 %}
+    {% if user_type != 2 and user_type != 3 %}
         <h3>You can add topic below;</h3>
         {% for topic in not_interests %}
             <a href="/interested_in/add/{{topic}}" class="btn btn-light" role="button" >ADD: {{topic}}</a>

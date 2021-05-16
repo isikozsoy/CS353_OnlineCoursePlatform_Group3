@@ -3,7 +3,7 @@ from django.db import connection
 
 from accounts.models import Instructor
 from main.models import Topic
-from courses.models import Lecture
+from courses.models import Course
 from .models import Offered_Discount
 
 
@@ -48,15 +48,14 @@ class CourseCreate(forms.Form):
     finally:
         cursor.close()
 
-    course_img = forms.ImageField(label='Thumbnail', widget=forms.FileInput(attrs={'class': 'form-control-file',
-                                                                                   'enctype': 'multipart/form-data'}))
+    course_img = forms.CharField(label='Embedded Image URL', widget=forms.TextInput(attrs={'class': 'form-control-file'}))
     cname = forms.CharField(label='Course name', max_length=50,
                             widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A Course Name'}))
     price = forms.DecimalField(label='Price (up to $9999.99)', max_digits=6, decimal_places=2,
                                widget=forms.NumberInput(attrs={'class': 'form-control'}))
     description = forms.CharField(label='Description', max_length=4000,
                                   widget=forms.Textarea(attrs={'class': 'form-control'}))
-    private = forms.BooleanField(label='Private or not?', required=False)
+    private = forms.BooleanField(label='Private', required=False)
 
 
 class LectureCreate(forms.Form):
@@ -64,7 +63,7 @@ class LectureCreate(forms.Form):
 
     try:
         cursor.execute('select cno from courses_course')
-        course = forms.ModelChoiceField(Lecture.objects.filter(cno_id__in=(x[0] for x in cursor)), label='Topic',
+        course = forms.ModelChoiceField(Course.objects.filter(cno__in=(x[0] for x in cursor)), label='Course',
                                         widget=forms.Select(attrs={'class': "form-control"}))
     finally:
         cursor.close()

@@ -39,6 +39,20 @@ def create_discount_trigger():
     finally:
         cursor.close()
 
+def create_discount_deletion_event_():
+    cursor = connection.cursor()
+    try:
+        cursor.execute('drop event if exists remove_discount_daily;')
+        cursor.execute('create event remove_discount_daily '
+                       'on schedule '
+                       'every 1 day '
+                       'do '
+                       'delete from main_discount where (select end_date from adminpanel_offered_discount '
+                       'where offerno_id = adminpanel_offered_discount.discount_id) < curdate();')
+    finally:
+        cursor.close()
+
+
 def create_discount_trigger_deletion():
     cursor = connection.cursor()
 

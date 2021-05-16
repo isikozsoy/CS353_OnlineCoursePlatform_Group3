@@ -193,7 +193,6 @@ class CourseDetailView(View):
                                [cno, request.user.id])
 
         cursor.execute('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
-        print("After lecture")
 
         lecture_list = cursor.fetchall()
 
@@ -216,7 +215,6 @@ class CourseDetailView(View):
         else:
             cursor.execute('SELECT count(*) FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
                            [cno, request.user.id])
-            print("After enroll")
             is_enrolled = cursor.fetchone()
 
             if is_enrolled:
@@ -225,7 +223,6 @@ class CourseDetailView(View):
             is_in_cart = Inside_Cart.objects.raw(
                 'SELECT * FROM main_inside_cart WHERE cno_id = %s AND username_id= %s AND '
                 'receiver_username_id = %s', [cno, request.user.id, request.user.id])
-            print("After cart")
             if is_enrolled or is_in_cart:
                 is_only_gift = True
 
@@ -243,16 +240,12 @@ class CourseDetailView(View):
         contributors = [None] * len(contributor_list)
         for i in range(0, len(contributors)):
             contributors[i] = contributor_list[i][0]
-            print(contributor_list[i][0])
-        print("After contributor")
 
         lectures = Lecture.objects.raw('''SELECT * FROM courses_lecture as CL WHERE CL.cno_id = %s;''', [cno])
         lecture_count = len(lectures)
-        print("After lecture count")
 
         cursor.execute('SELECT AVG(score) FROM main_finishes WHERE cno_id = %s AND score !=0', [cno])
         rating = cursor.fetchone()
-        print("After average score")
 
         if rating:
             if rating[0]:
@@ -260,13 +253,10 @@ class CourseDetailView(View):
             else:
                 rating = 0
 
-        print("Rating:", rating)
-
         cursor.execute('SELECT * '
                        'FROM main_advertisement '
                        'WHERE cno_id = %s AND status = 2 '
                        'AND (CURRENT_TIMESTAMP BETWEEN startdate AND finishdate) ', [cno])
-        print("After advertisement")
 
         advertisement_list = cursor.fetchone()
         print("advertisement", advertisement_list)
