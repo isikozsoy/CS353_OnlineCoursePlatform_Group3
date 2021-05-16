@@ -30,7 +30,7 @@ class CoursesDiscount(forms.Form):
         try:
             cursor.execute('select cno '
                            'from courses_course '
-                           'where owner_id = %s and new_price is null;', [self.instructor_id])
+                           'where owner_id = %s and new_price is null and is_private = 0;', [self.instructor_id])
             qset = Course.objects.filter(cno__in=(x[0] for x in cursor))
             self.fields['courses'] = forms.ModelMultipleChoiceField(
                 qset,

@@ -595,7 +595,7 @@ class LectureView(View):
 
         print("Progress and lecture count : ", cnt_prog, cnt_lec)
 
-        avg_prog = (cnt_prog / cnt_lec) * 100
+        avg_prog = int((cnt_prog / cnt_lec) * 100)
 
         announcements = Announcement.objects.raw('''SELECT * FROM main_announcement as MA,auth_user as U 
                                                     WHERE MA.cno_id = %s and MA.i_user_id = U.id;''', [cno])

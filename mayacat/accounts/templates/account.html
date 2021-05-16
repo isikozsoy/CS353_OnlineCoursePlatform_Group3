@@ -36,14 +36,18 @@
     </form>
 
     {% if user_type != 2 and user_type != 3 %}
+        {% if request.user.id == user.id %}
         <h3>You can add topic below;</h3>
         {% for topic in not_interests %}
             <a href="/interested_in/add/{{topic}}" class="btn btn-light" role="button" >ADD: {{topic}}</a>
         {% endfor %}
+        {% endif %}
 
         <h3>Interests</h3>
         {% for topic in interests %}
             <a href="/interested_in/remove/{{topic}}" class="btn btn-light" role="button">REMOVE: {{topic}}</a>
+        {%empty%}
+        <a>None</a>
         {% endfor %}
     {% endif %}
 
