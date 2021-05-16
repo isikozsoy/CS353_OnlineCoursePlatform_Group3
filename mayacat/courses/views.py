@@ -1416,13 +1416,6 @@ class ChangeCourseSettingsView(View):
                 cursor.close()
 
             cursor = connection.cursor()
-            try:
-                cursor.execute('select topicname from main_topic;')
-                topic_list = cursor.fetchall()
-            except DatabaseError:
-                return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
-            finally:
-                cursor.close()
 
             cursor = connection.cursor()
             cursor.execute('''SELECT U.username 
@@ -1438,6 +1431,8 @@ class ChangeCourseSettingsView(View):
             cursor.close()
 
             contributor_form = AddContributorForm()
+
+            topic_list = Topic.objects.raw('select * from main_topic;')
 
             return render(request, self.template_name, {'course_form': course_form, 'course': course,
                                                         'user_type': user_type, 'topic_list': topic_list,
