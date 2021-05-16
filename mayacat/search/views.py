@@ -19,7 +19,7 @@ class SearchView(View):
         object_list = Course.objects.raw(
             "select * " +
             "from courses_course " +
-            "where cname like %s;", [q]
+            "where cname like %s and is_private != 1;", [q]
         )
         user_type = -1
         if request.user.is_authenticated:

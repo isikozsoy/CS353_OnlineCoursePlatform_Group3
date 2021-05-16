@@ -22,7 +22,7 @@ def topic_course_listing_page(request, topicname):
         course_list = Course.objects.raw('select cno '
                                          'from courses_course '
                                          'inner join main_course_topic mct on courses_course.cno = mct.cno_id '
-                                         'where topicname_id = %s;', [topicname])
+                                         'where topicname_id = %s and is_private != 1;', [topicname])
 
         # obligatory user type check for base.html
         user_type = -1
