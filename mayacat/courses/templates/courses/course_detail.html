@@ -1,18 +1,126 @@
 {% extends "main/base.html" %}
 
+{% block style_block %}
+<style>
+
+    .btn {
+        border: 2px solid black;
+        background-color: white;
+        color: black;
+        padding: 7px 14px;
+        font-size: 16px;
+    cursor: pointer;
+    }
+
+    img {
+        border-radius: 5px 5px 0 0;
+        height: 100%;
+    }
+
+    /* Float four columns side by side */
+    .column {
+        float: left;
+        width: 50%;
+        padding: 10px 10px;
+
+    }
+
+    .first {
+        padding: 0 10px 0 0;
+        float: left;
+    }
+
+    .second{
+        float: right;
+        padding-right: 90px;
+        text-align: center;
+        top: 50%;
+    }
+
+    .third {
+        padding: 0 10px 0 0;
+        float: left;
+        width: 65%;
+        padding-right: 100px;
+    }
+
+    .fourth{
+        float: right;
+        padding-right: 90px;
+        text-align: center;
+        top: 50%;
+        width: 35%;
+    }
+
+    /* Remove extra left and right margins, due to padding */
+    .row {
+        margin: 0 -5px;
+        row-gap: 20px;
+        float: left;
+        padding-left: 30px;
+        min-height: 400px;
+        clear: both;
+        display: inline-block;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    .a{
+        background-color: black;
+        color: aliceblue;
+        width: 100%;
+        height: 250px;
+    }
+
+    .b{
+        width: 100%;
+    }
+
+    .strike{
+        font-size: 30px;
+        color: firebrick;
+    }
+
+
+</style>
+
+{% endblock %}
+
 
 {% block main_content %}
     {% if course is not None %}
 
-    <h1>Course Details</h1>
+    <div class = "column a" >
+    <div class="column first">
+            <div class="row">
+                <iframe src={{ course.course_img }} width="230" height="200" target="_self"></iframe>
+        </div>
+    </div>
+    <div class="column second">
     <h2>{{ course.cname }}</h2>
-
     <a href="/account/{{ course.owner }}" >by {{ course.owner }}</a><br><br>
+    <h3>Rating: {{rating}}</h3>
 
-    <iframe src={{ course.course_img }} width="230" height="200" target="_self"></iframe>
+    {% if course.new_price %}
+        <h3 style = "display:inline">Discounted Price: </h3>
+        <div class = "strike" style = "display:inline"><strike style = "display:inline">{{course.price}}</strike></div>
+        <h3 style = "display:inline"> {{course.new_price}}</h3>
+        {% else %}
+        <h3>Price {{course.price}}</h3>
+    {% endif %}
+        </div>
+        </div>
 
-    <h2>Rating: {{rating}}</h2>
+<div class = "column b" >
+    <div class="column third">
+            <div class="row">
         {% if is_owner != 0 %}
+
             <a href="{% url 'courses:course_edit' course.slug %}" class="btn btn-secondary">Edit Course</a>
             {% if course.is_complete == 0 %}
                 <a href="{% url 'courses:mark_as_complete' course.slug %}" class="btn btn-secondary">Mark as complete</a>
@@ -20,7 +128,51 @@
             <a href="{% url 'courses:add_lecture' course.slug %}" class="btn btn-primary">Add Lecture</a>
         {% endif %}
 
-    {% if lecture_list != 0 and lecture_slug != None %}
+    <h3>Description</h3>
+    <a>{{ course.description }}</a>
+
+    {% if contributor_cnt != 0 %}
+        <h4><br>Contributors of the Course</h4>
+        {% for contributor in contributors %}
+          <a href = /account/{{contributor}}>{{contributor}} {{ contributor.username }} <br></a>
+        {% endfor %}
+    {% endif %}
+
+
+    <h3><br>Including</h3>
+    <a>{{ lecture_count }} lecture is included.<br></a>
+                {% if lecture_count != 0 %}
+    <h3><br>Lectures:<br></h3>
+    <ol>
+      {% for lecture in lecture_list %}
+        {% if registered == 0 %}
+            <li><p>{{ lecture.lecture_name }}</p></li>
+        {% else %}
+            <li><a href="/{{ course.slug }}/{{ lecture.lecture_slug }}">{{ lecture.lecture_name }}</a></li>
+        {% endif %}
+      {% endfor %}
+    </ol>
+    {% else %}
+        <h4><br>Lectures: No lectures in this course :(<br></h4>
+    {% endif %}
+
+    {% if comments is not None %}
+        <h3><br>Comments:<br></h3>
+        <ol>
+        {% for comment in comments %}
+            {% if comment is not None %}
+                <li>{{ comment }}</li>
+            {% endif %}
+        {% endfor %}
+        </ol>
+    {% else %}
+        <h4><br>Comments: No comments for this course :(<br></h4>
+    {% endif %}
+                </div>
+    </div>
+    <div class="column fourth">
+
+        {% if lecture_list != 0 and lecture_slug != None %}
         {% if finished  %}
             <br><a href="/{{course.slug}}/{{ lecture_slug }}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">RESTART</a>
         {% elif prog is None %}
@@ -29,19 +181,6 @@
             <br><a href="/{{course.slug}}/{{ lecture_slug }}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">CONTINUE</a>
         {% endif %}
     {% endif %}
-
-    <h3>Description</h3>
-    <a>{{ course.description }}</a>
-    {% if contributor_cnt != 0 %}
-        <h4>Contributors of the Course</h4>
-        {% for contributor in contributors %}
-          <a href = /account/{{contributor}}>{{contributor}} {{ contributor.username }} <br></a>
-        {% endfor %}
-    {% endif %}
-
-
-    <h3>Including</h3>
-    <a>{{ lecture_count }} lecture is included.<br></a>
 
     {% if user_type == 2 %} <!-- advertiser -->
         <br><a href="/offer_ad/{{ course.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
@@ -78,43 +217,15 @@
 
     {% endif %}
 
-    <h3>Price {{course.price}}</h3>
-    {% if course.new_price %}
-        <h3>Discounted Price {{course.new_price}}</h3>
-    {% endif %}
-
     {% if advertisement is not None %}
         <h3><br>Advertisement<br></h3>
         <iframe src={{ advertisement.advertisement }} width="230" height="200" target="_self"></iframe>
     {% endif %}
 
-    {% if lecture_count != 0 %}
-    <h3><br>Lectures:<br></h3>
-    <ol>
-      {% for lecture in lecture_list %}
-        {% if registered == 0 %}
-            <li><p>{{ lecture.lecture_name }}</p></li>
-        {% else %}
-            <li><a href="/{{ course.slug }}/{{ lecture.lecture_slug }}">{{ lecture.lecture_name }}</a></li>
-        {% endif %}
-      {% endfor %}
-    </ol>
-    {% else %}
-        <h4><br>Lectures: No lectures in this course :(<br></h4>
-    {% endif %}
+    </div>
+</div>
 
-    {% if comments is not None %}
-        <h3><br>Comments:<br></h3>
-        <ol>
-        {% for comment in comments %}
-            {% if comment is not None %}
-                <li>{{ comment }}</li>
-            {% endif %}
-        {% endfor %}
-        </ol>
-    {% else %}
-        <h4><br>Comments: No comments for this course :(<br></h4>
-    {% endif %}
+
 
     {% else %}
 
