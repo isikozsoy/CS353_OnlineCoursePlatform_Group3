@@ -28,7 +28,9 @@ class CoursesDiscount(forms.Form):
         super(CoursesDiscount, self).__init__(*args, **kwargs)
         cursor = connection.cursor()
         try:
-            cursor.execute('select cno from courses_course where owner_id = %s;', [self.instructor_id])
+            cursor.execute('select cno '
+                           'from courses_course '
+                           'where owner_id = %s and new_price is null;', [self.instructor_id])
             qset = Course.objects.filter(cno__in=(x[0] for x in cursor))
             self.fields['courses'] = forms.ModelMultipleChoiceField(
                 qset,

@@ -6,20 +6,20 @@
         <ol>
             {% if user_type == 0 %}
                 {% for ntf in notifications %}
-                    {% if ntf.3 == "gift" %}
-                        <p>[You receive a gift from {{ntf.2}}] Received Course: {{ntf.1}}</p>
+                    {% if ntf.4 == "gift" %}
+                        <a href="/{{ntf.3}}">[You receive a gift from {{ntf.2}}] Received Course: {{ntf.1}}</a><br>
                     {% else %}
-                        <p>[New announcement] {{ntf.1}}: {{ntf.2}}</p>
+                        <a href="/{{ntf.3}}">[New announcement] {{ntf.1}}: {{ntf.2}}</a><br>
                     {% endif %}
                 {% endfor %}
             {% elif user_type == 1 %}
                 {% for ntf in notifications %}
-                    {% if ntf.3 == "gift" %}
-                        <li><p>[You receive a gift from {{ntf.2}}] Received Course: {{ntf.1}}</p></li>
-                    {% elif ntf.3 == "ann" %}
-                        <li><p>[New announcement] {{ntf.1}}: {{ntf.2}}</p></li>
-                    {% elif ntf.4 == "post" %}
-                        <li><p>[New post from {{ntf.3}}] Course / Lecture: {{ntf.1}} / {{ntf.2}}</p></li>
+                    {% if ntf.4 == "gift" %}
+                        <li><a href="/{{ntf.3}}">[You receive a gift from {{ntf.2}}] Received Course: {{ntf.1}}</a></li><br>
+                    {% elif ntf.4 == "ann" %}
+                        <li><a href="/{{ntf.3}}">[New announcement] {{ntf.1}}: {{ntf.2}}</a></li><br>
+                    {% elif ntf.5 == "post" %}
+                        <li><a href="/{{ntf.4}}">[New post from {{ntf.3}}] Course / Lecture: {{ntf.1}} / {{ntf.2}}</a></li><br>
                     {% endif %}
                 {% endfor %}
             {% endif %}
