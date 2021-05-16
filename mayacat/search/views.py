@@ -21,10 +21,11 @@ class SearchView(View):
             "from courses_course " +
             "where cname like %s;", [q]
         )
+        user_type = -1
         if request.user.is_authenticated:
             cursor = connection.cursor()
             try:
-                cursor.execute('select type from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
+                cursor.execute('select user_type from auth_user where id = %s;', [request.user.id])
                 user_type = cursor.fetchone()[0]
             finally:
                 cursor.close()

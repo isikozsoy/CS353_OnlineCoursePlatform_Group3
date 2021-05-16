@@ -30,7 +30,7 @@ def topic_course_listing_page(request, topicname):
             # check for user type
             cursor_ = connection.cursor()
             try:
-                cursor_.execute('select type from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
+                cursor_.execute('select user_type from auth_user where id = %s;', [request.user.id])
                 type_row = cursor_.fetchone()
                 if type_row:
                     user_type = type_row[0]
@@ -129,6 +129,7 @@ def add_to_wishlist(request, course_slug):
 class MainView(View):
     def get(self, request, warning_message = None):
         cursor = connection.cursor()
+        print("Request id: ", request.user.id)
         cursor.execute('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
@@ -178,9 +179,8 @@ class MainView(View):
         topics = Topic.objects.raw('select * from main_topic order by topicname;')
 
         try:
-            cursor.execute('select type '
+            cursor.execute('select user_type '
                            'from auth_user '
-                           'inner join accounts_defaultuser ad on auth_user.id = ad.user_ptr_id '
                            'where id = %s;', [request.user.id])
         except DatabaseError:
             return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
@@ -772,7 +772,7 @@ class JoinCoursesView(View):
             # check if the user is an instructor, list the instructor's courses, and create multiple selection boxes
             cursor = connection.cursor()
             try:
-                cursor.execute('select type from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
+                cursor.execute('select user_type from auth_user where id = %s;', [request.user.id])
                 user_type = cursor.fetchone()
                 if user_type:  # the user ought to be recorded inside defaultuser as well, but just in case
                     user_type = user_type[0]
@@ -814,7 +814,7 @@ def get_user_type(request):
     if request.user.is_authenticated:
         cursor = connection.cursor()
         try:
-            cursor.execute('select type from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
+            cursor.execute('select type from user_types where id = %s;', [request.user.id])
             user_type = cursor.fetchone()
             if user_type:
                 user_type = user_type[0]

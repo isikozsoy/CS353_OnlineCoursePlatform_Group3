@@ -6,7 +6,7 @@ from django.views.generic.base import View, HttpResponseRedirect, HttpResponse
 from django.contrib.auth import login, logout, authenticate
 
 from .forms import *
-from .models import DefaultUser, Student, Instructor, SiteAdmin, Advertiser
+from .models import Student, Instructor, SiteAdmin, Advertiser
 from main.models import *
 from main.views import MainView
 
@@ -22,9 +22,11 @@ class LoginView(View):
 
     def get(self, request, warning_message = None):
         if request.user.is_authenticated:
+            print("Here")
             return HttpResponseRedirect('/')
 
         form = Login()
+        print("Request user: ", request.user.id)
         topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
         return render(request, self.template_name, {'form': form,
                                                     'user_type': -1,
@@ -76,8 +78,8 @@ class RegisterView(View):
         form = Register()
 
         cursor = connection.cursor()
-        cursor.execute('select type '
-                       'from user_types '
+        cursor.execute('select user_type '
+                       'from auth_user '
                        'where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
@@ -129,6 +131,9 @@ class RegisterView(View):
             # we first create a new User object inside the auth.models.User model
             new_user = User(username=username, email=email, password=password)
             new_user.save()
+            cursor = connection.cursor()
+            cursor.execute('select id from auth_user where username = %s;', [username])
+            user_id = cursor.fetchone()[0]
 
             # Then we go on to add this model to the corresponding submodels, i.e. DefaultUser where password_orig
             #  will be saved, Student, Instructor, Advertiser, etc. For this, we need the id of the user that we added
@@ -139,44 +144,32 @@ class RegisterView(View):
                 name = form.cleaned_data['name']
                 company_name = form.cleaned_data['company_name']
 
-                cursor.execute(
-                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
-                    [new_user.id, password, 2])
                 cursor.close()
                 cursor = connection.cursor()
                 cursor.execute(
-                    "insert into accounts_advertiser(defaultuser_ptr_id, name, company_name, phone) "
+                    "insert into accounts_advertiser(user_ptr_id, name, company_name, phone) "
                     "values ( %s, %s, %s, %s)",
-                    [new_user.id, name, company_name, phone])
+                    [user_id, name, company_name, phone])
             elif "instructor" in request.path:
                 description = form.cleaned_data['description']
 
-                cursor.execute(
-                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
-                    [new_user.id, password, 1])
                 cursor.close()
                 cursor = connection.cursor()
                 cursor.execute(
-                    "insert into accounts_student(defaultuser_ptr_id, phone) values ( %s, %s)",
-                    [new_user.id, phone])
+                    "insert into accounts_student(user_ptr_id, phone) values ( %s, %s)",
+                    [user_id, phone])
                 cursor.close()
                 cursor = connection.cursor()
                 cursor.execute(
                     "insert into accounts_instructor(student_ptr_id, description) values ( %s, %s)",
                     [new_user.id, description])
-            else:
-                cursor.execute(
-                    "insert into accounts_defaultuser(user_ptr_id, password_orig, type) values ( %s, %s, %s)",
-                    [new_user.id, password, 0])
                 cursor.close()
                 cursor = connection.cursor()
                 cursor.execute(
-                    "insert into accounts_student(defaultuser_ptr_id, phone) values ( %s, %s)",
-                    [new_user.id, phone])
+                    "insert into accounts_student(user_ptr_id, phone) values ( %s, %s)",
+                    [user_id, phone])
 
             cursor.close()
-
-            new_user.save()
             return HttpResponseRedirect('/login')  # /login
         warning_message = "The form values were not valid."
         return RegisterView.get(self, request, warning_message)
@@ -204,23 +197,23 @@ class UserView(View):
         cursor = connection.cursor()
 
         # find the type of the user
-        cursor.execute('select type '
-                       'from accounts_defaultuser '
-                       'where user_ptr_id = %s;', [user_id])
+        cursor.execute('select user_type '
+                       'from auth_user '
+                       'where id = %s;', [user_id])
         user_type = cursor.fetchone()[0]
         cursor.close()
 
         if user_type == 0:  # it is a Student account
-            user = Student.objects.raw('select * from accounts_student where defaultuser_ptr_id = %s;',
+            user = Student.objects.raw('select * from accounts_student where user_ptr_id = %s;',
                                        [user_id])[0]
         elif user_type == 1:  # it is an Instructor account
             user = Instructor.objects.raw('select * from accounts_instructor where student_ptr_id = %s;',
                                           [user_id])[0]
         elif user_type == 2:  # advertiser account
-            user = Advertiser.objects.raw('select * from accounts_advertiser where defaultuser_ptr_id = %s;',
+            user = Advertiser.objects.raw('select * from accounts_advertiser where user_ptr_id = %s;',
                                           [user_id])[0]
         else:
-            user = SiteAdmin.objects.raw('select * from accounts_advertiser where defaultuser_ptr_id = %s;',
+            user = SiteAdmin.objects.raw('select * from accounts_advertiser where user_ptr_id = %s;',
                                           [user_id])[0]
         form = AccountViewForm(user_type=user_type, user=user, readonly=True)
 
@@ -240,8 +233,8 @@ class AccountView(View):
         if request.user.is_authenticated:
             cursor = connection.cursor()
             try:
-                cursor.execute('select type '
-                               'from user_types '
+                cursor.execute('select user_type '
+                               'from auth_user '
                                'where id = %s;', [request.user.id])
                 user_type = cursor.fetchone()
                 if user_type:
@@ -252,7 +245,7 @@ class AccountView(View):
                 cursor.close()
 
             if user_type == 0:  # it is a Student account
-                user = Student.objects.raw('select * from accounts_student where defaultuser_ptr_id = %s;',
+                user = Student.objects.raw('select * from accounts_student where user_ptr_id = %s;',
                                            [request.user.id])[0]
 
             elif user_type == 1:  # it is an Instructor account
@@ -260,10 +253,10 @@ class AccountView(View):
                                               [request.user.id])[0]
 
             elif user_type == 2:  # advertiser account
-                user = Advertiser.objects.raw('select * from accounts_advertiser where defaultuser_ptr_id = %s;',
+                user = Advertiser.objects.raw('select * from accounts_advertiser where user_ptr_id = %s;',
                                               [request.user.id])[0]
             else:  # admin
-                user = SiteAdmin.objects.raw('select * from accounts_siteadmin where defaultuser_ptr_id = %s;',
+                user = SiteAdmin.objects.raw('select * from accounts_siteadmin where user_ptr_id = %s;',
                                              [request.user.id])[0]
 
             form = AccountViewForm(user_type=user_type, user=user, readonly=False)
@@ -311,8 +304,8 @@ class AccountView(View):
         try:
             user_id = request.user.id
             # find the type of the user
-            cursor.execute('select type '
-                           'from user_types '
+            cursor.execute('select user_type '
+                           'from auth_user '
                            'where id = %s;', [user_id])
             user_type = cursor.fetchone()
             if user_type:
@@ -323,16 +316,16 @@ class AccountView(View):
             cursor.close()
 
         if user_type == 0:  # it is a Student account
-            user = Student.objects.raw('select * from accounts_student where defaultuser_ptr_id = %s;',
+            user = Student.objects.raw('select * from accounts_student where user_ptr_id = %s;',
                                        [request.user.id])[0]
         elif user_type == 1:  # it is an Instructor account
             user = Instructor.objects.raw('select * from accounts_instructor where student_ptr_id = %s;',
                                           [request.user.id])[0]
         elif user_type == 2:  # advertiser account
-            user = Advertiser.objects.raw('select * from accounts_advertiser where defaultuser_ptr_id = %s;',
+            user = Advertiser.objects.raw('select * from accounts_advertiser where user_ptr_id = %s;',
                                           [request.user.id])[0]
         else:  # admin
-            user = SiteAdmin.objects.raw('select * from accounts_siteadmin where defaultuser_ptr_id = %s;',
+            user = SiteAdmin.objects.raw('select * from accounts_siteadmin where user_ptr_id = %s;',
                                          [request.user.id])[0]
 
         form = AccountViewForm(request.POST, user_type=user_type, user=user, readonly=False)
@@ -355,7 +348,7 @@ class AccountView(View):
                     try:
                         cursor.execute('update accounts_student '
                                        'set phone = %s '
-                                       'where defaultuser_ptr_id = %s;',
+                                       'where user_ptr_id = %s;',
                                        [phone, user_id])
                     finally:
                         cursor.close()
@@ -375,7 +368,7 @@ class AccountView(View):
                     try:
                         cursor.execute('update accounts_student '
                                        'set phone = %s '
-                                       'where defaultuser_ptr_id = %s;',
+                                       'where user_ptr_id = %s;',
                                        [phone, user_id])
                     finally:
                         cursor.close()
@@ -387,7 +380,7 @@ class AccountView(View):
                     try:
                         cursor.execute('update accounts_advertiser '
                                        'set phone = %s '
-                                       'where defaultuser_ptr_id = %s;',
+                                       'where user_ptr_id = %s;',
                                        [phone, user_id])
                     finally:
                         cursor.close()
@@ -396,7 +389,7 @@ class AccountView(View):
                     try:
                         cursor.execute('update accounts_advertiser '
                                        'set company_name = %s '
-                                       'where defaultuser_ptr_id = %s;',
+                                       'where user_ptr_id = %s;',
                                        [company_name, user_id])
                     finally:
                         cursor.close()
@@ -405,7 +398,7 @@ class AccountView(View):
                     try:
                         cursor.execute('update accounts_advertiser '
                                        'set name = %s '
-                                       'where defaultuser_ptr_id = %s;',
+                                       'where user_ptr_id = %s;',
                                        [name, user_id])
                     finally:
                         cursor.close()
