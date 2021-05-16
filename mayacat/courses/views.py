@@ -1367,7 +1367,7 @@ class AddLectureToCourseView(View):
                            '(%s, %s, %s, %s);', [lecture_name, lecture_slug, lecture_url, cno])
 
         warning_message = "Success: Lecture submission is successful."
-        return CourseDetailView.get(self, request, warning_message)
+        return CourseDetailView.get(self, request, course_slug, warning_message)
 
 
 class ChangeCourseSettingsView(View):
