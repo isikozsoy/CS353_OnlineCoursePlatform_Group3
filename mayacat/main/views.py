@@ -51,9 +51,10 @@ class WishlistView(ListView):
     def get(self, request):
         # WILL BE CHANGED TO CURRENT USER
         user_id = request.user.id
-        wishlist_q = Wishes.objects.raw('''SELECT *
-                                            FROM main_wishes
-                                            WHERE user_id = %s''', [user_id])
+
+        wishlist_q = Wishes.objects.raw('''SELECT cc.course_img, cc.cname, mw.wishes_id, cc.slug
+                                        FROM main_wishes AS mw, courses_course AS cc
+                                        WHERE mw.cno_id = cc.cno AND mw.user_id = %s''', [user_id])
 
         cursor = connection.cursor()
         cursor.execute('select type '

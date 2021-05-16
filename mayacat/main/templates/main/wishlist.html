@@ -1,9 +1,81 @@
 {% extends 'main/base.html' %}
 
+{% block style_block %}
+<style>
+
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 270px;
+    border-radius: 5px;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+img {
+    border-radius: 5px 5px 0 0;
+}
+
+.container {
+    padding: 2px 16px;
+}
+
+/* Float four columns side by side */
+.column {
+    float: left;
+    width: 25%;
+    padding: 10px 10px;
+}
+
+/* Remove extra left and right margins, due to padding */
+.row {margin: 0 -5px;
+    float: left;
+    padding-left: 30px;
+    min-height: 400px;
+    clear: both;
+    display: inline-block;
+    padding-top: 20px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.Mycourses {
+    text-align: center;
+    background-color: black;
+    padding-top: 5px;
+    color: white;
+    min-height: 70px;
+}
+
+</style>
+
+{% endblock %}
+
 {% block main_content %}
-    <h1>Welcome Your Wishlist</h1>
-    <h2>Items Added To Wishlist</h2>
+
+<div class = "Mycourses">
+    <h1>Wishlist</h1>
+    </div>
+
+    <div class="row">
     {% for wish in wishlist_q %}
-        <p>{{ wish.cno }}</p>
+        <div class="column">
+            <div class="card" >
+                <iframe src={{ wish.course_img }} width="250" height="130" target="_self"></iframe>
+
+                <div class="container">
+        <a href = "/wish.slug">{{ wish.cname }}</a>
+                    </div>
+            </div>
+        </div>
     {% endfor %}
+
+</div>
 {% endblock %}
