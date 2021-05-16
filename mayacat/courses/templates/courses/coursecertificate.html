@@ -1,0 +1,14 @@
+{% extends "main/base.html" %}
+
+{% block main_content %}
+
+<object data="{{pdf}}" type="application/pdf" width="100%" height="100%">
+  <p>Alternative text - include a link <a href="myfile.pdf">to the PDF!</a></p>
+</object>
+
+<a><br><br>Congratulations {{first_name}} {{last_name}}. You have finished the {{curcourse.cname}} now.<br></a>
+<a><br>MAYACAT<br></a>
+<a href = "/{{course_slug}}"> Continue to the course page</a>
+
+<br>
+{% endblock %}
