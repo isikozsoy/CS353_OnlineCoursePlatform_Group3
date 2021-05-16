@@ -123,6 +123,9 @@ def add_to_wishlist(request, course_slug):
     else:
         cursor.execute('DELETE FROM main_wishes WHERE cno_id = %s AND user_id = %s', [cno, user_id])
 
+    if str(request.path).find("/to_cart") != -1:
+        return redirect("main:cart")
+
     return redirect("main:wishlist_items")
 
 
@@ -428,8 +431,9 @@ class ShoppingCartView(View):
                        ' WHERE username_id = %s', [request.user.id])
         receivers = cursor.fetchall()
 
-        wishes = cursor.execute('SELECT cno_id FROM main_wishes WHERE user_id = %s;',
-                                              [request.user.id])
+        cursor.execute('SELECT cno_id FROM main_wishes WHERE user_id = %s;',
+                        [request.user.id])
+        wishes = cursor.fetchall()
 
         if count > 0:
             items = [None] * count
@@ -445,8 +449,9 @@ class ShoppingCartView(View):
                     'receiver_username': receivers[i],
                     'is_wish': False
                 }
-                if items_on_cart[i][7] in wishes:
-                    items[i]["is_wish"] = True
+                for wish in wishes:
+                    if items_on_cart[i][7] == wish[0]:
+                        items[i]["is_wish"] = True
         else:
             items = None
             count = 0

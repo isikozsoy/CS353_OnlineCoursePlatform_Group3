@@ -13,6 +13,7 @@ urlpatterns = [
     path('wishlist', WishlistView.as_view(), name='wishlist_items'),
     path('offers', OffersView.as_view(), name='offers'),
     path('wishlist/add_to_wishlist/<course_slug>', add_to_wishlist, name='user_wishlist'),
+    path('wishlist/add_to_wishlist/<course_slug>/to_cart', add_to_wishlist, name='ad_wish_in_cart'),
     path('wishlist', WishlistView.as_view(), name='wishlist_items'),
     path('cart/trash/<inside_cart_id>', TrashView.as_view(), name='add_trash_btn'),
     path('topic/<topicname>', topic_course_listing_page, name='topic_course_list'),

@@ -163,11 +163,13 @@
     <h3>Description</h3>
     <a>{{ course.description }}</a>
 
+    <h4><br>Contributors of the Course</h4>
     {% if contributor_cnt != 0 %}
-        <h4><br>Contributors of the Course</h4>
         {% for contributor in contributors %}
           <a href = /account/{{contributor}}>{{contributor}} {{ contributor.username }} <br></a>
         {% endfor %}
+    {% else %}
+        <p>This course does not have any contributor.</p>
     {% endif %}
 
 
