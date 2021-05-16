@@ -1,8 +1,12 @@
 {% extends "main/base.html" %}
 
 {% block main_content %}
+
+    <a href="/{{course_slug}}">Check the course page<br></a>
     Original thumbnail:<br>
-    <img src="{{ course.course_img }}">
+
+    <iframe src={{ course.course_img }} width="230" height="200" target="_self"></iframe>
+
     <form method="post" action="" >
     {% csrf_token %}
     {{ course_form.as_table }}
