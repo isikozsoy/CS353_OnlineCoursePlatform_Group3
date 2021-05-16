@@ -1335,7 +1335,7 @@ class ChangeCourseSettingsView(View):
 
             cursor = connection.cursor()
             try:
-                cursor.execute('select type from accounts_defaultuser where user_ptr_id = %s;', [request.user.id])
+                cursor.execute('select user_type from auth_user where id = %s;', [request.user.id])
                 user_type = cursor.fetchone()
 
                 if user_type:

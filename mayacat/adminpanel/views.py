@@ -138,10 +138,6 @@ class AdminFirstRegisterView(View):
             print("Valid form for admin register")
             ssn = admin_save_form.cleaned_data['ssn']
             address = admin_save_form.cleaned_data['address']
-            cursor.execute(
-                'insert into accounts_defaultuser (user_ptr_id, password_orig, type) '  # password orig will be  
-                # stored as empty for admins
-                'values (%s, %s, %s);', [request.user.id, "0", 3])
             cursor.execute('insert into accounts_siteadmin (defaultuser_ptr_id, ssn, address) '
                            'values (%s, %s, %s);', [request.user.id, ssn, address])
             cursor.close()
