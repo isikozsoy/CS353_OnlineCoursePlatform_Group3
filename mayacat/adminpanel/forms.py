@@ -81,10 +81,10 @@ class DiscountForm(forms.Form):
     start_date = forms.DateField(label='Start Date',
                                  input_formats=['%Y-%m-%d'],
                                  widget=forms.DateInput(attrs={'class': 'datepicker-input',
-                                                               'data-target': '#datepicker_start'
+                                                               'type': 'date'
                                                                }))
     end_date = forms.DateField(label='End Date',
                                input_formats=['%Y-%m-%d'],
                                widget=forms.DateInput(attrs={'class': 'form-control datepicker-input',
-                                                             'data-target': '#datepicker_end'
+                                                             'type': 'date'
                                                              }))
