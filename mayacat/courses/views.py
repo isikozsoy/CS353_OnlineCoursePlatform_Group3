@@ -1194,9 +1194,12 @@ class AddLectureToCourseView(View):
             cursor = connection.cursor()
             cursor.execute('INSERT INTO courses_lecture (lecture_name, lecture_slug, video_url, cno_id) VALUES '
                            '(%s, %s, %s, %s);', [lecture_name, lecture_slug, lecture_url, cno])
-            messages.success(request, 'Lecture submission successful')
 
-        return HttpResponseRedirect(request.path)
+        response_str = "Lecture submission is successful. <a href='/"
+        response_str += course_slug
+        response_str += "'>Return to course page...</a>"
+
+        return HttpResponse( response_str)
 
 
 class ChangeCourseSettingsView(View):
