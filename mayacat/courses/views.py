@@ -156,6 +156,26 @@ class CourseDetailView(View):
 
         if course.is_private == 1:
 
+            # Check whether the user is the owner
+            cursor.execute('SELECT owner_id FROM courses_course WHERE cno = %s ', [cno])
+            owner_id = cursor.fetchone()
+
+            if owner_id:
+                owner_id = owner_id[0]
+
+            # Check whether the user is the contributor
+            cursor.execute('SELECT user_id FROM main_contributor WHERE cno_id = %s ', [cno])
+            contributor_id = cursor.fetchall()
+
+
+            # If not student, not contributor, not owner --> GO BACK
+            if user_type != 0 and (request.user.id != owner_id and request.user.id not in contributor_id):
+                warning_message = "Error: This is a private course that you are not allowed to view"
+                return MainView.get(self, request, warning_message)
+
+            if contributor_id:
+                contributor_id = contributor_id[0]
+
             # Check whether the user is enrolled
             cursor.execute('SELECT count(*) FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
                            [cno, request.user.id])
@@ -166,21 +186,9 @@ class CourseDetailView(View):
             else:
                 private_enroll = 0
 
-            # Check whether the user is the owner
-            cursor.execute('SELECT owner_id FROM courses_course WHERE cno = %s ', [cno])
-            owner_id = cursor.fetchone()
 
-            if owner_id:
-                owner_id = owner_id[0]
 
-            # Check whether the user is the contributor
-            cursor.execute('SELECT user_id FROM main_contributor WHERE cno_id = %s ', [cno])
-            contributor_id = cursor.fetchone()
-
-            if contributor_id:
-                contributor_id = contributor_id[0]
-
-            if private_enroll == 0 and request.user.id != owner_id and request.user.id != contributor_id and user_type == 0:
+            if private_enroll == 0 and request.user.id != owner_id and request.user.id not in contributor_id and user_type == 0:
                 cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
                                [cno, request.user.id])
 
