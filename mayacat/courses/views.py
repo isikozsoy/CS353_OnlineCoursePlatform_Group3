@@ -11,9 +11,12 @@ from accounts.models import *
 from datetime import date
 from slugify import slugify
 from datetime import date
+from PIL import Image, ImageDraw
 
 from .forms import *
 from main.views import get_user_type
+
+from reportlab.pdfgen.canvas import Canvas
 
 
 class MyCoursesView(ListView):
@@ -412,7 +415,7 @@ class AddAnswerView(View):
         cursor = connection.cursor()
 
         lecture_no = lecture_no_row[0]
-        cursor.execute('insert into main_post (post, lecture_no_id, username_id) values (%s, %s, %s);',
+        cursor.execute('insert into main_post (post, lecture_no_id, username_id, date) values (%s, %s, %s,CURRENT_TIMESTAMP );',
                        [answer, lecture_no, request.user.id])
         cursor.execute('select LAST_INSERT_ID()')
         row = cursor.fetchone()
@@ -826,6 +829,74 @@ class DeleteAnswerView( View ):
         cursor.close()
         return HttpResponseRedirect("/"+course_slug+"/"+lecture_slug)
 
+class CourseCertificateView(View):
+    def get(self, request, course_slug, *args, **kwargs):
+        if not request.user.id:
+            return HttpResponseRedirect("/login")
+
+        cursor = connections['default'].cursor()
+
+        course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
+
+        curuser_id = request.user.id
+        print(curuser_id)
+
+        cursor.execute( '''SELECT username,first_name, last_name FROM auth_user WHERE id = %s''',[curuser_id] )
+        user = cursor.fetchone()
+        username = user[0]
+        first_name = user[1]
+        last_name = user[2]
+        print("certificate username:",username, first_name, last_name)
+        """
+                img = Image.new('RGB', (100, 30), color=(73, 109, 137))
+        
+                d = ImageDraw.Draw(img)
+                d.text((10, 10), "Hello World", fill=(255, 255, 0))
+        
+                canvas = Canvas("certificate.pdf")
+                canvas.drawString(72, 72, "Congratulations")
+                canvas.save()
+        """
+        if len(course_queue) > 0:
+            course = course_queue[0]
+        else:
+            # 404 error
+            return HttpResponseRedirect('/')
+
+        finish_list = Finishes.objects.raw('''SELECT * FROM main_finishes as MF WHERE MF.cno_id = %s AND MF.user_id = %s;''',
+                                        [course.cno, curuser_id])
+
+        if( not finish_list ):
+            return HttpResponseRedirect("/"+course_slug)
+
+
+
+        cursor.execute('select type '
+                       'from user_types '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
+        topic_list = Topic.objects.raw('select * from main_topic;')
+
+        context = {
+            'courseurl': '/' + course_slug ,
+            'curcourse': course,
+            'user': curuser_id,
+            'username' : username,
+            'first_name' : first_name,
+            'last_name' : last_name,
+            'user_type': user_type,
+            'topic_list': topic_list,
+            'course_slug':course_slug,
+            'pdf' : canvas
+        }
+        cursor.close()
+
+        return render(request, 'courses/coursecertificate.html', context)
 
 class CourseFinishView(View):
     def get(self, request, course_slug, *args, **kwargs):
