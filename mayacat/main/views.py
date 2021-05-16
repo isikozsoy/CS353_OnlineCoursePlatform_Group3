@@ -701,8 +701,8 @@ class TaughtCoursesView(View):
         owned_courses = cursor.fetchall()
 
         cursor.execute(
-            'SELECT cname, slug FROM courses_course C, main_teaches T, courses_lecture L WHERE T.user_id = %s'
-            ' AND T.lecture_no_id = L.lecture_no AND L.cno_id = C.cno AND cno NOT IN'
+            'SELECT cname, slug FROM courses_course C, main_contributor T WHERE T.user_id = %s'
+            ' AND T.cno_id = C.cno AND cno NOT IN'
             ' (SELECT cno FROM courses_course WHERE owner_id = %s)', [request.user.id, request.user.id])
         taught_courses = cursor.fetchall()
 
@@ -727,9 +727,6 @@ def add_to_my_courses(request, item):
     if receiver_id == user_id:
         cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
                        [cno, user_id])
-    else:
-        cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
-                           [cno, receiver_id])
 
         today = datetime.today().strftime('%Y-%m-%d')
 
@@ -737,7 +734,7 @@ def add_to_my_courses(request, item):
                            'VALUES (%s, %s, %s, %s);',[today, cno, receiver_id, user_id])
 
     cursor.execute('''DELETE FROM main_inside_cart 
-                            WHERE username_id = %s AND cno_id = %s''', [request.user.id, cno])
+                    WHERE username_id = %s AND cno_id = %s''', [request.user.id, cno])
 
     cursor.close()
 

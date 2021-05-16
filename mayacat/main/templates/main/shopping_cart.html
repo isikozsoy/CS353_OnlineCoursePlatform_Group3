@@ -172,9 +172,7 @@
                 {% for item in items %}
                     <div class="card" >
                         <div class="d-flex justify-content-start">
-
-                            <!--<img src = {{ course.course_img }} width="290" height="180" >-->
-                            <img src="https://www.niobehosting.com/blog/wp-content/uploads/database-nedir-840x400.jpg" width="290" height="180">
+                            <iframe src={{ item.course_img }} width="250" height="130" target="_self"></iframe>
                             <div class = "container">
                                 Name: {{ item.cname }} <br />Price: {{ item.price }} <br />
 
