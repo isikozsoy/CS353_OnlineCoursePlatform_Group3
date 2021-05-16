@@ -129,6 +129,7 @@ def add_to_wishlist(request, course_slug):
 class MainView(View):
     def get(self, request, warning_message = None):
         cursor = connection.cursor()
+        print("Request id: ", request.user.id)
         cursor.execute('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()

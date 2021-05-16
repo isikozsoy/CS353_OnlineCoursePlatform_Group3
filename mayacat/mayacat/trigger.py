@@ -71,13 +71,13 @@ def create_gift_trigger():
         cursor.close()
 
 
-def create_view():
+def create_view_():
     cursor = connection.cursor()
 
     try:
         cursor.execute('drop view if exists user_types;')
         cursor.execute('create view user_types as '
-                       'select id, user_type '
+                       'select id, user_type as type '
                        'from auth_user '
                        ';')
     except Error:
@@ -130,14 +130,14 @@ def trigger_save_user_type():
         cursor.execute('create trigger save_adv after insert on accounts_advertiser '
                        'for each row '
                        'begin '
-                       'update auth_user set user_type = 2 where id = new.defaultuser_ptr_id;'
+                       'update auth_user set user_type = 2 where id = new.user_ptr_id;'
                        'end;')
 
         cursor.execute('drop trigger if exists save_admin;')
         cursor.execute('create trigger save_admin after insert on accounts_siteadmin '
                        'for each row '
                        'begin '
-                       'update auth_user set user_type = 3 where id = new.defaultuser_ptr_id;'
+                       'update auth_user set user_type = 3 where id = new.user_ptr_id;'
                        'end;')
     except Error:
         print(sys.exc_info())
