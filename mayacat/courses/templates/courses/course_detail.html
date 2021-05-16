@@ -151,14 +151,6 @@
 <div class = "column b" >
     <div class="column third">
             <div class="row">
-        {% if is_owner != 0 %}
-
-            <a href="{% url 'courses:course_edit' course.slug %}" class="btn btn-secondary">Edit Course</a>
-            {% if course.is_complete == 0 %}
-                <a href="{% url 'courses:mark_as_complete' course.slug %}" class="btn btn-secondary">Mark as complete</a>
-                <a href="{% url 'courses:add_lecture' course.slug %}" class="btn btn-primary">Add Lecture</a>
-            {% endif %}
-        {% endif %}
 
     <h3>Description</h3>
     <a>{{ course.description }}</a>
@@ -206,6 +198,15 @@
     </div>
     <div class="column fourth">
 
+        {% if is_owner != 0 %}
+
+            <a href="{% url 'courses:course_edit' course.slug %}" class="btn btn-secondary">Edit Course</a>
+            {% if course.is_complete == 0 %}
+                <a href="{% url 'courses:mark_as_complete' course.slug %}" class="btn btn-secondary">Mark as complete</a>
+                <a href="{% url 'courses:add_lecture' course.slug %}" class="btn btn-primary">Add Lecture</a>
+            {% endif %}
+        {% endif %}
+
         {% if lecture_list != 0 and lecture_slug != None %}
         {% if finished  %}
             <br><a href="/{{course.slug}}/{{ lecture_slug }}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">RESTART</a>
@@ -217,28 +218,32 @@
     {% endif %}
 
     {% if user_type == 2 %} <!-- advertiser -->
-        <br><a href="/offer_ad/{{ course.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
+        {% if course.is_private == 0 %}
+            <br><a href="/offer_ad/{{ course.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
 
-        {% if is_wish == 0 %}
-            <br><a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Favorites</a>
-        {% else %}
-            <br><a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Favorites</a>
+            {% if is_wish == 0 %}
+                <br><a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Favorites</a>
+            {% else %}
+                <br><a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Favorites</a>
+            {% endif %}
         {% endif %}
     {% else %}
-        {% if not is_gift %}
-            <br><form action={{ path|lower }} method="POST">
-                {% csrf_token %}
-                {{ form.errors }}
-                {{ form.as_table }}
-                <button type="submit"
+        {% if course.is_private == 0 %}
+            {% if not is_gift %}
+                <br><form action={{ path|lower }} method="POST">
+                    {% csrf_token %}
+                    {{ form.errors }}
+                    {{ form.as_table }}
+                    <button type="submit"
                         class="btn btn-primary"
                         role="button">Add To Cart</button><br>
-            </form>
-        {% else %}
-                <form action = "/cart/gift/{{ course.slug }}" method = "post">
+                </form>
+            {% else %}
+                    <form action = "/cart/gift/{{ course.slug }}" method = "post">
                         {% csrf_token %}
                        <input type="submit" value="Add To Cart As Gift">
-                </form>
+                    </form>
+            {% endif %}
         {% endif %}
     {% endif %}
 
