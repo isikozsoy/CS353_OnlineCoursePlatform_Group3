@@ -145,7 +145,7 @@
   </form>
   <br>
   {% for note in notes %}
-  <a>{{ note.note }} {{ note.s_username_id }} <br></a>
+  <a>{{ note.note }} <br></a>
 
     <form action="{{url}}/deletenote/{{note.note_id}}" method="post">
            {% csrf_token %}
@@ -167,18 +167,18 @@
   <br>
 
   {% for question,answers in qanda %}
-  <a>Question : {{ question.post }}</a>
-    {% if question.username_id == request.user.id %}
-        <form action="{{url}}/deletequestion/{{question.postno}}" method="post">
+  <a>Question : {{question.1}} Date:{{question.2}} Username:{{question.3}}</a>
+    {% if question.4 == request.user.id %}
+        <form action="{{url}}/deletequestion/{{question.0}}" method="post">
            {% csrf_token %}
             <input type="submit" value="Delete Question">
         </form>
     {% endif %}
 <br>
   {% for a in answers %}
-  <a>Answer : {{ a.post }}</a>
-    {% if a.username_id == request.user.id %}
-        <form action="{{url}}/deleteanswer/{{a.postno}}" method="post">
+  <a>Answer : {{a.1}} Date:{{a.2}} Username:{{a.3}}</a>
+    {% if a.4 == request.user.id %}
+        <form action="{{url}}/deleteanswer/{{a.0}}" method="post">
            {% csrf_token %}
             <input type="submit" value="Delete Answer">
         </form>
@@ -186,7 +186,7 @@
     <br>
 
   {% endfor %}
-  <form action="{{url}}/answer/{{question.postno}}" method="post">
+  <form action="{{url}}/answer/{{question.0}}" method="post">
    {% csrf_token %}
     <label for="answer">Your Answer: </label>
     <input id="answer" type="text" name="answer" value="{{ answer }}">
