@@ -30,7 +30,7 @@ def topic_course_listing_page(request, topicname):
             # check for user type
             cursor_ = connection.cursor()
             try:
-                cursor_.execute('select type from auth_user where id = %s;', [request.user.id])
+                cursor_.execute('select user_type from auth_user where id = %s;', [request.user.id])
                 type_row = cursor_.fetchone()
                 if type_row:
                     user_type = type_row[0]

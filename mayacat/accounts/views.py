@@ -6,7 +6,7 @@ from django.views.generic.base import View, HttpResponseRedirect, HttpResponse
 from django.contrib.auth import login, logout, authenticate
 
 from .forms import *
-from .models import DefaultUser, Student, Instructor, SiteAdmin, Advertiser
+from .models import Student, Instructor, SiteAdmin, Advertiser
 from main.models import *
 from main.views import MainView
 
