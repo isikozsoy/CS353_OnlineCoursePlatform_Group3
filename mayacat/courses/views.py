@@ -137,6 +137,15 @@ class CourseDetailView(View):
         form = GiftInfo()
         cursor = connection.cursor()
 
+        cursor.execute('select type '
+                       'from user_types '
+                       'where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
         course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s;', [course_slug])
         print("After course")
         if len(list(course)) != 0:
@@ -144,6 +153,37 @@ class CourseDetailView(View):
         else:
             return HttpResponseRedirect('/')
         cno = course.cno
+
+        if course.is_private == 1:
+
+            # Check whether the user is enrolled
+            cursor.execute('SELECT count(*) FROM main_enroll as E WHERE E.cno_id = %s AND E.user_id= %s',
+                       [cno, request.user.id])
+            private_enroll = cursor.fetchone()
+
+            if private_enroll:
+                private_enroll = private_enroll[0]
+            else:
+                private_enroll = 0
+
+
+            # Check whether the user is the owner
+            cursor.execute('SELECT owner_id FROM courses_course WHERE cno = %s ', [cno])
+            owner_id = cursor.fetchone()
+
+            if owner_id:
+                owner_id = owner_id[0]
+
+            # Check whether the user is the contributor
+            cursor.execute('SELECT user_id FROM main_contributor WHERE cno_id = %s ', [cno])
+            contributor_id = cursor.fetchone()
+
+            if contributor_id:
+                contributor_id = contributor_id[0]
+
+            if private_enroll == 0 and request.user.id != owner_id and request.user.id != contributor_id and user_type == 0:
+                cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
+                           [cno, request.user.id])
 
         cursor.execute('SELECT * FROM courses_lecture WHERE cno_id = %s;', [cno])
         print("After lecture")
@@ -245,14 +285,7 @@ class CourseDetailView(View):
         if is_All_None:
             comments = None
 
-        cursor.execute('select type '
-                       'from user_types '
-                       'where id = %s;', [request.user.id])
 
-        row = cursor.fetchone()
-        user_type = -1
-        if row:
-            user_type = row[0]
         cursor.execute('SELECT count(*) '
                        'FROM main_wishes WHERE cno_id = %s AND user_id = %s;',
                        [cno, request.user.id])
