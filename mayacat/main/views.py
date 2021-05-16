@@ -159,13 +159,11 @@ class MainView(View):
 
         topic_based_courses = [None] * interested_topics_count
         for i, topic in enumerate(interested_topics):
-            cursor.execute('SELECT count(*) FROM main_course_topic CT, courses_course C '
-                           'WHERE C.is_private = 0 AND CT.topicname_id = %s AND C.cno = CT.cno_id LIMIT 5', [topic[0]])
-            cnt = cursor.fetchone()[0]
 
             cursor.execute('SELECT slug, course_img, cname FROM main_course_topic CT, courses_course C '
                            'WHERE C.is_private = 0 AND CT.topicname_id = %s AND C.cno = CT.cno_id LIMIT 5', [topic[0]])
             interested_courses = cursor.fetchall()
+            cnt = len(interested_courses)
 
             topic_based_courses[i] = [None] * (cnt+1)
 
