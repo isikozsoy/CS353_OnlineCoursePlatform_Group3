@@ -510,7 +510,8 @@ class LectureView(View):
             course = course_queue[0]
             print("=2", course, course.cno)
         else:
-            return HttpResponse("No course with this name. <a href='/'>Return to main page...</a>")
+            warning_message = "Error: No course with this name."
+            return MainView.get(self, request, warning_message)
 
         cursor.execute('''SELECT U.username 
                                     FROM main_contributor AS MC,auth_user AS U
@@ -755,10 +756,8 @@ class LectureView(View):
                            [t_username])
             t_id_list = cursor.fetchone()
             if not t_id_list:
-                response_str = 'There is no teacher with this username. <a href="/'
-                response_str += course_slug+'/'+lecture_slug
-                response_str += '">Return to lecture page...</a>'
-                return HttpResponse(response_str)
+                warning_message = "There is no teacher with this username."
+                return LectureView.get(self, request, course_slug, lecture_slug, warning_message)
 
             t_id = t_id_list[0]
 
@@ -1367,7 +1366,7 @@ class AddLectureToCourseView(View):
                            '(%s, %s, %s, %s);', [lecture_name, lecture_slug, lecture_url, cno])
 
         warning_message = "Success: Lecture submission is successful."
-        return CourseDetailView.get(self, request, warning_message)
+        return CourseDetailView.get(self, request, course_slug, warning_message)
 
 
 class ChangeCourseSettingsView(View):
