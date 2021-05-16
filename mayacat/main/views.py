@@ -610,7 +610,7 @@ class AdOffersView(View):
         # Date is passed. Mark as refused.
         today = datetime.today().strftime('%Y-%m-%d')
         cursor.execute('SELECT advertisementno FROM main_advertisement INNER JOIN courses_course on cno_id = cno '
-                       'WHERE owner_id = %s AND startdate <= %s', [request.user.id, today])
+                       'WHERE status = 0 AND owner_id = %s AND startdate < %s', [request.user.id, today])
         ad_passed = cursor.fetchall()
         for ad_no in ad_passed:
             cursor.execute('UPDATE main_advertisement '
@@ -643,7 +643,7 @@ class AdOffersView(View):
                     'cname': offers[i][6],
                     'ad_username': advertiser_usernames[i]
                 }
-            context = context + {'items': items}
+            context = {'user_type': user_type, "topic_list": topic_list, 'items': items}
 
         return render(request, 'main/ad_offers.html', context)
 
