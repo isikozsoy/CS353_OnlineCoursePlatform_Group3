@@ -1025,8 +1025,10 @@ class CourseFinishView(View):
             first_name = first_last_name.cleaned_data['first_name']
             last_name = first_last_name.cleaned_data['last_name']
 
+            cursor = connection.cursor()
             cursor.execute('update auth_user set first_name = %s, last_name = %s where id = %s;',
                            [first_name, last_name, request.user.id])
+            cursor.close()
         return HttpResponseRedirect(request.path)
 
 
@@ -1070,8 +1072,8 @@ class AddComplainView(View):
         if form.is_valid():
             description = form.cleaned_data['description']
             cursor.execute('insert into main_complaint (creation_date, description, course_id, s_user_id) '
-                           'values (%s, %s, %s, %s);',
-                           [get_today(), description, course_cno, request.user.id])
+                           'values (curdate(), %s, %s, %s);',
+                           [description, course_cno, request.user.id])
             cursor.close()
             return render(request, "trivial/success_message_after_submitting.html",
                           {'success_message': 'Your refund request has been sent to the administrators. '
