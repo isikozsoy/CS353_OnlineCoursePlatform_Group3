@@ -50,10 +50,10 @@ class LoginView(View):
             is_super = cursor.fetchone()
             cursor.close()
             if is_super and is_super[0] == 1:
-                admin_set = authenticate(request, username=username, password=password)
+                admin_set = self.authenticate(request, username=username, password=password)
                 if admin_set:
-                    login(request, admin_set)
-                    return HttpResponseRedirect('/admin/register')
+                    login(request, admin_set[0])
+                    return HttpResponseRedirect('/admin')
                 return HttpResponseRedirect('/login')
 
             # continues if there is no admin by this username
