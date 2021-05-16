@@ -114,6 +114,17 @@ def add_to_wishlist(request, course_slug):
     user_id = request.user.id
     cursor = connection.cursor()
 
+    cursor.execute('select type from user_types where id = %s;', [request.user.id])
+
+    row = cursor.fetchone()
+    user_type = -1
+    if row:
+        user_type = row[0]
+
+    # log in before buy anything
+    if user_type == -1:
+        return HttpResponseRedirect('/login')
+
     current_wishes = Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s',
                                         [cno, user_id])
 

@@ -395,6 +395,19 @@ class CourseDetailView(View):
         cno = course.cno
 
         cursor = connection.cursor()
+
+        cursor.execute('select type from user_types where id = %s;', [request.user.id])
+
+        row = cursor.fetchone()
+        user_type = -1
+        if row:
+            user_type = row[0]
+
+        # log in before buy anything
+        if user_type == -1:
+            return HttpResponseRedirect('/login')
+
+
         if form.is_valid():
             if not form.cleaned_data['is_gift']:
                 cursor.execute('INSERT INTO main_inside_cart (cno_id, receiver_username_id, username_id)'
