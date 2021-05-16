@@ -1,7 +1,41 @@
 {% extends "main/base.html" %}
 
+{% block style_block %}
+<style>
+    .alert {
+        padding: 20px;
+        background-color: #f44336;
+        color: white;
+    }
+
+    .closebtn {
+        margin-left: 15px;
+        color: white;
+        font-weight: bold;
+        float: right;
+        font-size: 22px;
+        line-height: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .closebtn:hover {
+        color: black;
+    }
+</style>
+{% endblock %}
 
 {% block main_content %}
+
+{% if warning_message is not None %}
+
+    <div class="alert">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        <strong></strong> {{ warning_message }}
+    </div>
+
+    {% endif %}
+
     {% if user_type == 1 %} <!-- the user is an instructor -->
         <a href="/add" class="btn btn-primary">Request to add a course!</a><br>
         <a href="/discounts" class="btn btn-primary">See current discounts</a><br>

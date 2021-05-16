@@ -109,6 +109,33 @@
         padding-top: 20px;
     }
 
+    .alert {
+        padding: 20px;
+        background-color: #f44336;
+        color: white;
+    }
+
+    .closebtn {
+        margin-left: 15px;
+        color: white;
+        font-weight: bold;
+        float: right;
+        font-size: 22px;
+        line-height: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .closebtn:hover {
+        color: black;
+    }
+
+    .title{
+        margin-left: 40px;
+        margin-top: 20px;
+    }
+
+
 </style>
 
 {% endblock %}
@@ -120,18 +147,21 @@
     </div>
 
     {% if count != 0 %}
-
+        <div class="title">
         {% if count == 1 %}
             <h3>My shopping cart (1 item)</h3>
         {% else %}
             <h3>My shopping cart ({{count}} items)</h3>
         {% endif %}
+            </div>
 
-    {% if item_id is not None %}
+    <hr style="width:100%;text-align:left;margin-left:0">
+
+    {% if warning_message is not None %}
 
     <div class="alert">
         <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-        <strong>Error: </strong> {{ item_id }}
+        <strong>Error: </strong> {{ warning_message }}
     </div>
 
     {% endif %}
