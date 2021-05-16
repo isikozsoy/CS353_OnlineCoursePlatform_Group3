@@ -35,6 +35,7 @@
     <br>
     {% endif %}
     <form method="post" action="{{ url }}">
+    {% csrf_token %}
         {{ first_last_name }}
         <button formmethod="post" formaction="{{ url }}">Save</button>
     </form>

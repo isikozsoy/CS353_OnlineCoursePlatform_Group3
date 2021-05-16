@@ -457,7 +457,7 @@ class LectureView(View):
             course = course_queue[0]
             print("=2", course, course.cno)
         else:
-            return HttpResponseRedirect("/")
+            return HttpResponse("No course with this name. <a href='/'>Return to main page...</a>")
 
         cursor.execute('''SELECT U.username 
                                     FROM main_contributor AS MC,auth_user AS U
@@ -910,7 +910,7 @@ class CourseCertificateView(View):
         }
         cursor.close()
 
-        return render(request, 'courses/coursecertificate.html', context)
+        return render(request, 'certificate.html', context)
 
 
 class CourseFinishView(View):
