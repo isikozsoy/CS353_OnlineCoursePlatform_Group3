@@ -208,7 +208,7 @@
         {% endif %}
     {% endif %}
 
-    {% if is_owner == 0 and user_type != 2%}
+    {% if is_owner == 0 and user_type != 2 and registered == 0 %}
         {% if is_wish == 0 %}
             <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
         {% else %}

@@ -310,7 +310,7 @@ class CourseDetailView(View):
 
         is_contributor = cursor.fetchone()[0]
         if is_contributor != 0:
-            is_enrolled = True
+            registered = True
             is_only_gift = True
 
         context = {
@@ -328,7 +328,6 @@ class CourseDetailView(View):
             'advertisement': advertisement,
             'comments': comments,
             'is_owner': is_owner,
-            'is_enrolled': is_enrolled,
             'prog': prog,
             'lecture_slug': lecture_slug,
             'finished': finished,

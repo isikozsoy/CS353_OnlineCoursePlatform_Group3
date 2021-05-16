@@ -615,6 +615,10 @@ class AdOffersView(View):
                        ' WHERE cno_id in (SELECT cno FROM courses_course WHERE owner_id = %s)', [request.user.id])
         advertiser_usernames = cursor.fetchall()
 
+        topic_list = Topic.objects.raw('select * from main_topic;')
+
+        context = {'user_type': user_type, "topic_list": topic_list}
+
         if len(offers) > 0:
             items = [None] * len(offers)
             for i in range(0, len(offers)):
@@ -628,10 +632,8 @@ class AdOffersView(View):
                     'cname': offers[i][6],
                     'ad_username': advertiser_usernames[i]
                 }
+            context = context + {'items': items}
 
-        topic_list = Topic.objects.raw('select * from main_topic;')
-
-        context = {'items': items, 'user_type': user_type, "topic_list": topic_list}
         return render(request, 'main/ad_offers.html', context)
 
 
