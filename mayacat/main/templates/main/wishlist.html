@@ -3,60 +3,62 @@
 {% block style_block %}
 <style>
 
-.card {
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    transition: 0.3s;
-    width: 270px;
-    border-radius: 5px;
-}
+    .card {
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+        width: 270px;
+        border-radius: 5px;
+    }
 
-.card:hover {
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-}
+    .card:hover {
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
 
-img {
-    border-radius: 5px 5px 0 0;
-}
+    img {
+        border-radius: 5px 5px 0 0;
+    }
 
-.container {
-    padding: 2px 16px;
-}
+    .container {
+        padding: 2px 16px;
+    }
 
-.column {
-    padding: 10px 10px;
-    float: left;
-}
+    .column {
+        padding: 10px 10px;
+        float: left;
+    }
 
-/* Remove extra left and right margins, due to padding */
-.row {margin: 0 -5px;
-    float: left;
-    margin-left: 40px;
-    min-height: 400px;
-    clear: both;
-    display: inline-block;
-    padding-top: 20px;
-}
+    /* Remove extra left and right margins, due to padding */
+    .row {
+        alignment: left;
+        margin: 0 -5px;
+        float: left;
+        margin-left: 40px;
+        min-height: 400px;
+        clear: both;
+        display: inline-block;
+        padding-top: 20px;
+    }
 
-/* Clear floats after the columns */
-.row:after {
-    content: "";
-    display: table;
-    clear: both;
-}
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
 
-.header {
-    text-align: center;
-    background-color: black;
-    padding-top: 5px;
-    color: white;
-    min-height: 70px;
-}
+    .header {
+        text-align: center;
+        background-color: black;
+        padding-top: 5px;
+        color: white;
+        min-height: 70px;
+    }
 
-.EmptyError{
-    text-align: center;
-    padding-bottom: 20px;
-    padding-top: 20px;
-}
+    .EmptyError{
+        text-align: center;
+        padding-bottom: 20px;
+        padding-top: 20px;
+    }
 
 </style>
 

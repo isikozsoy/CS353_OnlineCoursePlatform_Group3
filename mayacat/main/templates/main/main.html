@@ -1,7 +1,58 @@
 {% extends "main/base.html" %}
 
 {% block style_block %}
+
 <style>
+
+    .card {
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+        width: 270px;
+        border-radius: 5px;
+    }
+
+    .card:hover {
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+
+    img {
+        border-radius: 5px 5px 0 0;
+    }
+
+    .container {
+        padding: 2px 16px;
+    }
+
+    .column {
+        padding: 10px 10px;
+        float: left;
+    }
+
+    /* Remove extra left and right margins, due to padding */
+    .row {margin: 0 -5px;
+        float: left;
+        margin-left: 40px;
+        min-height: 400px;
+        clear: both;
+        display: inline-block;
+        padding-top: 20px;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    .header {
+        text-align: center;
+        background-color: black;
+        padding-top: 5px;
+        color: white;
+        min-height: 70px;
+    }
+
     .alert {
         padding: 20px;
         background-color: #f44336;
@@ -22,17 +73,23 @@
     .closebtn:hover {
         color: black;
     }
+
+    .title{
+        text-align: center;
+        padding-top: 20px;
+    }
+
 </style>
 {% endblock %}
 
 {% block main_content %}
 
-{% if warning_message is not None %}
+    {% if warning_message is not None %}
 
-    <div class="alert">
-        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-        <strong></strong> {{ warning_message }}
-    </div>
+        <div class="alert">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            <strong></strong> {{ warning_message }}
+        </div>
 
     {% endif %}
 
@@ -41,25 +98,47 @@
         <a href="/discounts" class="btn btn-primary">See current discounts</a><br>
     {% endif %}
 
-    <h1>Courses List</h1>
+    <div class = "header">
+        <h1>Courses List</h1>
+    </div>
 
     {% for topic in topic_based %}
-        {% for course in topic %}
-            {% if course.type == 0 %}
-                {% if course.cnt != 0 %}
-                    <h3>{{course.topic}}</h3>
+        <div class="row">
+            {% for course in topic %}
+                <div class="column">
+                    <div class="card" >
+                        {% if course.type == 0 %}
+                            {% if course.cnt != 0 %}
+                                <h3>{{course.topic}}</h3>
+                            {% endif %}
+                        {% elif course.type == 1 %}
+                        <iframe src={{ course.course_img }} width="250" height="130" target="_self"></iframe>
+                        <div class="container">
+                            <br><a href="/{{ course.slug }}">{{ course.cname }}</a><br><br>
+                        </div>
+                    </div>
+                </div>
                 {% endif %}
-            {% elif course.type == 1 %}
-                <iframe src={{ course.course_img }} width="120" height="100" target="_self"></iframe>
-                <br><a href="/{{ course.slug }}">{{ course.cname }}</a><br><br>
-            {% endif %}
-        {% endfor %}
+            {% endfor %}
         <br>
+        </div>
     {% endfor %}
-    <h3>All Courses</h3>
+
+    <div class = "title">
+        <h3>All Courses</h3>
+    </div>
+
+    <div class="row">
     {% for object in object_list %}
-        <iframe src={{ object.course_img }} width="120" height="100" target="_self"></iframe>
-        <br><a href="{{ object.get_url }}">{{ object }}</a><br><br>
+        <div class="column">
+            <div class="card" >
+                <iframe src={{ object.course_img }} width="120" height="100" target="_self"></iframe>
+                <div class="container">
+                    <br><a href="{{ object.get_url }}">{{ object }}</a><br><br>
+                </div>
+            </div>
+        </div>
     {% endfor %}
+    </div>
 
 {% endblock %}

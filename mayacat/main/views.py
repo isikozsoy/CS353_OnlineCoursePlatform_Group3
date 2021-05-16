@@ -744,9 +744,7 @@ class TrashView(View):
     def post(self, request, inside_cart_id):
         cursor = connection.cursor()
 
-        course = Inside_Cart.objects.raw(
-            'SELECT * FROM main_inside_cart WHERE inside_cart_id = "' + inside_cart_id + '" LIMIT 1')[0]
-        ici = course.inside_cart_id
+        ici = inside_cart_id
 
         # course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = "' + course_slug + '" LIMIT 1')[0]
         # cno = course.cno
