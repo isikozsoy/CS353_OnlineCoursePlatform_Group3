@@ -698,11 +698,12 @@ class LectureView(View):
         if form_teacher.is_valid():
             t_username = form_teacher.cleaned_data['addteacher']
             print("t_username", t_username)
-            cursor.execute('SELECT id from auth_user where username = %s', [t_username])
+            cursor.execute('SELECT id from auth_user,accounts_instructor where username = %s AND id = student_ptr_id',
+                           [t_username])
             t_id_list = cursor.fetchone()
             if not t_id_list:
                 response_str = 'There is no teacher with this username. <a href="/'
-                response_str += request.path
+                response_str += course_slug+'/'+lecture_slug
                 response_str += '">Return to lecture page...</a>'
                 return HttpResponse(response_str)
 
@@ -1428,11 +1429,14 @@ class ChangeCourseSettingsView(View):
         cursor = connection.cursor()
         if contributor_form.is_valid():
             contributor_username = contributor_form.cleaned_data['addcontributor']
-            cursor.execute('SELECT id FROM auth_user WHERE username = %s;', [contributor_username])
+            cursor.execute('SELECT id FROM auth_user, accounts_instructor WHERE username = %s AND student_ptr_id = id;', [contributor_username])
             c_id_list = cursor.fetchone()
             if (c_id_list == None):
                 cursor.close()
-                return HttpResponseRedirect("/" + course_slug + "/" + edit)
+                response_str = 'There is no instructor with this username. <a href="/'
+                response_str += course_slug+'/edit'
+                response_str += '">Return to edit page...</a>'
+                return HttpResponse(response_str)
             c_id = c_id_list[0];
 
             cursor.execute('SELECT user_id FROM main_contributor WHERE cno_id = %s and user_id = %s;', [cno, c_id])
