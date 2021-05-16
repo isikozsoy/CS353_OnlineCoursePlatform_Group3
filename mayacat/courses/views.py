@@ -1390,7 +1390,7 @@ class ChangeCourseSettingsView(View):
 
         return cno, course_topic_id
 
-    def get(self, request, course_slug):
+    def get(self, request, course_slug, warning_message = None):
         if request.user.is_authenticated:  # if the user has logged in
             cno_course_topic_id = self.check_validity(course_slug)
 
@@ -1441,7 +1441,8 @@ class ChangeCourseSettingsView(View):
 
             return render(request, self.template_name, {'course_form': course_form, 'course': course,
                                                         'user_type': user_type, 'topic_list': topic_list,
-                                                        'course_slug': course_slug, 'contributors': contributors})
+                                                        'course_slug': course_slug, 'contributors': contributors,
+                                                        'warning_message': warning_message})
         return HttpResponseRedirect('/')
 
     def post(self, request, course_slug):
@@ -1474,10 +1475,9 @@ class ChangeCourseSettingsView(View):
             c_id_list = cursor.fetchone()
             if (c_id_list == None):
                 cursor.close()
-                response_str = 'There is no instructor with this username. <a href="/'
-                response_str += course_slug+'/edit'
-                response_str += '">Return to edit page...</a>'
-                return HttpResponse(response_str)
+
+                warning_message = "There is no instructor with this username."
+                return ChangeCourseSettingsView.get(self, request, course_slug, warning_message)
             c_id = c_id_list[0];
 
             cursor.execute('SELECT user_id FROM main_contributor WHERE cno_id = %s and user_id = %s;', [cno, c_id])
