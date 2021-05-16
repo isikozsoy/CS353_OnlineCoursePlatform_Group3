@@ -1025,8 +1025,10 @@ class CourseFinishView(View):
             first_name = first_last_name.cleaned_data['first_name']
             last_name = first_last_name.cleaned_data['last_name']
 
+            cursor = connection.cursor()
             cursor.execute('update auth_user set first_name = %s, last_name = %s where id = %s;',
                            [first_name, last_name, request.user.id])
+            cursor.close()
         return HttpResponseRedirect(request.path)
 
 
