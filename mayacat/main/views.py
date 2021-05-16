@@ -127,7 +127,7 @@ def add_to_wishlist(request, course_slug):
 
 
 class MainView(View):
-    def get(self, request):
+    def get(self, request, warning_message = None):
         cursor = connection.cursor()
         cursor.execute('select type from user_types where id = %s;', [request.user.id])
 
@@ -190,7 +190,8 @@ class MainView(View):
         return render(request, 'main/main.html', {'object_list': courses,
                                                   'topic_list': topics,
                                                   'user_type': user_type,
-                                                  "topic_based": topic_based_courses})
+                                                  "topic_based": topic_based_courses,
+                                                  'warning_message': warning_message})
 
 
 def course_detail(request, course_slug):
@@ -390,7 +391,7 @@ class NotificationView(View):
 
 class ShoppingCartView(View):
 
-    def get(self, request):
+    def get(self, request, warning_message = None):
 
         cursor = connection.cursor()
 
@@ -447,8 +448,6 @@ class ShoppingCartView(View):
 
         topic_list = Topic.objects.raw('select * from main_topic;')
 
-        warning_message = None
-
         return render(request, 'main/shopping_cart.html', {'user_type': user_type, 'items': items, 'path': request.path,
                                                            'count': count, 'total_price': total_price,
                                                            'user_id': request.user.id, 'warning_message': warning_message,
@@ -468,16 +467,17 @@ class ShoppingCartView(View):
             receiver_id = cursor.fetchall()
 
             if len(receiver_id) == 0:
-                html = "ERROR: There is no such a user<p> <a href='/cart'>Go back to cart</a>"
-                return HttpResponse(html)
+                warning_message = "There is no such a user"
+                return ShoppingCartView.get(self, request, warning_message)
 
             if receiver_id[0][0] == request.user.id:
-                html = "ERROR: You cannot send a gift to yourself<p> <a href='/cart'>Go back to cart</a>"
-                return HttpResponse(html)
+                warning_message = "You cannot send a gift to yourself"
+                return ShoppingCartView.get(self, request, warning_message)
 
             if receiver_id[0][2] == 1:
-                html = "ERROR: You cannot send a gift to an admin<p> <a href='/cart'>Go back to cart</a>"
-                return HttpResponse(html)
+                warning_message = "You cannot send a gift to an admin"
+                return ShoppingCartView.get(self, request, warning_message)
+
 
             cursor.execute('SELECT cc.owner_id '
                            'FROM main_inside_cart AS mic, courses_course AS cc '
@@ -486,8 +486,8 @@ class ShoppingCartView(View):
             owner_id = cursor.fetchone()[0]
 
             if receiver_id[0][0] == owner_id:
-                html = "ERROR: You cannot send the course to its owner<p> <a href='/cart'>Go back to cart</a>"
-                return HttpResponse(html)
+                warning_message = "You cannot send the course to its owner"
+                return ShoppingCartView.get(self, request, warning_message)
 
             cursor.execute('SELECT cno_id FROM main_inside_cart WHERE inside_cart_id = %s', [item_id])
             cno = cursor.fetchone()[0]
@@ -506,8 +506,8 @@ class ShoppingCartView(View):
                                                 [receiver_id[0][0], cno])
 
             if len(list(my_courses)) != 0:
-                html = "ERROR: The receiver of this course is already enrolled to the course<p> <a href='/cart'>Go back to cart</a>"
-                return HttpResponse(html)
+                warning_message = "The receiver of this course is already enrolled to the course"
+                return ShoppingCartView.get(self, request, warning_message)
 
             if receiver_id[0][0]:
                 cursor.execute('UPDATE main_inside_cart '
@@ -529,8 +529,8 @@ class ShoppingCheckoutView(View):
 
         for item in items:
             if item[0] is None:
-                html = "ERROR: For the course ' %s ': The username of the gift's receiver cannot be left blank<p> <a href='/cart'>Go back to cart</a>" % item[1]
-                return HttpResponse(html)
+                warning_message = "For the course " + item[1] + ": The username of the gift's receiver cannot be left blank"
+                return ShoppingCartView.get(self, request, warning_message)
 
 
         print('items: ', items)
