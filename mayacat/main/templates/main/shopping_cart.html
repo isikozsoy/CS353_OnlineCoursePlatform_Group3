@@ -174,7 +174,7 @@
                         <div class="d-flex justify-content-start">
                             <iframe src={{ item.course_img }} width="250" height="130" target="_self"></iframe>
                             <div class = "container">
-                                Name: {{ item.cname }} <br />Price: {{ item.price }} <br />
+                                <a href = "/{{item.slug}}">Name: {{ item.cname }}</a> <br />Price: ${{ item.price }} <br />
 
                                 <form action = "/cart/trash/{{item.inside_cart_id}}" method = "post">
                                     {% csrf_token %}
@@ -216,7 +216,7 @@
     <div class="column">
         <div class="second-column">
 
-            <h2>Total: {{total_price}}</h2>
+            <h2>Total: ${{total_price}}</h2>
             <a href="/checkout" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Checkout</a>
         </div>
     </div>
