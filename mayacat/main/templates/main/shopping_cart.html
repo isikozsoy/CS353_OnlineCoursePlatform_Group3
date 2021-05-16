@@ -109,6 +109,27 @@
         padding-top: 20px;
     }
 
+    .alert {
+  padding: 20px;
+  background-color: #f44336;
+  color: white;
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: black;
+}
+
 </style>
 
 {% endblock %}
@@ -127,11 +148,11 @@
             <h3>My shopping cart ({{count}} items)</h3>
         {% endif %}
 
-    {% if item_id is not None %}
+    {% if warning_message is not None %}
 
     <div class="alert">
         <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-        <strong>Error: </strong> {{ item_id }}
+        <strong>Error: </strong> {{ warning_message }}
     </div>
 
     {% endif %}
