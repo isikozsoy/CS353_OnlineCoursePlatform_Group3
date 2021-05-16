@@ -149,11 +149,11 @@ class MainView(View):
         topic_based_courses = [None] * interested_topics_count
         for i, topic in enumerate(interested_topics):
             cursor.execute('SELECT count(*) FROM main_course_topic CT, courses_course C '
-                           'WHERE CT.topicname_id = %s AND C.cno = CT.cno_id LIMIT 5', [topic[0]])
+                           'WHERE C.is_private = 0 AND CT.topicname_id = %s AND C.cno = CT.cno_id LIMIT 5', [topic[0]])
             cnt = cursor.fetchone()[0]
 
             cursor.execute('SELECT slug, course_img, cname FROM main_course_topic CT, courses_course C '
-                           'WHERE CT.topicname_id = %s AND C.cno = CT.cno_id LIMIT 5', [topic[0]])
+                           'WHERE C.is_private = 0 AND CT.topicname_id = %s AND C.cno = CT.cno_id LIMIT 5', [topic[0]])
             interested_courses = cursor.fetchall()
 
             topic_based_courses[i] = [None] * (cnt+1)
@@ -177,7 +177,8 @@ class MainView(View):
 
         # THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
         courses = Course.objects.raw('select * '
-                                     'from courses_course;')
+                                     'from courses_course '
+                                     'where is_private = 0;')
 
         topics = Topic.objects.raw('select * from main_topic order by topicname;')
 
