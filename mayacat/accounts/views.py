@@ -22,12 +22,11 @@ class LoginView(View):
 
     def get(self, request, warning_message = None):
         if request.user.is_authenticated:
-            print("Here")
             return HttpResponseRedirect('/')
 
         form = Login()
-        print("Request user: ", request.user.id)
         topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
+        print('select * from main_topic order by topicname;')
         return render(request, self.template_name, {'form': form,
                                                     'user_type': -1,
                                                     'topic_list': topic_list,
@@ -36,6 +35,7 @@ class LoginView(View):
     def authenticate(self, request, username, password):
         user_q = User.objects.raw('select * from auth_user where username = %s and password = %s;',
                                   [username, password])
+        print('select * from auth_user where username = ', username, ' and password = ', password, ';')
         return user_q
 
     def post(self, request):
@@ -47,6 +47,7 @@ class LoginView(View):
             # checking if the user logs in as admin
             cursor = connection.cursor()
             cursor.execute('select is_superuser from auth_user where username = %s;', [username])
+            print('select is_superuser from auth_user where username = ',username, ';')
             is_super = cursor.fetchone()
             cursor.close()
             if is_super and is_super[0] == 1:
@@ -82,12 +83,17 @@ class RegisterView(View):
                        'from auth_user '
                        'where id = %s;', [request.user.id])
 
+        print('select user_type '
+                       'from auth_user '
+                       'where id = ',request.user.id,';')
+
         row = cursor.fetchone()
         user_type = -1
         if row:
             user_type = row[0]
 
         topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
+        print('select * from main_topic order by topicname;')
 
         return render(request, self.template_name, {'form': form,
                                                     'path': request.path,
@@ -98,6 +104,7 @@ class RegisterView(View):
     def exists(self, username):
         query = 'select * from auth_user where username = "' + username + '";'
         user_q = User.objects.raw(query)
+        print(query)
 
         if user_q:
             return True
@@ -135,11 +142,12 @@ class RegisterView(View):
             new_user.save()
             cursor = connection.cursor()
             cursor.execute('select id from auth_user where username = %s;', [username])
-            print("Here1")
+            print('select id from auth_user where username = ', username,';')
             user_id = cursor.fetchone()[0]
 
             cursor.execute('update auth_user set first_name = %s, last_name = %s where id = %s;',
                            [first_name, last_name, user_id])
+            print('update auth_user set first_name = ', first_name, ', last_name = ',last_name,' where id = ', user_id, ';')
 
             # Then we go on to add this model to the corresponding submodels, i.e. DefaultUser where password_orig
             #  will be saved, Student, Instructor, Advertiser, etc. For this, we need the id of the user that we added
@@ -155,6 +163,8 @@ class RegisterView(View):
                     "insert into accounts_advertiser(user_ptr_id, name, company_name, phone) "
                     "values ( %s, %s, %s, %s)",
                     [user_id, "", company_name, phone])
+                print("insert into accounts_advertiser(user_ptr_id, name, company_name, phone) "
+                    "values ( ", user_id, ",  , ", company_name, ", ", phone, ")")
             elif "instructor" in request.path:
                 description = form.cleaned_data['description']
 
@@ -163,17 +173,20 @@ class RegisterView(View):
                 cursor.execute(
                     "insert into accounts_student(user_ptr_id, phone) values ( %s, %s)",
                     [user_id, phone])
+                print('insert into accounts_student(user_ptr_id, phone) values ( ',user_id, ', ', phone, ')')
                 cursor.close()
                 cursor = connection.cursor()
                 cursor.execute(
                     "insert into accounts_instructor(student_ptr_id, description) values ( %s, %s)",
                     [new_user.id, description])
+                print('insert into accounts_instructor(student_ptr_id, description) values ( ', new_user.id, ', ', description, ')')
             else:
                 cursor.close()
                 cursor = connection.cursor()
                 cursor.execute(
                     "insert into accounts_student(user_ptr_id, phone) values ( %s, %s)",
                     [user_id, phone])
+                print('insert into accounts_student(user_ptr_id, phone) values ( ', user_id, ', ', phone, ')')
 
             cursor.close()
             return HttpResponseRedirect('/login')  # /login
@@ -187,6 +200,7 @@ class UserView(View):
     def get(self, request, username):
         cursor = connection.cursor()
         cursor.execute('select id from auth_user where username = %s;', [username])
+        print('select id from auth_user where username = ',username,';')
         user_id_row = cursor.fetchone()
         cursor.close()
 
@@ -207,6 +221,9 @@ class UserView(View):
                        'from auth_user '
                        'where id = %s;', [user_id])
         user_type = cursor.fetchone()[0]
+        print('select user_type '
+                       'from auth_user '
+                       'where id = ', user_id, ';')
         cursor.close()
 
         if user_type == 0:  # it is a Student account
@@ -243,6 +260,9 @@ class AccountView(View):
                                'from auth_user '
                                'where id = %s;', [request.user.id])
                 user_type = cursor.fetchone()
+                print('select user_type '
+                               'from auth_user '
+                               'where id = ', request.user.id, ';')
                 if user_type:
                     user_type = user_type[0]
             except Error:
@@ -272,6 +292,8 @@ class AccountView(View):
                 cursor.execute('select topic_id as topicname from main_interested_in '
                                'where s_username_id = %s;', [request.user.id])
                 interests = cursor.fetchall()
+                print('select topic_id as topicname from main_interested_in '
+                               'where s_username_id = ', request.user.id, ';')
                 interests_arr = []
                 for interest in interests:
                     interests_arr.append(interest[0])
@@ -285,6 +307,9 @@ class AccountView(View):
                 cursor.execute(
                     'select topicname from main_topic where topicname not in (select topic_id from main_interested_in '
                     'where s_username_id = %s);', [request.user.id])
+                print('select topicname from main_topic where topicname not in (select topic_id from main_interested_in '
+                    'where s_username_id = ', request.user.id, ');')
+
                 not_in_interests = cursor.fetchall()
                 not_interests_arr = []
                 for not_interest in not_in_interests:
@@ -313,6 +338,9 @@ class AccountView(View):
             cursor.execute('select user_type '
                            'from auth_user '
                            'where id = %s;', [user_id])
+            print('select user_type '
+                           'from auth_user '
+                           'where id = ', user_id, ';')
             user_type = cursor.fetchone()
             if user_type:
                 user_type = user_type[0]
@@ -350,6 +378,10 @@ class AccountView(View):
                                    'set first_name = %s '
                                    'where id = %s;',
                                    [first_name, user_id])
+
+                    print('update auth_user '
+                                   'set first_name = ', first_name,' '
+                                   'where id = ', user_id, ';')
                 finally:
                     cursor.close()
 
@@ -360,6 +392,10 @@ class AccountView(View):
                                    'set last_name = %s '
                                    'where id = %s;',
                                    [last_name, user_id])
+
+                    print('update auth_user '
+                                   'set last_name = ', last_name, ' '
+                                   'where id = ', user_id,';')
                 finally:
                     cursor.close()
 
@@ -370,6 +406,9 @@ class AccountView(View):
                                    'set email = %s '
                                    'where id = %s;',
                                    [email, user_id])
+                    print('update auth_user '
+                                   'set email = ', email, ' '
+                                   'where id = ', user_id, ';')
                 finally:
                     cursor.close()
 
@@ -381,6 +420,10 @@ class AccountView(View):
                                        'set phone = %s '
                                        'where user_ptr_id = %s;',
                                        [phone, user_id])
+                        print('update accounts_student '
+                                       'set phone = ',phone , ' '
+                                       'where user_ptr_id = ', user_id, ';')
+
                     finally:
                         cursor.close()
             elif user_type == 1: # instructor, so phone and description need to be updated
@@ -392,6 +435,9 @@ class AccountView(View):
                                        'set description = %s '
                                        'where student_ptr_id = %s;',
                                        [description, user_id])
+                        print('update accounts_instructor '
+                                       'set description = ', description,' '
+                                       'where student_ptr_id = ', user_id, ';')
                     finally:
                         cursor.close()
                 if phone:
@@ -401,6 +447,9 @@ class AccountView(View):
                                        'set phone = %s '
                                        'where user_ptr_id = %s;',
                                        [phone, user_id])
+                        print('update accounts_student '
+                                       'set phone = ', phone, ' '
+                                       'where user_ptr_id = ', user_id, ';')
                     finally:
                         cursor.close()
             elif user_type == 2:  # advertiser, so phone, company_name and name need to be updated
@@ -413,6 +462,9 @@ class AccountView(View):
                                        'set phone = %s '
                                        'where user_ptr_id = %s;',
                                        [phone, user_id])
+                        print('update accounts_advertiser '
+                                       'set phone = ', phone, ' '
+                                       'where user_ptr_id = ', user_id, ';')
                     finally:
                         cursor.close()
                 if company_name:
@@ -422,6 +474,9 @@ class AccountView(View):
                                        'set company_name = %s '
                                        'where user_ptr_id = %s;',
                                        [company_name, user_id])
+                        print('update accounts_advertiser '
+                                       'set company_name = ', company_name, ' '
+                                       'where user_ptr_id = ', user_id, ';')
                     finally:
                         cursor.close()
                 if name:
@@ -431,6 +486,9 @@ class AccountView(View):
                                        'set name = %s '
                                        'where user_ptr_id = %s;',
                                        [name, user_id])
+                        print('update accounts_advertiser '
+                                       'set name = ', name,' '
+                                       'where user_ptr_id = ', user_id, ';')
                     finally:
                         cursor.close()
             #else:  # admin
@@ -445,6 +503,7 @@ def add_interested_topic(request, topic):
     cursor = connection.cursor()
     cursor.execute("INSERT INTO main_interested_in(topic_id, s_username_id) values (%s, %s)",
                    [topic, request.user.id])
+    print("INSERT INTO main_interested_in(topic_id, s_username_id) values (", topic, ", ", request.user.id,")")
     cursor.close()
     return HttpResponseRedirect('/account')
 
@@ -453,6 +512,8 @@ def remove_interested_topic(request, topic):
     cursor = connection.cursor()
     cursor.execute("DELETE FROM main_interested_in WHERE topic_id = %s AND s_username_id = %s",
                    [topic, request.user.id])
+
+    print("DELETE FROM main_interested_in WHERE topic_id = ", topic, " AND s_username_id = ", request.user.id)
     cursor.close()
     return HttpResponseRedirect('/account')
 
@@ -460,5 +521,7 @@ def update_to_instructor(request):
     cursor = connection.cursor()
     cursor.execute('INSERT INTO accounts_instructor(student_ptr_id, description) values (%s, %s)',
                    [request.user.id, ""])
+    print('INSERT INTO accounts_instructor(student_ptr_id, description) values (', request.user.id, ',  )')
     cursor.execute('UPDATE auth_user SET user_type = 1 WHERE id = %s', request.user.id)
+    print('UPDATE auth_user SET user_type = 1 WHERE id = ', request.user.id)
     return HttpResponseRedirect('/account')
