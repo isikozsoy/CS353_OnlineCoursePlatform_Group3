@@ -454,7 +454,7 @@ class ShoppingCartView(View):
                     'price': items_on_cart[i][2],
                     'slug': items_on_cart[i][3],
                     'course_img': items_on_cart[i][4],
-                    'isGift': items_on_cart[i][5],
+                    'isGift': not (items_on_cart[i][5] == request.user.id),
                     'inside_cart_id': items_on_cart[i][6],
                     'receiver_username': receivers[i],
                     'is_wish': False
