@@ -47,38 +47,23 @@ class MyCoursesView(ListView):
 
             for course in my_courses_q:
 
-                cursor.execute('''SELECT COUNT(lecture_no)
-                                            FROM courses_lecture AS cl 
-                                            WHERE cl.cno_id = %s AND 
-                                            cl.cno_id IN (SELECT me.cno_id
-                                                                FROM main_enroll AS me 
-                                                                WHERE me.user_id = %s );''',
-                               [course[2], request.user.id])
+                cursor.execute('''SELECT COUNT(MP.prog_id) FROM main_progress as MP
+                                WHERE MP.s_username_id = %s AND 
+                                MP.lecture_no_id IN ( SELECT lecture_no
+                                FROM courses_lecture 
+                                WHERE cno_id = %s );''', [user_id, course[2]])
+                cnt_prog = cursor.fetchone()
 
-                total = cursor.fetchone()
+                if cnt_prog:
+                    cnt_prog = cnt_prog[0]
 
-                if total:
-                    total = total[0]
+                cursor.execute('''SELECT COUNT(lecture_no) FROM courses_lecture as CL WHERE CL.cno_id = %s;''', [course[2]])
+                cnt_lec = cursor.fetchone()
 
-                if (total is None or total == 0):
-                    percentage = 100
+                if cnt_lec:
+                    cnt_lec = cnt_lec[0]
 
-                else:
-
-                    cursor.execute('''SELECT COUNT(MP.lecture_no_id) FROM main_progress as MP
-                                        WHERE MP.s_username_id = %s 
-                                        AND MP.lecture_no_id IN 
-                                            ( SELECT lecture_no
-                                                FROM courses_lecture 
-                                                WHERE cno_id = %s );''', [request.user.id, course[2]])
-                    prog = cursor.fetchone()
-
-                    if prog:
-                        prog = prog[0]
-                    else:
-                        prog = 0
-
-                    percentage = int(100 * prog / total)
+                percentage = int((cnt_prog / cnt_lec) * 100)
 
                 course = course + (percentage,)
                 my_courses = my_courses + (course,)
@@ -572,10 +557,16 @@ class LectureView(View):
                                                                                 FROM courses_lecture 
                                                                                 WHERE cno_id = %s );'''
                        , [curuser_id, cno])
-        cnt_prog = cursor.fetchone()[0]
+        cnt_prog = cursor.fetchone()
+
+        if cnt_prog:
+            cnt_prog = cnt_prog[0]
 
         cursor.execute('''SELECT COUNT(lecture_no) FROM courses_lecture as CL WHERE CL.cno_id = %s;''', [cno])
-        cnt_lec = cursor.fetchone()[0]
+        cnt_lec = cursor.fetchone()
+
+        if cnt_lec:
+            cnt_lec = cnt_lec[0]
 
         avg_prog = int((cnt_prog / cnt_lec) * 100)
 
@@ -617,11 +608,26 @@ class LectureView(View):
         assignments = Assignment.objects.raw('''SELECT *
                                                  FROM main_assignment
                                                  WHERE lecture_no_id = %s;''', [lecture.lecture_no])
-        assignmentcnt = len(assignments)
+
+
+        cursor.execute('''SELECT count(assignmentno) 
+                            FROM main_assignment,courses_lecture
+                            WHERE cno_id = %s AND lecture_no = lecture_no_id;''', [cno])
+        assignmentcnt = cursor.fetchone()[0]
+        #assignmentcnt = len(assignments)
+
+
+
+
         lecturemat = LectureMaterial.objects.raw('''SELECT *
                                                  FROM courses_lecturematerial
                                                  WHERE lecture_no_id = %s;''', [lecture.lecture_no])
-        lecturematcnt = len(lecturemat)
+
+        cursor.execute( '''SELECT count(lecture_no_id)
+                            FROM courses_lecturematerial, courses_lecture
+                            WHERE cno_id = %s AND lecture_no = lecture_no_id;''', [cno] )
+        
+        lecturematcnt = cursor.fetchone()[0]
 
         cursor.execute('''SELECT U.username 
                         FROM main_contributor AS MC,auth_user AS U
@@ -1421,7 +1427,7 @@ class ChangeCourseSettingsView(View):
             price = course_form.cleaned_data['price']
             course_img = course_form.cleaned_data['course_img']
             description = course_form.cleaned_data['description']
-            private = course_form.cleaned_data['private']
+            private = course_form.cleaned_data['is_private']
 
             cursor = connection.cursor()
             cursor.execute('update courses_course '

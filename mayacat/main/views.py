@@ -454,7 +454,7 @@ class ShoppingCartView(View):
                     'price': items_on_cart[i][2],
                     'slug': items_on_cart[i][3],
                     'course_img': items_on_cart[i][4],
-                    'isGift': items_on_cart[i][5],
+                    'isGift': not (items_on_cart[i][5] == request.user.id),
                     'inside_cart_id': items_on_cart[i][6],
                     'receiver_username': receivers[i],
                     'is_wish': False
@@ -553,9 +553,6 @@ class ShoppingCheckoutView(View):
                 warning_message = "For the course " + item[1] + ": The username of the gift's receiver cannot be left blank"
                 return ShoppingCartView.get(self, request, warning_message)
 
-
-        print('items: ', items)
-
         cursor.execute('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
@@ -564,8 +561,9 @@ class ShoppingCheckoutView(View):
             user_type = row[0]
 
         topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
+        form = Checkout()
 
-        return render(request, 'main/checkout.html', {'user_type': user_type, 'topic_list': topic_list, })
+        return render(request, 'main/checkout.html', {'form': form, 'user_type': user_type, 'topic_list': topic_list, })
 
     def post(self, request):
         cursor = connection.cursor()

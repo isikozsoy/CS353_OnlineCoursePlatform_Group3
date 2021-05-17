@@ -9,7 +9,41 @@
         color: black;
         padding: 7px 14px;
         font-size: 16px;
-    cursor: pointer;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+
+    .button {
+        border-color: black;
+        color: black;
+        background: transparent;
+    }
+
+    .button:hover {
+        background: black;
+        color: white;
+    }
+
+    /* Red */
+    .red {
+        border-color: #f44336;
+        color: red
+    }
+
+    .red:hover {
+        background: #f44336;
+        color: white;
+    }
+
+    /* Green */
+    .green {
+        border-color: #04AA6D;
+        color: green;
+    }
+
+    .green:hover {
+        background-color: #04AA6D;
+        color: white;
     }
 
     img {
@@ -130,7 +164,7 @@
     <div class = "column a" >
     <div class="column first">
             <div class="row">
-                <iframe src={{ course.course_img }} width="230" height="200" target="_self"></iframe>
+                <iframe src={{ course.course_img }} width="300" height="200" target="_self"></iframe>
         </div>
     </div>
     <div class="column second">
@@ -141,9 +175,9 @@
     {% if course.new_price %}
         <h3 style = "display:inline">Discounted Price: </h3>
         <div class = "strike" style = "display:inline"><strike style = "display:inline">{{course.price}}</strike></div>
-        <h3 style = "display:inline"> {{course.new_price}}</h3>
+        <h3 style = "display:inline"> ${{course.new_price}}</h3>
         {% else %}
-        <h3>Price {{course.price}}</h3>
+        <h3>Price ${{course.price}}</h3>
     {% endif %}
         </div>
         </div>
@@ -200,31 +234,29 @@
 
         {% if is_owner != 0 %}
 
-            <a href="{% url 'courses:course_edit' course.slug %}" class="btn btn-secondary">Edit Course</a>
+            <a href="{% url 'courses:course_edit' course.slug %}" class="btn button">Edit Course</a><br>
             {% if course.is_complete == 0 %}
-                <a href="{% url 'courses:mark_as_complete' course.slug %}" class="btn btn-secondary">Mark as complete</a>
-                <a href="{% url 'courses:add_lecture' course.slug %}" class="btn btn-primary">Add Lecture</a>
+                <a href="{% url 'courses:mark_as_complete' course.slug %}" class="btn button">Mark as complete</a><br>
+                <a href="{% url 'courses:add_lecture' course.slug %}" class="btn button">Add Lecture</a><br>
             {% endif %}
         {% endif %}
 
         {% if lecture_list != 0 and lecture_slug != None %}
-        {% if finished  %}
-            <br><a href="/{{course.slug}}/{{ lecture_slug }}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">RESTART</a>
-        {% elif prog is None %}
-            <br><a href="/{{course.slug}}/{{ lecture_slug }}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">START</a>
+        {% if prog is None %}
+            <br><a href="/{{course.slug}}/{{ lecture_slug }}" class="btn green" tabindex="-1" role="button" aria-disabled="true">START</a><br>
         {% else %}
-            <br><a href="/{{course.slug}}/{{ lecture_slug }}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">CONTINUE</a>
+            <br><a href="/{{course.slug}}/{{ lecture_slug }}" class="btn green" tabindex="-1" role="button" aria-disabled="true">CONTINUE</a><br>
         {% endif %}
     {% endif %}
 
     {% if user_type == 2 %} <!-- advertiser -->
         {% if course.is_private == 0 %}
-            <br><a href="/offer_ad/{{ course.slug }}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a>
+            <br><a href="/offer_ad/{{ course.slug }}" class="btn button" tabindex="-1" role="button" aria-disabled="true">Offer Ad</a><br>
 
             {% if is_wish == 0 %}
-                <br><a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Favorites</a>
+                <br><a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn button" tabindex="-1" role="button" aria-disabled="true">Add to Favorites</a><br>
             {% else %}
-                <br><a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Favorites</a>
+                <br><a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn button" tabindex="-1" role="button" aria-disabled="true">Remove from Favorites</a><br>
             {% endif %}
         {% endif %}
     {% else %}
@@ -235,13 +267,13 @@
                     {{ form.errors }}
                     {{ form.as_table }}
                     <button type="submit"
-                        class="btn btn-primary"
+                        class="btn button"
                         role="button">Add To Cart</button><br>
                 </form>
             {% else %}
                     <form action = "/cart/gift/{{ course.slug }}" method = "post">
                         {% csrf_token %}
-                       <input type="submit" value="Add To Cart As Gift">
+                       <input type="submit" class = "btn button" value="Add To Cart As Gift"><br>
                     </form>
             {% endif %}
         {% endif %}
@@ -249,9 +281,9 @@
 
     {% if is_owner == 0 and user_type != 2 and registered == 0 %}
         {% if is_wish == 0 %}
-            <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a>
+            <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn green" tabindex="-1" role="button" aria-disabled="true">Add to Wishlist</a><br>
         {% else %}
-            <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn btn-light" tabindex="-1" role="button" aria-disabled="true">Remove from Wishlist</a>
+            <a href="/wishlist/add_to_wishlist/{{course.slug}}" class="btn red" tabindex="-1" role="button" aria-disabled="true">Remove from Wishlist</a><br>
         {% endif %}
 
     {% endif %}
@@ -262,8 +294,8 @@
     {% endif %}
 
     {% if registered != 0 and not is_contributor and is_owner == 0 %}
-        <a href="{% url 'courses:refund' course.slug %}" class="btn btn-secondary">Request refund</a>
-        <a href="{% url 'courses:complaint' course.slug %}" class="btn btn-secondary">Form Complaint</a>
+        <a href="{% url 'courses:refund' course.slug %}" class="btn red">Request refund</a><br>
+        <a href="{% url 'courses:complaint' course.slug %}" class="btn red">Form Complaint</a><br>
     {% endif %}
 
     </div>

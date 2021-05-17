@@ -79,7 +79,7 @@ class EditCourseForm(forms.ModelForm):
                                widget=forms.NumberInput(attrs={'class': 'form-control'}))
     description = forms.CharField(label='Description', max_length=4000,
                                   widget=forms.Textarea(attrs={'class': 'form-control'}))
-    private = forms.BooleanField(label='Private', required=False)
+    is_private = forms.BooleanField(label='Private', required=False)
 
     class Meta:
         model = Course

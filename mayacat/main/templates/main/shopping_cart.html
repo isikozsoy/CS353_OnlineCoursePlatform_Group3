@@ -180,7 +180,7 @@
                                     {% csrf_token %}
                                     <button class="btn trash"><i class="fa fa-trash"></i> Trash</button>
                                 </form>
-                                {% if is_gift == 0 %}
+                                {% if item.isGift == 0 %}
                                     {% if item.is_wish %}
                                         <a href="/wishlist/add_to_wishlist/{{item.slug}}/to_cart" class="btn heart" tabindex="-1" role="button" aria-disabled="true">Remove From Wishlist</a>
                                     {% else %}
@@ -190,7 +190,7 @@
                             </div>
 
                             <div class = "container">
-                                {% if item.isGift != user_id or item.isGift == None %}
+                                {% if item.isGift %}
                                     <form action = {{ path|lower }} method="POST">
                                         {% csrf_token %}
                                         {{ form.errors }}
