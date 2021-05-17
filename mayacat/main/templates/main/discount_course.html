@@ -1,12 +1,12 @@
 {% extends "main/base.html" %}
 {% block main_content %}
     <h3>Select</h3>
-    <form method="POST">
+    <form method="POST" action="">
         {% csrf_token %}
         {{ courses_from_instructor }}
 
         <p><button type="submit"
                 class="btn btn-primary"
-                   role="button">Join discount with these courses.</button></p>
+                   role="button">Join</button></p>
     </form>
 {% endblock %}
