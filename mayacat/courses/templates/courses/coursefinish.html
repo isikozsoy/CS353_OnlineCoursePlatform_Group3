@@ -34,11 +34,7 @@
     <a>Your Rate : {{currate}}</a>
     <br>
     {% endif %}
-    <form method="post" action="{{ url }}">
-    {% csrf_token %}
-        {{ first_last_name }}
-        <button formmethod="post" formaction="{{ url }}">Save</button>
-    </form>
+
 <br>
 <a href = "/{{course_slug}}/certificate">SEE YOUR CERTIFICATE<br><br></a>
 <a href = "/{{course_slug}}"> Continue to the course page</a>
