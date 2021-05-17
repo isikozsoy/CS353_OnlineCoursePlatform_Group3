@@ -67,7 +67,6 @@ class MyCoursesView(ListView):
 
                 course = course + (percentage,)
                 my_courses = my_courses + (course,)
-            print(my_courses)
 
             topic_list = Topic.objects.raw('select topicname from main_topic;')
             context = {
@@ -142,7 +141,7 @@ class CourseDetailView(View):
         if course.is_private == 1:
 
             # Check whether the user is the owner
-            cursor.execute('SELECT owner_id FROM courses_course WHERE cno = %s ', [cno])
+            cursor.execute('SELECT owner_id, cno FROM courses_course WHERE cno = %s ', [cno])
             owner_id = cursor.fetchone()
 
             if owner_id:
@@ -170,8 +169,6 @@ class CourseDetailView(View):
                 private_enroll = private_enroll[0]
             else:
                 private_enroll = 0
-
-
 
             if private_enroll == 0 and request.user.id != owner_id and request.user.id not in contributor_id and user_type == 0:
                 cursor.execute('INSERT INTO main_enroll (cno_id, user_id) VALUES (%s, %s);',
@@ -480,10 +477,8 @@ class LectureView(View):
         course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
         print(request.user.id)
 
-        print("=1", course_queue)
         if len(course_queue) > 0:
             course = course_queue[0]
-            print("=2", course, course.cno)
         else:
             warning_message = "Error: No course with this name."
             return MainView.get(self, request, warning_message)
@@ -508,14 +503,11 @@ class LectureView(View):
                                         [lecture_slug])
         if len(lecture_q) > 0:
             lecture = lecture_q[0]
-            print("=3", "lecture exists\n")
         else:
             # error no such lecture
-            print("error no lecture as the stated");
+            return HttpResponse("No lecture as stated. <a href='/'>Return to main page.</a>")
 
         curuser_id = request.user.id
-        print("=4", lecture_q)
-        print("=5", lecture)
         isWatched = Progress.objects.raw('''SELECT * FROM main_progress as MP 
                                             WHERE MP.lecture_no_id = %s AND MP.s_username_id = %s;'''
                                          , [lecture.lecture_no, curuser_id])
@@ -533,7 +525,6 @@ class LectureView(View):
                                                                         FROM courses_lecture 
                                                                         WHERE cno_id = %s );'''
                                         , [curuser_id, cno])
-            print("prog : ", len(prog))  # raw must include primary key - cursor
 
         prog = Progress.objects.raw('''SELECT MP.prog_id FROM main_progress as MP
                                                     WHERE MP.s_username_id = %s AND 
@@ -547,20 +538,13 @@ class LectureView(View):
             if not cursor.fetchone():
                 cursor.execute('''INSERT INTO main_finishes(comment,cno_id,user_id,score) VALUES (%s,%s, %s,%s);''',
                                ["", cno, curuser_id, 0])
-            print("This course is finished")
             isFinished = 1
-
-        print("- ", cno)
-
-        # lectures = Lecture.objects.raw('''SELECT * FROM courses_lecture;''')
-        print("=6", lecture_slug, course.cno, lectures, len(lectures))
 
         lecandprog = [None] * len(lectures)
         for i in range(0, len(lectures)):
             isWatched = Progress.objects.raw('''SELECT * FROM main_progress as MP 
                                                     WHERE MP.lecture_no_id = %s AND MP.s_username_id = %s;'''
                                              , [lectures[i].lecture_no, curuser_id])
-            print(isWatched)
 
             if (len(isWatched) > 0):
                 lecandprog[i] = (lectures[i], "Watched")
@@ -583,8 +567,6 @@ class LectureView(View):
 
         if cnt_lec:
             cnt_lec = cnt_lec[0]
-
-        print("Progress and lecture count : ", cnt_prog, cnt_lec)
 
         avg_prog = int((cnt_prog / cnt_lec) * 100)
 
@@ -622,7 +604,6 @@ class LectureView(View):
                                                 [questions[i][0]] )
             answers[i] = cursor.fetchall()
             qanda[i] = (questions[i], answers[i])
-        print(qanda)
 
         assignments = Assignment.objects.raw('''SELECT *
                                                  FROM main_assignment
@@ -656,8 +637,6 @@ class LectureView(View):
         contributors = [None] * len(contributor_list)
         for i in range(0, len(contributors)):
             contributors[i] = contributor_list[i][0]
-            print(contributor_list[i][0])
-        print("Contributors:", contributors)
 
         cursor.execute('''SELECT U.username 
                                 FROM main_teaches AS MT,auth_user AS U
@@ -667,8 +646,6 @@ class LectureView(View):
         teaches = [None] * len(teaches_list)
         for i in range(0, len(teaches)):
             teaches[i] = teaches_list[i][0]
-            print(teaches_list[i][0])
-        print("Teaches:", teaches)
 
         form_lecmat_assignment = CreateAssignmentAndLectureMaterialForm()
 
@@ -992,7 +969,7 @@ class CourseFinishView(View):
             course = course_queue[0]
         else:
             # 404 error
-            print("error no course as the stated");
+            return HttpResponse("No course as stated. <a href='/'>Return to main page.</a>")
 
         finish_list = Finishes.objects.raw(
             '''SELECT * FROM main_finishes as MF WHERE MF.cno_id = %s AND MF.user_id = %s;''',
@@ -1169,8 +1146,8 @@ class RefundRequestView(View):
         form = ComplainForm(request.POST)
         if form.is_valid():
             description = form.cleaned_data['description']
-            cursor.execute('INSERT INTO main_refundrequest (reason, status, cno_id, s_username_id) '
-                           'VALUES (%s, %s, %s, %s);',
+            cursor.execute('INSERT INTO main_refundrequest (reason, status, cno_id, s_username_id, date) '
+                           'VALUES (%s, %s, %s, %s, curdate());',
                            [description, 0, course_cno, request.user.id])
             cursor.close()
             return render(request, "trivial/success_message_after_submitting.html",
