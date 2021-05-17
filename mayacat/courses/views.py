@@ -1435,7 +1435,7 @@ class ChangeCourseSettingsView(View):
             price = course_form.cleaned_data['price']
             course_img = course_form.cleaned_data['course_img']
             description = course_form.cleaned_data['description']
-            private = course_form.cleaned_data['private']
+            private = course_form.cleaned_data['is_private']
 
             cursor = connection.cursor()
             cursor.execute('update courses_course '
