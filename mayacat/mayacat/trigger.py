@@ -156,3 +156,6 @@ def trigger_save_user_type():
         print(sys.exc_info())
     finally:
         cursor.close()
+
+
+# def delete_after_refund():
