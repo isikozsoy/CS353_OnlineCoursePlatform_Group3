@@ -608,9 +608,10 @@ class AdOffersView(View):
         # Only one ad for the same date. Mark as refused.
         cursor.execute('SELECT a1.advertisementno FROM main_advertisement AS a1, main_advertisement AS a2, '
                        'courses_course WHERE owner_id = %s AND a1.startdate <= a2.finishdate AND '
-                       'a1.finishdate >= a2.startdate AND a1.status = %s AND a2.status = %s',
+                       'a1.finishdate >= a2.startdate AND a1.status = %s AND a2.status = %s AND a1.cno_id = a2.cno_id',
                        [request.user.id, 0, 2])
         ad_to_refuse = cursor.fetchall()
+        print(ad_to_refuse)
         for ad in ad_to_refuse:
             cursor.execute('UPDATE main_advertisement '
                            'SET status = 1 '
@@ -621,6 +622,7 @@ class AdOffersView(View):
         cursor.execute('SELECT advertisementno FROM main_advertisement INNER JOIN courses_course on cno_id = cno '
                        'WHERE status = 0 AND owner_id = %s AND startdate < %s', [request.user.id, today])
         ad_passed = cursor.fetchall()
+        print(ad_passed)
         for ad_no in ad_passed:
             cursor.execute('UPDATE main_advertisement '
                            'SET status = 1 '
@@ -665,7 +667,7 @@ def accept_ad(request, ad_no):
 
     cursor.execute('SELECT a1.advertisementno FROM main_advertisement AS a1, main_advertisement AS a2, '
                    'courses_course WHERE owner_id = %s AND a1.startdate <= a2.finishdate AND '
-                   'a1.finishdate >= a2.startdate AND a1.status = %s AND a2.status = %s',
+                   'a1.finishdate >= a2.startdate AND a1.status = %s AND a2.status = %s and a1.cno_id = a2.cno_id',
                    [request.user.id, 0, 2])
     ad_to_refuse = cursor.fetchall()
     for ad in ad_to_refuse:
