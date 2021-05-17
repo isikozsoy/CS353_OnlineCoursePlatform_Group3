@@ -16,13 +16,7 @@
         <tbody class="tbody-light">
         {% if refunds %}
             {% for refund in refunds %}
-                {% if refund.6 > 5 %}
-                    <tr class="table-danger">
-                {% elif refund.6 > 3 %}
-                    <tr class="table-warning">
-                {% else %}
                     <tr>
-                {% endif %}
                     <th scope="row">{{ forloop.counter }}</th>
                     <td>{{ refund.1 }}</td>
                     <td>{{ refund.3 }}</td>
@@ -34,6 +28,33 @@
                     <td><form>{% csrf_token %}<input value="Reject" type="submit" formmethod="post"
                                                      formaction="{% url 'adminpanel:admin_refund_action' refund.0 False %}"/>
                     </form></td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <a>No records to show.</a>
+        {% endif %}
+        </tbody>
+    </table>
+    <h3>Complaints About Courses</h3>
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Description</th>
+            <th scope="col">Course no</th>
+            <th scope="col">User id</th>
+            <th scope="col">Complaint date</th>
+        </tr>
+        </thead>
+        <tbody class="tbody-light">
+        {% if complaint_set %}
+            {% for complaint in complaint_set %}
+                    <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ complaint.1 }}</td>
+                    <td>{{ complaint.2 }}</td>
+                    <td>{{ complaint.3 }}</td>
+                    <td>{{ complaint.0 }}</td>
                 </tr>
             {% endfor %}
         {% else %}

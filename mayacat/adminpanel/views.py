@@ -65,18 +65,19 @@ class AdminRefundView(View):
                                'where status = 0 order by date;')
                 refund_set = cursor.fetchall()
 
-                cursor = connection.cursor()
-                try:
-                    cursor.execute('select topicname from main_topic;')
-                    topic_list = cursor.fetchall()
-                except DatabaseError:
-                    return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
-                finally:
-                    cursor.close()
+                cursor.execute('select creation_date, description, course_id, s_user_id '
+                               'from main_complaint '
+                               'order by creation_date;')
+                complaint_set = cursor.fetchall()
+
+                cursor.close()
+
+                topic_list = Topic.objects.raw('select * from main_topic;')
 
                 return render(request, self.template_name, {'refunds': refund_set,
                                                             'user_type': 3,
-                                                            'topic_list': topic_list}, )
+                                                            'topic_list': topic_list,
+                                                            'complaint_set': complaint_set, }, )
             except Error:
                 return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
             finally:
