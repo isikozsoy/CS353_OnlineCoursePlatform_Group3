@@ -1146,8 +1146,8 @@ class RefundRequestView(View):
         form = ComplainForm(request.POST)
         if form.is_valid():
             description = form.cleaned_data['description']
-            cursor.execute('INSERT INTO main_refundrequest (reason, status, cno_id, s_username_id) '
-                           'VALUES (%s, %s, %s, %s);',
+            cursor.execute('INSERT INTO main_refundrequest (reason, status, cno_id, s_username_id, date) '
+                           'VALUES (%s, %s, %s, %s, curdate());',
                            [description, 0, course_cno, request.user.id])
             cursor.close()
             return render(request, "trivial/success_message_after_submitting.html",
