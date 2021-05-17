@@ -627,11 +627,26 @@ class LectureView(View):
         assignments = Assignment.objects.raw('''SELECT *
                                                  FROM main_assignment
                                                  WHERE lecture_no_id = %s;''', [lecture.lecture_no])
-        assignmentcnt = len(assignments)
+
+
+        cursor.execute('''SELECT count(assignmentno) 
+                            FROM main_assignment,courses_lecture
+                            WHERE cno_id = %s AND lecture_no = lecture_no_id;''', [cno])
+        assignmentcnt = cursor.fetchone()[0]
+        #assignmentcnt = len(assignments)
+
+
+
+
         lecturemat = LectureMaterial.objects.raw('''SELECT *
                                                  FROM courses_lecturematerial
                                                  WHERE lecture_no_id = %s;''', [lecture.lecture_no])
-        lecturematcnt = len(lecturemat)
+
+        cursor.execute( '''SELECT count(lecture_no_id)
+                            FROM courses_lecturematerial, courses_lecture
+                            WHERE cno_id = %s AND lecture_no = lecture_no_id;''', [cno] )
+        
+        lecturematcnt = cursor.fetchone()[0]
 
         cursor.execute('''SELECT U.username 
                         FROM main_contributor AS MC,auth_user AS U
