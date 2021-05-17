@@ -48,7 +48,7 @@ def create_discount_deletion_event_():
                        'every 1 day '
                        'do '
                        'delete from main_discount where (select end_date from adminpanel_offered_discount '
-                       'where offerno_id = adminpanel_offered_discount.discount_id) > curdate();')
+                       'where offerno_id = adminpanel_offered_discount.discount_id) < curdate();')
     finally:
         cursor.close()
 

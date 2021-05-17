@@ -180,8 +180,6 @@ class MainView(View):
                     "cname": interested_courses[k-1][2]
                 }
 
-        # TODO: THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
-        #  also the courses that are not private will be listed here
         cursor = connection.cursor()
 
         # THE COURSES WILL BE CHANGED AS TOP 5 MOST POPULAR AND TOP 5 HIGHEST RATED
@@ -797,6 +795,7 @@ class JoinCoursesView(View):
             topic_list = Topic.objects.raw('select * from main_topic;')
 
             courses_from_instructor = CoursesDiscount(instructor_id=request.user.id)
+            print("Courses: ", courses_from_instructor)
             return render(request, self.template_name, {'user_type': user_type, 'topic_list': topic_list,
                                                         'courses_from_instructor': courses_from_instructor, })
 
