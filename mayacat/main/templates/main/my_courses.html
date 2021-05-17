@@ -8,7 +8,11 @@
     transition: 0.3s;
     width: 270px;
     border-radius: 5px;
+    height: 230px;
+}
 
+.card[data-status="1"] {
+    background-color: #a4e794;
 }
 
 .card:hover {
@@ -53,6 +57,11 @@ img {
     min-height: 70px;
 }
 
+.text{
+    color: black;
+    font-weight: bold;
+}
+
 </style>
 
 {% endblock %}
@@ -68,12 +77,12 @@ img {
         {% for course in my_courses_q %}
 
         <div class="column">
-            <div class="card" >
+            <div class="card" data-status="{{ course.4 }}"  >
                 <iframe src={{ course.3 }} width="250" height="130" target="_self"></iframe>
 
                 <div class="container">
-                    <a href="/{{ course.1 }}" >{{ course.0 }}</a>
-                    <br><a>Progress: {{ course.4 }}%</a>
+                    <a class = "text" href="/{{ course.1 }}" >{{ course.0 }}</a>
+                    <br><a>Progress: {{ course.5 }}%</a>
                 </div>
             </div>
         </div>
