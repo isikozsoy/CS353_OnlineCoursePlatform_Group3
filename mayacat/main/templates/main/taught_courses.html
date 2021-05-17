@@ -17,7 +17,7 @@
   <ol>
     {% for item in taught_courses %}
     <li>
-      <br>Course Name: {{ item.0 }}
+      <br>Course Name: <a href="/{{ item.1 }}">{{ item.0 }}</a>
     </li>
     {% endfor %}
   </ol>

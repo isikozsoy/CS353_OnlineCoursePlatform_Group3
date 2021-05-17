@@ -963,7 +963,7 @@ class CourseFinishView(View):
             course = course_queue[0]
         else:
             # 404 error
-            print("error no course as the stated");
+            return HttpResponse("No course as stated. <a href='/'>Return to main page.</a>")
 
         finish_list = Finishes.objects.raw(
             '''SELECT * FROM main_finishes as MF WHERE MF.cno_id = %s AND MF.user_id = %s;''',
