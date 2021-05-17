@@ -28,7 +28,7 @@ class MyCoursesView(ListView):
             user_id = request.user.id
             cursor = connection.cursor()
 
-            cursor.execute('''SELECT cc.cname, cc.slug, cc.cno, cc.course_img 
+            cursor.execute('''SELECT cc.cname, cc.slug, cc.cno, cc.course_img, cc.is_complete
                             FROM main_enroll as me, courses_course as cc 
                             WHERE me.user_id = %s and me.cno_id = cc.cno''', [user_id])
 
@@ -63,7 +63,10 @@ class MyCoursesView(ListView):
                 if cnt_lec:
                     cnt_lec = cnt_lec[0]
 
-                percentage = int((cnt_prog / cnt_lec) * 100)
+                if cnt_lec is None or cnt_lec == 0:
+                    percentage = 0
+                else:
+                    percentage = int((cnt_prog / cnt_lec) * 100)
 
                 course = course + (percentage,)
                 my_courses = my_courses + (course,)
@@ -568,7 +571,10 @@ class LectureView(View):
         if cnt_lec:
             cnt_lec = cnt_lec[0]
 
-        avg_prog = int((cnt_prog / cnt_lec) * 100)
+        if cnt_lec is None or cnt_lec == 0:
+            avg_prog = 0
+        else:
+            avg_prog = int((cnt_prog / cnt_lec) * 100)
 
         announcements = Announcement.objects.raw('''SELECT * FROM main_announcement as MA,auth_user as U 
                                                     WHERE MA.cno_id = %s and MA.i_user_id = U.id;''', [cno])

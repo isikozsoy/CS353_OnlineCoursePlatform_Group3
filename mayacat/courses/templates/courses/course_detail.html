@@ -15,6 +15,7 @@
 
     .button {
         border-color: black;
+        border-color: black;
         color: black;
         background: transparent;
     }
@@ -288,14 +289,14 @@
 
     {% endif %}
 
-    {% if advertisement is not None %}
-        <h3><br>Advertisement<br></h3>
-        <iframe src={{ advertisement.advertisement }} width="230" height="200" target="_self"></iframe>
-    {% endif %}
-
     {% if registered != 0 and not is_contributor and is_owner == 0 %}
         <a href="{% url 'courses:refund' course.slug %}" class="btn red">Request refund</a><br>
         <a href="{% url 'courses:complaint' course.slug %}" class="btn red">Form Complaint</a><br>
+    {% endif %}
+
+        {% if advertisement is not None %}
+        <h3><br>Advertisement<br></h3>
+        <iframe src={{ advertisement.advertisement }} width="230" height="200" target="_self"></iframe>
     {% endif %}
 
     </div>
