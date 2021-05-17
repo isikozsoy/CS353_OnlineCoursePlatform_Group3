@@ -2,6 +2,29 @@
 
 {% block style_block %}
 <style>
+
+    .btn {
+        border: 2px solid black;
+        background-color: white;
+        color: black;
+        padding: 7px 14px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-right: 50px;
+        margin-top: 20px;
+    }
+
+    .button {
+        border-color: black;
+        color: black;
+        background: transparent;
+    }
+
+    .button:hover {
+        background: black;
+        color: white;
+    }
+
     .alert {
         padding: 20px;
         background-color: #f44336;
@@ -37,8 +60,8 @@
     {% endif %}
 
     {% if user_type == 1 %} <!-- the user is an instructor -->
-        <a href="/add" class="btn btn-primary">Request to add a course!</a><br>
-        <a href="/discounts" class="btn btn-primary">See current discounts</a><br>
+        <a href="/add" class="btn button">Request to add a course!</a>
+        <a href="/discounts" class="btn button">See current discounts</a><br><br>
     {% endif %}
 
     <h1>Courses List</h1>
