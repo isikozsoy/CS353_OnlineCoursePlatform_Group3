@@ -23,6 +23,9 @@ def topic_course_listing_page(request, topicname):
                                          'from courses_course '
                                          'inner join main_course_topic mct on courses_course.cno = mct.cno_id '
                                          'where topicname_id = %s and is_private != 1;', [topicname])
+        print('select cno from courses_course '
+              'inner join main_course_topic mct on courses_course.cno = mct.cno_id '
+              'where topicname_id = %s and is_private != 1;', [topicname])
 
         # obligatory user type check for base.html
         user_type = -1
@@ -31,6 +34,7 @@ def topic_course_listing_page(request, topicname):
             cursor_ = connection.cursor()
             try:
                 cursor_.execute('select user_type from auth_user where id = %s;', [request.user.id])
+                print('select user_type from auth_user where id = %s;', [request.user.id])
                 type_row = cursor_.fetchone()
                 if type_row:
                     user_type = type_row[0]
@@ -40,6 +44,7 @@ def topic_course_listing_page(request, topicname):
                 cursor_.close()
 
         topic_list = Topic.objects.raw('select * from main_topic;')
+        print('select * from main_topic;')
 
         return render(request, template_name, {'course_list': course_list, 'topic_list': topic_list,
                                                'user_type': user_type, 'topicname': topicname, })
@@ -55,11 +60,15 @@ class WishlistView(ListView):
         wishlist_q = Wishes.objects.raw('''SELECT cc.course_img, cc.cname, mw.wishes_id, cc.slug
                                         FROM main_wishes AS mw, courses_course AS cc
                                         WHERE mw.cno_id = cc.cno AND mw.user_id = %s''', [user_id])
+        print('''SELECT cc.course_img, cc.cname, mw.wishes_id, cc.slug
+                                        FROM main_wishes AS mw, courses_course AS cc
+                                        WHERE mw.cno_id = cc.cno AND mw.user_id = %s''', [user_id])
 
         cursor = connection.cursor()
         cursor.execute('select type '
                        'from user_types '
                        'where id = %s;', [request.user.id])
+        print('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
         user_type = -1
@@ -70,6 +79,7 @@ class WishlistView(ListView):
             return HttpResponseRedirect('/login')
 
         topic_list = Topic.objects.raw('select * from main_topic order by topicname;')
+        print('select * from main_topic order by topicname;')
         context = {
             'wishlist_q': wishlist_q,
             'user_type': user_type,
@@ -86,11 +96,13 @@ class OffersView(ListView):
                                             FROM main_advertisement
                                             WHERE ad_username_id = %s
                                             ORDER BY startdate''', [user_id])
+        print('''SELECT * FROM main_advertisement WHERE ad_username_id = %s ORDER BY startdate''', [user_id])
 
 
 
         cursor = connection.cursor()
         cursor.execute('select type from user_types where id = %s;', [request.user.id])
+        print('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
         user_type = -1
@@ -98,6 +110,7 @@ class OffersView(ListView):
             user_type = row[0]
 
         topic_list = Topic.objects.raw('select topicname from main_topic;')
+        print('select topicname from main_topic;')
         context = {
             'offers_q': offers_q,
             'user_type': user_type,
@@ -108,6 +121,7 @@ class OffersView(ListView):
 
 def add_to_wishlist(request, course_slug):
     course = Course.objects.raw('SELECT * FROM courses_course WHERE slug = %s LIMIT 1', [course_slug])[0]
+    print('SELECT * FROM courses_course WHERE slug = %s LIMIT 1', [course_slug])
     cno = course.cno
 
     # WILL BE CHANGED TO CURRENT USER
@@ -115,6 +129,7 @@ def add_to_wishlist(request, course_slug):
     cursor = connection.cursor()
 
     cursor.execute('select type from user_types where id = %s;', [request.user.id])
+    print('select type from user_types where id = %s;', [request.user.id])
 
     row = cursor.fetchone()
     user_type = -1
@@ -127,12 +142,17 @@ def add_to_wishlist(request, course_slug):
 
     current_wishes = Wishes.objects.raw('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s',
                                         [cno, user_id])
+    print('SELECT * FROM main_wishes WHERE cno_id = %s AND user_id = %s',
+          [cno, user_id])
 
     if len(list(current_wishes)) == 0:
         cursor.execute('INSERT INTO main_wishes (cno_id, user_id) VALUES (%s, %s);',
                        [cno, user_id])
+        print('INSERT INTO main_wishes (cno_id, user_id) VALUES (%s, %s);',
+                       [cno, user_id])
     else:
         cursor.execute('DELETE FROM main_wishes WHERE cno_id = %s AND user_id = %s', [cno, user_id])
+        print('DELETE FROM main_wishes WHERE cno_id = %s AND user_id = %s', [cno, user_id])
 
     if str(request.path).find("/to_cart") != -1:
         return redirect("main:cart")
@@ -145,6 +165,7 @@ class MainView(View):
         cursor = connection.cursor()
         print("Request id: ", request.user.id)
         cursor.execute('select type from user_types where id = %s;', [request.user.id])
+        print('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
         user_type = -1
@@ -152,15 +173,19 @@ class MainView(View):
             user_type = row[0]
 
         cursor.execute('SELECT topic_id FROM main_interested_in WHERE s_username_id = %s LIMIT 5', [request.user.id])
+        print('SELECT topic_id FROM main_interested_in WHERE s_username_id = %s LIMIT 5', [request.user.id])
         interested_topics = cursor.fetchall()
 
         cursor.execute('SELECT count(*) FROM main_interested_in WHERE s_username_id = %s LIMIT 5', [request.user.id])
+        print('SELECT count(*) FROM main_interested_in WHERE s_username_id = %s LIMIT 5', [request.user.id])
         interested_topics_count = cursor.fetchone()[0]
 
         topic_based_courses = [None] * interested_topics_count
         for i, topic in enumerate(interested_topics):
 
             cursor.execute('SELECT slug, course_img, cname FROM main_course_topic CT, courses_course C '
+                           'WHERE C.is_private = 0 AND CT.topicname_id = %s AND C.cno = CT.cno_id LIMIT 5', [topic[0]])
+            print('SELECT slug, course_img, cname FROM main_course_topic CT, courses_course C '
                            'WHERE C.is_private = 0 AND CT.topicname_id = %s AND C.cno = CT.cno_id LIMIT 5', [topic[0]])
             interested_courses = cursor.fetchall()
             cnt = len(interested_courses)
@@ -186,13 +211,16 @@ class MainView(View):
         courses = Course.objects.raw('select * '
                                      'from courses_course '
                                      'where is_private = 0;')
+        print('select * from courses_course where is_private = 0;')
 
         topics = Topic.objects.raw('select * from main_topic order by topicname;')
+        print('select * from main_topic order by topicname;')
 
         try:
             cursor.execute('select user_type '
                            'from auth_user '
                            'where id = %s;', [request.user.id])
+            print('select user_type from auth_user where id = %s;', [request.user.id])
         except DatabaseError:
             return HttpResponse("There was an error.<p> " + str(sys.exc_info()))
         finally:
@@ -207,6 +235,7 @@ class MainView(View):
 
 def course_detail(request, course_slug):
     course_queue = Course.objects.raw('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
+    print('''SELECT * FROM courses_course WHERE slug = %s;''', [course_slug])
 
     # check whether the student is enrolled into this course
     # is course slug primary key
@@ -221,9 +250,12 @@ def course_detail(request, course_slug):
     cno = course.cno
 
     course = Course.objects.raw('SELECT * FROM courses_course WHERE course_id = %s', [course_id])
+    print('SELECT * FROM courses_course WHERE course_id = %s', [course_id])
 
     user_id = request.user.id
     registered = Enroll.objects.raw('SELECT enroll_id FROM main_enroll WHERE user_id = %s AND cno_id = %s',
+                                    [user_id, course_id])
+    print('SELECT enroll_id FROM main_enroll WHERE user_id = %s AND cno_id = %s',
                                     [user_id, course_id])
 
     lecture_count = Lecture.objects.filter(cno_id=course.cno).count()
@@ -257,6 +289,7 @@ class NotificationView(View):
     def get(self, request):
         cursor = connection.cursor()
         cursor.execute('select type from user_types where id = %s;', [request.user.id])
+        print('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
         user_type = -1
@@ -266,6 +299,9 @@ class NotificationView(View):
         if user_type == 0:  # student
             cursor = connection.cursor()
             cursor.execute('SELECT date, cname, username, slug FROM main_gift as G, auth_user as A, courses_course as C'
+                           ' WHERE C.cno = G.course_id AND G.sender_id = A.id AND G.receiver_id = %s ORDER BY date DESC'
+                           , [request.user.id])
+            print('SELECT date, cname, username, slug FROM main_gift as G, auth_user as A, courses_course as C'
                            ' WHERE C.cno = G.course_id AND G.sender_id = A.id AND G.receiver_id = %s ORDER BY date DESC'
                            , [request.user.id])
             temp_gift = cursor.fetchall()
@@ -280,6 +316,9 @@ class NotificationView(View):
             cursor = connection.cursor()
             cursor.execute(
                 'SELECT ann_date, cname, ann_text, slug FROM main_enroll as E, main_announcement A, courses_course C'
+                ' WHERE E.cno_id = A.cno_id AND E.user_id = %s'
+                ' AND E.cno_id = C.cno ORDER BY ann_date DESC', [request.user.id])
+            print('SELECT ann_date, cname, ann_text, slug FROM main_enroll as E, main_announcement A, courses_course C'
                 ' WHERE E.cno_id = A.cno_id AND E.user_id = %s'
                 ' AND E.cno_id = C.cno ORDER BY ann_date DESC', [request.user.id])
             temp_anns = cursor.fetchall()
@@ -316,6 +355,9 @@ class NotificationView(View):
             cursor.execute('SELECT date, cname, username, slug FROM main_gift as G, auth_user as A, courses_course as C'
                            ' WHERE C.cno = G.course_id AND G.sender_id = A.id AND G.receiver_id = %s ORDER BY date DESC'
                            , [request.user.id])
+            print('SELECT date, cname, username, slug FROM main_gift as G, auth_user as A, courses_course as C'
+                           ' WHERE C.cno = G.course_id AND G.sender_id = A.id AND G.receiver_id = %s ORDER BY date DESC'
+                           , [request.user.id])
             temp_gift = cursor.fetchall()
             cursor.close()
 
@@ -328,6 +370,9 @@ class NotificationView(View):
             cursor = connection.cursor()
             cursor.execute(
                 'SELECT ann_date, cname, ann_text, slug FROM main_enroll as E, main_announcement A, courses_course C'
+                ' WHERE E.cno_id = A.cno_id AND E.user_id = %s'
+                ' AND E.cno_id = C.cno ORDER BY ann_date DESC', [request.user.id])
+            print('SELECT ann_date, cname, ann_text, slug FROM main_enroll as E, main_announcement A, courses_course C'
                 ' WHERE E.cno_id = A.cno_id AND E.user_id = %s'
                 ' AND E.cno_id = C.cno ORDER BY ann_date DESC', [request.user.id])
             temp_anns = cursor.fetchall()
@@ -365,6 +410,10 @@ class NotificationView(View):
                 'auth_user U WHERE P.lecture_no_id = L.lecture_no AND L.cno_id = C.cno AND owner_id = %s'
                 ' AND P.username_id = U.id'
                 , [request.user.id])
+            print('SELECT date, cname, lecture_name, username, slug FROM main_post P, courses_lecture L, courses_course C,'
+                'auth_user U WHERE P.lecture_no_id = L.lecture_no AND L.cno_id = C.cno AND owner_id = %s'
+                ' AND P.username_id = U.id'
+                , [request.user.id])
             temp_posts = cursor.fetchall()
             cursor.close()
 
@@ -395,6 +444,7 @@ class NotificationView(View):
                     not1_i = not1_i + 1
 
         topic_list = Topic.objects.raw('select * from main_topic;')
+        print('select * from main_topic;')
 
         context = {'user_type': user_type, 'notifications': notifications, "topic_list": topic_list}
         return render(request, 'main/notifications.html', context)
@@ -407,6 +457,7 @@ class ShoppingCartView(View):
         cursor = connection.cursor()
 
         cursor.execute('select type from user_types where id = %s;', [request.user.id])
+        print('select type from user_types where id = %s;', [request.user.id])
 
         row = cursor.fetchone()
         user_type = -1
@@ -420,10 +471,14 @@ class ShoppingCartView(View):
         cursor.execute('SELECT count(*) '
                        'FROM main_inside_cart '
                        'WHERE username_id = %s;', [request.user.id])
+        print('SELECT count(*) FROM main_inside_cart WHERE username_id = %s;', [request.user.id])
         count = cursor.fetchone()[0]
 
         cursor.execute('SELECT SUM(price) '
                        'FROM courses_course '
+                       'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
+                       'WHERE mic.username_id = %s;', [request.user.id])
+        print('SELECT SUM(price) FROM courses_course '
                        'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
                        'WHERE mic.username_id = %s;', [request.user.id])
         total_price = cursor.fetchone()[0]
@@ -432,14 +487,22 @@ class ShoppingCartView(View):
             'SELECT inside_cart_id, cname, price, slug, course_img, receiver_username_id, inside_cart_id, cno '
             'FROM courses_course AS cc, main_inside_cart AS mic '
             'WHERE cc.cno = mic.cno_id AND mic.username_id = %s;', [request.user.id])
+        print('SELECT inside_cart_id, cname, price, slug, course_img, receiver_username_id, inside_cart_id, cno '
+            'FROM courses_course AS cc, main_inside_cart AS mic '
+            'WHERE cc.cno = mic.cno_id AND mic.username_id = %s;', [request.user.id])
         items_on_cart = cursor.fetchall()
 
         cursor.execute('SELECT username FROM main_inside_cart LEFT JOIN auth_user'
                        ' on receiver_username_id = id'
                        ' WHERE username_id = %s', [request.user.id])
+        print('SELECT username FROM main_inside_cart LEFT JOIN auth_user'
+                       ' on receiver_username_id = id'
+                       ' WHERE username_id = %s', [request.user.id])
         receivers = cursor.fetchall()
 
         cursor.execute('SELECT cno_id FROM main_wishes WHERE user_id = %s;',
+                        [request.user.id])
+        print('SELECT cno_id FROM main_wishes WHERE user_id = %s;',
                         [request.user.id])
         wishes = cursor.fetchall()
 
@@ -502,6 +565,10 @@ class ShoppingCartView(View):
                            'FROM main_inside_cart AS mic, courses_course AS cc '
                            'WHERE mic.cno_id = cc.cno '
                            'AND mic.inside_cart_id = %s', [item_id])
+            print('SELECT cc.owner_id '
+                           'FROM main_inside_cart AS mic, courses_course AS cc '
+                           'WHERE mic.cno_id = cc.cno '
+                           'AND mic.inside_cart_id = %s', [item_id])
             owner_id = cursor.fetchone()[0]
 
             if receiver_id[0][0] == owner_id:
@@ -509,6 +576,7 @@ class ShoppingCartView(View):
                 return ShoppingCartView.get(self, request, warning_message)
 
             cursor.execute('SELECT cno_id FROM main_inside_cart WHERE inside_cart_id = %s', [item_id])
+            print('SELECT cno_id FROM main_inside_cart WHERE inside_cart_id = %s', [item_id])
             cno = cursor.fetchone()[0]
 
             if receiver_id == request.user.id:
@@ -517,8 +585,8 @@ class ShoppingCartView(View):
                                                 'FROM main_enroll '
                                                 'WHERE user_id = %s AND cno_id = %s;',
                                                 [user_id, cno])
+                print('SELECT * FROM main_enroll WHERE user_id = %s AND cno_id = %s;', [user_id, cno])
             else:
-
                 my_courses = Enroll.objects.raw('SELECT * '
                                                 'FROM main_enroll '
                                                 'WHERE user_id = %s AND cno_id = %s;',
@@ -567,6 +635,10 @@ class ShoppingCheckoutView(View):
         cursor = connection.cursor()
 
         cursor.execute('SELECT slug, receiver_username_id, cno, owner_id, inside_cart_id '
+                       'FROM courses_course '
+                       'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
+                       'WHERE mic.username_id = %s;', [request.user.id])
+        print('SELECT slug, receiver_username_id, cno, owner_id, inside_cart_id '
                        'FROM courses_course '
                        'inner join main_inside_cart AS mic ON courses_course.cno = mic.cno_id '
                        'WHERE mic.username_id = %s;', [request.user.id])

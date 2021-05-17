@@ -21,6 +21,9 @@ class SearchView(View):
             "from courses_course " +
             "where cname like %s and is_private != 1;", [q]
         )
+        print("select * " +
+            "from courses_course " +
+            "where cname like %s and is_private != 1;", [q])
         user_type = -1
         if request.user.is_authenticated:
             cursor = connection.cursor()
