@@ -130,7 +130,7 @@
     <div class = "column a" >
     <div class="column first">
             <div class="row">
-                <iframe src={{ course.course_img }} width="230" height="200" target="_self"></iframe>
+                <iframe src={{ course.course_img }} width="300" height="200" target="_self"></iframe>
         </div>
     </div>
     <div class="column second">
@@ -141,9 +141,9 @@
     {% if course.new_price %}
         <h3 style = "display:inline">Discounted Price: </h3>
         <div class = "strike" style = "display:inline"><strike style = "display:inline">{{course.price}}</strike></div>
-        <h3 style = "display:inline"> {{course.new_price}}</h3>
+        <h3 style = "display:inline"> ${{course.new_price}}</h3>
         {% else %}
-        <h3>Price {{course.price}}</h3>
+        <h3>Price ${{course.price}}</h3>
     {% endif %}
         </div>
         </div>
